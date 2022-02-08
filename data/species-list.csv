@@ -6,7 +6,6 @@ Unidentified Gadid,Gadidae,Gadidae,Cod,FL,
 Walleye Pollock,Gadus chalcogrammus,Gadidae,Cod,FL,290
 Alaska Plaice,Pleuronectes quadrituberculatus,Pleuronectidae,Flatfish,TL,315
 English Sole,Parophrys vetulus,Pleuronectidae,Flatfish,TL,238
-Unidentified Flatfish (Juvenile),Pleuronectidae,Pleuronectidae,Flatfish,TL,
 Rock Sole,Lepidopsetta spp.,Pleuronectidae,Flatfish,TL,305
 Sand Sole,Psettichthys melanostictus,Pleuronectidae,Flatfish,TL,356
 Starry Flounder,Platichthys stellatus,Pleuronectidae,Flatfish,TL,493
@@ -26,34 +25,21 @@ Unidentified Greenling,Hexagrammodae,Hexagrammodae,Greenling,FL,
 White Spotted Greenling,Hexagrammos stelleri,Hexagrammodae,Greenling,FL,280
 Crescent Gunnel,Pholis laeta,Pholidae,Gunnel,TL,257
 Penpoint Gunnel,Apodichthys flavidus,Pholidae,Gunnel,TL,270
-Larval Fish,,Larval,Larval,TL,
+Larval,,Larval,Larval,TL,
 Sturgeon Poacher,Podothecus accipenserinus,Agonidae,Poacher,TL,188
 Tubenose Poacher,Pallasina barbata,Agonidae,Poacher,TL,94
 Slender Eelblenny,Lumpenus fabricii,Stichaeidae,Prickleback,TL,217
 Snake Prickleback,Lumpenus sagitta,Stichaeidae,Prickleback,TL,295
 Chinook Salmon,Oncorhynchus tshawytscha,Salmonidae,Salmonid,FL,767
-Chinook Salmon (Adult),Oncorhynchus tshawytscha,Salmonidae,Salmonid,FL,
-Chinook Salmon (Juvenile),Oncorhynchus tshawytscha,Salmonidae,Salmonid,FL,
 Chum Salmon,Oncorhynchus keta,Salmonidae,Salmonid,FL,532
-Chum Salmon (Adult),Oncorhynchus keta,Salmonidae,Salmonid,FL,
-Chum Salmon (Juvenile),Oncorhynchus keta,Salmonidae,Salmonid,FL,
 Coho Salmon,Oncorhynchus kisutch,Salmonidae,Salmonid,FL,573
-Coho Salmon (Adult),Oncorhynchus kisutch,Salmonidae,Salmonid,FL,
-Coho Salmon (Juvenile),Oncorhynchus kisutch,Salmonidae,Salmonid,FL,
 Dolly Varden,Salvelinus malma,Salmonidae,Salmonid,FL,420
-Dolly Varden (Adult),Salvelinus malma,Salmonidae,Salmonid,FL,
-Dolly Varden (Juvenile),Salvelinus malma,Salmonidae,Salmonid,FL,
 Pink Salmon,Oncorhynchus gorbuscha,Salmonidae,Salmonid,FL,420
-Pink Salmon (Adult),Oncorhynchus gorbuscha,Salmonidae,Salmonid,FL,
-Pink Salmon (Juvenile),Oncorhynchus gorbuscha,Salmonidae,Salmonid,FL,
 Sockeye Salmon,Oncorhynchus nerka,Salmonidae,Salmonid,FL,374
-Sockeye Salmon (Adult),Oncorhynchus nerka,Salmonidae,Salmonid,FL,
-Sockeye Salmon (Juvenile),Oncorhynchus nerka,Salmonidae,Salmonid,FL,
 Armorhead Sculpin,Gymnocanthus galeatus,Cottidae,Sculpin,TL,217
 Brown Irish Lord,Hemilepidotus spinosus,Cottidae,Sculpin,TL,179
 Buffalo Sculpin,Enophrys bison,Cottidae,Sculpin,TL,223
 Great Sculpin,Myoxocephalus polyacanthocephalus,Cottidae,Sculpin,TL,420
-Unidentified Sculpin (Juvenile),Cottidae,Cottidae,Sculpin,TL,
 Padded Sculpin,Artedius fenestralis,Cottidae,Sculpin,TL,94
 Red Irish Lord,Hemilepidotus hemilepidotus,Cottidae,Sculpin,TL,295
 Scalyhead Sculpin,Artedius harringtoni,Cottidae,Sculpin,TL,70
