@@ -158,17 +158,20 @@ fish.counts = fish.1 %>%
   group_by(Common, LifeStage) %>%
   summarise(Count = sum(Count))
 
-fish.1 %>%
+# Calculate avg, min, max length by species and lifestage:
+fish.sizes = fish.1 %>%
   group_by(Common, LifeStage) %>%
-  mutate(n = n(Length_mm)) %>%
-  filter(n > 1) %>%
+  filter(!is.na(Length_mm)) %>% # Remove obs without length measurements
+  mutate(n = n()) %>%
+  filter(n > 1) %>% # Remove any species only caught once
   summarise(Length.mean = round(mean(Length_mm, na.rm = TRUE), digits = 0),
+            n = n(),
             Length.min = min(Length_mm, na.rm = TRUE),
-            Length.max = max(Length_mm, na.rm = TRUE)) %>% View()
+            Length.max = max(Length_mm, na.rm = TRUE))
 
-  mutate(Length.mean = as.double(replace_na(Length.mean, ''))))
-            
+# Now let's join the count and size data:
 
+          
 
 ?n()
 
