@@ -1,63 +1,63 @@
-﻿Common,Scientific,Family,Group,LengthType,atMaturity
-Pacific Cod,Gadus macrocephalus,Gadidae,Cod,FL,587
-Saffron Cod,Eleginus gracilis,Gadidae,Cod,FL,316
-Pacific Tom Cod,Microgadus proximus,Gadidae,Cod,FL,188
-Unidentified Gadid,Gadidae,Gadidae,Cod,FL,
-Walleye Pollock,Gadus chalcogrammus,Gadidae,Cod,FL,290
-Alaska Plaice,Pleuronectes quadrituberculatus,Pleuronectidae,Flatfish,TL,315
-English Sole,Parophrys vetulus,Pleuronectidae,Flatfish,TL,238
-Rock Sole,Lepidopsetta spp.,Pleuronectidae,Flatfish,TL,305
-Sand Sole,Psettichthys melanostictus,Pleuronectidae,Flatfish,TL,356
-Starry Flounder,Platichthys stellatus,Pleuronectidae,Flatfish,TL,493
-Unidentified Flatfish,Pleuronectidae,Pleuronectidae,Flatfish,TL,
-Capelin,Mallotus villosus,Osmeridae,Smelt,FL,106
-Eulachon,Thaleichthys pacificus,Osmeridae,Smelt,FL,119
-Pacific Herring,Clupea pallasii,Clupeidae,Herring,FL,222
-Longfin Smelt,Spirinchus thaleichthys,Osmeridae,Smelt,FL,118
-Pacific Sand Lance,Ammodytes hexapterus,Ammodytidae,Sand lance,TL,125
-Sandfish,Trichodon trichodon,Trichodontidae,Sandfish,FL,188
-Surf Smelt,Hypomesus pretiosus,Osmeridae,Smelt,FL,135
-Kelp Greenling,Hexagrammos decagrammus,Hexagrammodae,Greenling,FL,346
-Lingcod,Ophiodon elongatus,Hexagrammodae,Greenling,FL,457
-Masked Greenling,Hexagrammos octogrammus,Hexagrammodae,Greenling,FL,249
-Rock Greenling,Hexagrammos lagocephalus,Hexagrammodae,Greenling,FL,346
-Unidentified Greenling,Hexagrammodae,Hexagrammodae,Greenling,FL,
-White Spotted Greenling,Hexagrammos stelleri,Hexagrammodae,Greenling,FL,280
-Crescent Gunnel,Pholis laeta,Pholidae,Gunnel,TL,257
-Penpoint Gunnel,Apodichthys flavidus,Pholidae,Gunnel,TL,270
-Larval,,Larval,Larval,TL,
-Sturgeon Poacher,Podothecus accipenserinus,Agonidae,Poacher,TL,188
-Tubenose Poacher,Pallasina barbata,Agonidae,Poacher,TL,94
-Slender Eelblenny,Lumpenus fabricii,Stichaeidae,Prickleback,TL,217
-Snake Prickleback,Lumpenus sagitta,Stichaeidae,Prickleback,TL,295
-Chinook Salmon,Oncorhynchus tshawytscha,Salmonidae,Salmonid,FL,767
-Chum Salmon,Oncorhynchus keta,Salmonidae,Salmonid,FL,532
-Coho Salmon,Oncorhynchus kisutch,Salmonidae,Salmonid,FL,573
-Dolly Varden,Salvelinus malma,Salmonidae,Salmonid,FL,420
-Pink Salmon,Oncorhynchus gorbuscha,Salmonidae,Salmonid,FL,420
-Sockeye Salmon,Oncorhynchus nerka,Salmonidae,Salmonid,FL,374
-Armorhead Sculpin,Gymnocanthus galeatus,Cottidae,Sculpin,TL,217
-Brown Irish Lord,Hemilepidotus spinosus,Cottidae,Sculpin,TL,179
-Buffalo Sculpin,Enophrys bison,Cottidae,Sculpin,TL,223
-Great Sculpin,Myoxocephalus polyacanthocephalus,Cottidae,Sculpin,TL,420
-Padded Sculpin,Artedius fenestralis,Cottidae,Sculpin,TL,94
-Red Irish Lord,Hemilepidotus hemilepidotus,Cottidae,Sculpin,TL,295
-Scalyhead Sculpin,Artedius harringtoni,Cottidae,Sculpin,TL,70
-Sharpnose Sculpin,Clinocottus acuticeps,Cottidae,Sculpin,TL,47
-Shorthorn Sculpin,Myoxocephalus scorpius,Cottidae,Sculpin,TL,488
-Silver Spotted Sculpin,Blepsias cirrhosus,Hemitripteridae,Sculpin,TL,129
-Tidepool Sculpin,Oligocottus maculosus,Cottidae,Sculpin,TL,67
-Unidentified Sculpin,Cottidae,Cottidae,Sculpin,TL,
-Snailfish,Liparis spp.,Liparidae,Snailfish,TL,
-Three Spine Stickleback,Gasterosteus aculeatus,Gasterosteidae,Stickleback,TL,57
-Staghorn Sculpin,Leptocottus armatus,Cottidae,Sculpin,FL,270
-Slender Cockscomb,Anoplarchus insignis,Stichaeidae,Prickleback,TL,82
-Nine Spine Stickleback,Pungitius pungitus,Gasterosteidae,Stickleback,TL,64
-Graceful Decorator Crab,Oregonia gracilis,,Crab,Carapace,
-Graceful Kelp Crab,Pugettia gracilis ,,Crab,Carapace,
-Dungeness Crab,Metacarcinus magister,,Crab,Carapace,
-Hermit Crab,,Paguridae,,Carapace,
-Pacific Halibut,Hippoglossus stenolepis,Pleuronectidae,Flatfish,TL,
-Hairy Crab,Hapalogaster mertensii ,Lithodidae,Crab,Carapace,
-Pandalus Shrimp,Pandalus sp,Pandalidae,Shrimp,Rostrom-Tail,
-Sand Shrimp,,Crangonidae,Shrimp,Rostrom-Tail,
+﻿Common,Scientific,Family,Type,Group,LengthType,atMaturity
+Pacific Cod,Gadus macrocephalus,Gadidae,Fish,Cod,FL,587
+Saffron Cod,Eleginus gracilis,Gadidae,Fish,Cod,FL,316
+Pacific Tom Cod,Microgadus proximus,Gadidae,Fish,Cod,FL,188
+Unidentified Gadid,Gadidae,Gadidae,Fish,Cod,FL,
+Walleye Pollock,Gadus chalcogrammus,Gadidae,Fish,Cod,FL,290
+Alaska Plaice,Pleuronectes quadrituberculatus,Pleuronectidae,Fish,Flatfish,TL,315
+English Sole,Parophrys vetulus,Pleuronectidae,Fish,Flatfish,TL,238
+Rock Sole,Lepidopsetta spp.,Pleuronectidae,Fish,Flatfish,TL,305
+Sand Sole,Psettichthys melanostictus,Pleuronectidae,Fish,Flatfish,TL,356
+Starry Flounder,Platichthys stellatus,Pleuronectidae,Fish,Flatfish,TL,493
+Unidentified Flatfish,Pleuronectidae,Pleuronectidae,Fish,Flatfish,TL,
+Capelin,Mallotus villosus,Osmeridae,Fish,Smelt,FL,106
+Eulachon,Thaleichthys pacificus,Osmeridae,Fish,Smelt,FL,119
+Pacific Herring,Clupea pallasii,Clupeidae,Fish,Herring,FL,222
+Longfin Smelt,Spirinchus thaleichthys,Osmeridae,Fish,Smelt,FL,118
+Pacific Sand Lance,Ammodytes hexapterus,Ammodytidae,Fish,Sand lance,TL,125
+Sandfish,Trichodon trichodon,Trichodontidae,Fish,Sandfish,FL,188
+Surf Smelt,Hypomesus pretiosus,Osmeridae,Fish,Smelt,FL,135
+Kelp Greenling,Hexagrammos decagrammus,Hexagrammodae,Fish,Greenling,FL,346
+Lingcod,Ophiodon elongatus,Hexagrammodae,Fish,Greenling,FL,457
+Masked Greenling,Hexagrammos octogrammus,Hexagrammodae,Fish,Greenling,FL,249
+Rock Greenling,Hexagrammos lagocephalus,Hexagrammodae,Fish,Greenling,FL,346
+Unidentified Greenling,Hexagrammodae,Hexagrammodae,Fish,Greenling,FL,
+White Spotted Greenling,Hexagrammos stelleri,Hexagrammodae,Fish,Greenling,FL,280
+Crescent Gunnel,Pholis laeta,Pholidae,Fish,Gunnel,TL,257
+Penpoint Gunnel,Apodichthys flavidus,Pholidae,Fish,Gunnel,TL,270
+Larval,,Larval,Fish,Larval,TL,
+Sturgeon Poacher,Podothecus accipenserinus,Agonidae,Fish,Poacher,TL,188
+Tubenose Poacher,Pallasina barbata,Agonidae,Fish,Poacher,TL,94
+Slender Eelblenny,Lumpenus fabricii,Stichaeidae,Fish,Prickleback,TL,217
+Snake Prickleback,Lumpenus sagitta,Stichaeidae,Fish,Prickleback,TL,295
+Chinook Salmon,Oncorhynchus tshawytscha,Salmonidae,Fish,Salmonid,FL,767
+Chum Salmon,Oncorhynchus keta,Salmonidae,Fish,Salmonid,FL,532
+Coho Salmon,Oncorhynchus kisutch,Salmonidae,Fish,Salmonid,FL,573
+Dolly Varden,Salvelinus malma,Salmonidae,Fish,Salmonid,FL,420
+Pink Salmon,Oncorhynchus gorbuscha,Salmonidae,Fish,Salmonid,FL,420
+Sockeye Salmon,Oncorhynchus nerka,Salmonidae,Fish,Salmonid,FL,374
+Armorhead Sculpin,Gymnocanthus galeatus,Cottidae,Fish,Sculpin,TL,217
+Brown Irish Lord,Hemilepidotus spinosus,Cottidae,Fish,Sculpin,TL,179
+Buffalo Sculpin,Enophrys bison,Cottidae,Fish,Sculpin,TL,223
+Great Sculpin,Myoxocephalus polyacanthocephalus,Cottidae,Fish,Sculpin,TL,420
+Padded Sculpin,Artedius fenestralis,Cottidae,Fish,Sculpin,TL,94
+Red Irish Lord,Hemilepidotus hemilepidotus,Cottidae,Fish,Sculpin,TL,295
+Scalyhead Sculpin,Artedius harringtoni,Cottidae,Fish,Sculpin,TL,70
+Sharpnose Sculpin,Clinocottus acuticeps,Cottidae,Fish,Sculpin,TL,47
+Shorthorn Sculpin,Myoxocephalus scorpius,Cottidae,Fish,Sculpin,TL,488
+Silver Spotted Sculpin,Blepsias cirrhosus,Hemitripteridae,Fish,Sculpin,TL,129
+Tidepool Sculpin,Oligocottus maculosus,Cottidae,Fish,Sculpin,TL,67
+Unidentified Sculpin,Cottidae,Cottidae,Fish,Sculpin,TL,
+Snailfish,Liparis spp.,Liparidae,Fish,Snailfish,TL,
+Three Spine Stickleback,Gasterosteus aculeatus,Gasterosteidae,Fish,Stickleback,TL,57
+Staghorn Sculpin,Leptocottus armatus,Cottidae,Fish,Sculpin,FL,270
+Slender Cockscomb,Anoplarchus insignis,Stichaeidae,Fish,Prickleback,TL,82
+Nine Spine Stickleback,Pungitius pungitus,Gasterosteidae,Fish,Stickleback,TL,64
+Graceful Decorator Crab,Oregonia gracilis,,Invert,Crab,Carapace-Width,
+Graceful Kelp Crab,Pugettia gracilis ,,Invert,Crab,Carapace-Width,
+Dungeness Crab,Metacarcinus magister,,Invert,Crab,Carapace-Width,
+Hermit Crab,,Paguridae,Invert,,Carapace-Width,
+Pacific Halibut,Hippoglossus stenolepis,Pleuronectidae,Fish,Flatfish,TL,
+Hairy Crab,Hapalogaster mertensii ,Lithodidae,Invert,Crab,Carapace-Width,
+Pandalus Shrimp,Pandalus sp,Pandalidae,Invert,Shrimp,Rostrom-Tail,
+Sand Shrimp,,Crangonidae,Invert,Shrimp,Rostrom-Tail,

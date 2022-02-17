@@ -197,6 +197,7 @@ z.3 = z.2 %>%
 z.4 = select(species_list, Common, LengthType) %>%
   left_join(z.3, ., by = "Common") %>%
   relocate(LengthType, .after = Length) %>%
+  select(-SeineID) %>%
   rename(SpeciesName = Common) %>% # clean up
   mutate(LengthType = replace_na(LengthType, '')) # replace any NAs in new col
 
