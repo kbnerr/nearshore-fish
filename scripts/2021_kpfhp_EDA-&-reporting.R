@@ -65,7 +65,6 @@ env.plot = select(eci.site, SeineID, Site, Date) %>%
          Site = factor(Site, levels = c('Anchor Point', 'Plumb Bluff', 'Ninilchik')))
 
 # Create a figure of our WQ measurements:
-
 plot.T = select(env.plot, Site, Date, Temperature_C) %>%
   group_by(Date) %>%
   mutate(mean = mean(Temperature_C),
@@ -132,8 +131,9 @@ env.fig = ggarrange(plot.T, plot.DO,
                     labels = "AUTO",
                     legend = "bottom", common.legend = TRUE)
 
+# Export the figure:
 ggsave(plot = env.fig,
-       filename = "WQ-measurements.png", path = file.path(dir.figs),
+       filename = "2021_kpfhp_WQ-measurements.png", path = file.path(dir.figs),
        width = 10.0, height = 6.5, dpi = 'print')
 
 
@@ -160,18 +160,57 @@ fish.counts = fish.1 %>%
 
 # Calculate avg, min, max length by species and lifestage:
 fish.sizes = fish.1 %>%
-  group_by(Common, LifeStage) %>%
   filter(!is.na(Length_mm)) %>% # Remove obs without length measurements
-  mutate(n = n()) %>%
-  filter(n > 1) %>% # Remove any species only caught once
-  summarise(Length.mean = round(mean(Length_mm, na.rm = TRUE), digits = 0),
-            n = n(),
+  group_by(Common, LifeStage) %>%
+  summarise(n = n(),
+            Length.mean = round(mean(Length_mm, na.rm = TRUE), digits = 0),
             Length.min = min(Length_mm, na.rm = TRUE),
-            Length.max = max(Length_mm, na.rm = TRUE))
+            Length.max = max(Length_mm, na.rm = TRUE)) %>%
+  mutate(Length.min = if_else(n == 1,
+                              NaN,
+                              Length.min),
+         Length.max = if_else(n == 1,
+                              NaN,
+                              Length.max))
 
-# Now let's join the count and size data:
+# Next, let's join the count and size data:
+# *Note that there are less observations of fish size...
+fish.2 = left_join(fish.counts, fish.sizes, by = c("Common", "LifeStage"))
+
+# Now, let's add in scientific names and fish/invert groupings
+fish.3 = select(species_list, Common, Scientific, Type, LengthType) %>%
+  left_join(fish.2, ., by = "Common") %>%
+  relocate(Type, Scientific, .before = 1) %>%
+  relocate(LengthType, .after = Length.max)
+
+# Lastly, we need to tidy up the values for format and readability:
+fish.tbl = fish.3 %>%
+  mutate(n = replace_na(n, '0'),
+         n = paste("(", n, ")", sep = ''),
+         Length.mean = replace_na(Length.mean, '--'),
+         Length.min = replace_na(Length.min, ''),
+         Length.min = paste("(", Length.min, sep = ''),
+         Length.max = replace_na(Length.max, ''),
+         Length.max = paste(Length.max, ")", sep = '')) %>%
+  unite(Length.min, Length.max, col = 'Range', sep = '-') %>%
+  mutate(Range = ifelse(Length.mean == '--' | Count == 1, '--', Range),
+         LengthType = ifelse(Length.mean == '--' | Count == 1, '--', LengthType)) %>%
+  unite(Count, n, col = 'Count', sep = ' ') %>%
+  rename('Group' = Type,
+         'Scientific Name' = Scientific,
+         'Common Name' = Common,
+         'Life Stage' = LifeStage,
+         'Total (# Sized)' = Count,
+         'Mean' = Length.mean,
+         'Range' = Range,
+         'Type' = LengthType) %>%
+  arrange(Group, `Scientific Name`)
+
+# Export the table:
+write_csv(x = fish.tbl, file = file.path(dir.figs, "2021_kpfhp_spp-counts-lengths.csv"))
+
+
+
+
 
           
-
-?n()
-

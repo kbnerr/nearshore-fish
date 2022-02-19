@@ -1,0 +1,57 @@
+Group,Scientific name,Common name,Life stage,Count (no. sized),Mean size,Range,Type
+Fish,Ammodytes personatus,Pacific Sand Lance,YOY,185 (103),56,(39-78),TL
+Fish,Ammodytes personatus,Pacific Sand Lance,J/A,166 (61),69,(43-109),TL
+Fish,Artedius fenestralis,Padded Sculpin,J/A,31 (31),113,(75-170),TL
+Fish,Artedius harringtoni,Scalyhead Sculpin,J/A,13 (13),94,(62-136),TL
+Fish,Blepsias cirrhosus,Silver Spotted Sculpin,J/A,144 (101),76,(37-162),TL
+Fish,Clinocottus acuticeps,Sharpnose Sculpin,J/A,1 (1),45,--,--
+Fish,Clupea pallasii,Pacific Herring,YOY,971 (146),36,(22-60),FL
+Fish,Clupea pallasii,Pacific Herring,J/A,28 (28),103,(93-141),FL
+Fish,Cottidae,Unidentified Sculpin,J/A,12 (10),22,(12-29),TL
+Fish,Eleginus gracilis,Saffron Cod,YOY,3 (3),67,(53-74),FL
+Fish,Eleginus gracilis,Saffron Cod,J/A,4 (4),68,(64-71),FL
+Fish,Enophrys bison,Buffalo Sculpin,J/A,17 (17),35,(7-135),TL
+Fish,Gadus chalcogrammus,Walleye Pollock,YOY,5 (5),49,(43-61),FL
+Fish,Gadus macrocephalus,Pacific Cod,J/A,16 (16),97,(78-112),FL
+Fish,Gymnocanthus galeatus,Armorhead Sculpin,J/A,3 (2),90,(74-105),TL
+Fish,Hexagrammos decagrammus,Kelp Greenling,J/A,4 (4),58,(47-63),FL
+Fish,Hexagrammos octogrammus,Masked Greenling,J/A,1 (1),65,--,--
+Fish,Hexagrammos stelleri,White Spotted Greenling,J/A,80 (80),103,(20-262),FL
+Fish,Hippoglossus stenolepis,Pacific Halibut,J,139 (137),89,(32-197),TL
+Fish,Hypomesus pretiosus,Surf Smelt,YOY,130 (85),43,(28-59),FL
+Fish,Hypomesus pretiosus,Surf Smelt,J/A,1320 (233),93,(54-205),FL
+Fish,Lepidopsetta spp.,Rock Sole,J/A,157 (118),92,(26-175),TL
+Fish,Leptocottus armatus,Staghorn Sculpin,J/A,314 (310),226,(20-352),FL
+Fish,Liparis spp.,Snailfish,J/A,100 (90),38,(13-90),TL
+Fish,Lumpenus sagitta,Snake Prickleback,J/A,67 (67),171,(83-323),TL
+Fish,Mallotus villosus,Capelin,YOY,15 (15),41,(25-47),FL
+Fish,Microgadus proximus,Pacific Tom Cod,J/A,348 (269),182,(70-286),FL
+Fish,Myoxocephalus polyacanthocephalus,Great Sculpin,J/A,12 (12),58,(21-105),TL
+Fish,Myoxocephalus scorpius,Shorthorn Sculpin,J/A,2 (2),134,(80-188),TL
+Fish,Oligocottus maculosus,Tidepool Sculpin,J/A,10 (10),48,(33-73),TL
+Fish,Oncorhynchus gorbuscha,Pink Salmon,A,2 (2),310,(170-451),FL
+Fish,Oncorhynchus kisutch,Coho Salmon,J,3 (3),96,(95-97),FL
+Fish,Oncorhynchus nerka,Sockeye Salmon,J,1 (1),48,--,--
+Fish,Oncorhynchus tshawytscha,Chinook Salmon,J,15 (15),109,(104-120),FL
+Fish,Pallasina barbata,Tubenose Poacher,J/A,103 (97),65,(26-153),TL
+Fish,Parophrys vetulus,English Sole,J/A,193 (167),97,(36-142),TL
+Fish,Pholis laeta,Crescent Gunnel,J/A,9 (9),135,(34-170),TL
+Fish,Platichthys stellatus,Starry Flounder,YOY,18 (18),31,(19-40),TL
+Fish,Platichthys stellatus,Starry Flounder,J/A,278 (227),227,(50-619),TL
+Fish,Pleuronectes quadrituberculatus,Alaska Plaice,J/A,1 (1),56,--,--
+Fish,Pleuronectidae,Unidentified Flatfish,J/A,12 (6),26,(11-43),TL
+Fish,Podothecus accipenserinus,Sturgeon Poacher,J/A,475 (266),53,(20-193),TL
+Fish,Psettichthys melanostictus,Sand Sole,J/A,712 (597),114,(24-510),TL
+Fish,Pungitius pungitus,Nine Spine Stickleback,J/A,1 (1),47,--,--
+Fish,Salvelinus malma,Dolly Varden,J/A,29 (29),190,(119-340),FL
+Fish,Spirinchus thaleichthys,Longfin Smelt,J/A,27 (27),112,(88-132),FL
+Fish,Trichodon trichodon,Sandfish,J/A,26 (25),148,(63-197),FL
+Invert,Brachyura,Unidentified Crab,J/A,7 (0),--,--,--
+Invert,Caridea,Unidentified Shrimp,J/A,12 (3),47,(45-50),RTL
+Invert,Crangonidae,Sand Shrimp,J/A,2150 (391),53,(10-103),RTL
+Invert,Hapalogaster mertensii,Hairy Crab,J/A,1 (1),52,--,--
+Invert,Metacarcinus magister,Dungeness Crab,J/A,26 (26),79,(22-163),CW
+Invert,Oregonia gracilis,Graceful Decorator Crab,J/A,8 (3),22,(5-44),CW
+Invert,Paguridae,Hermit Crab,J/A,4 (0),--,--,--
+Invert,Pandalus spp.,Pandalus Shrimp,J/A,2 (2),36,(28-44),RTL
+Invert,Pugettia gracilis,Graceful Kelp Crab,J/A,7 (7),19,(12-24),CW

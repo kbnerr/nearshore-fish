@@ -14,7 +14,7 @@ Capelin,Mallotus villosus,Osmeridae,Fish,Smelt,FL,106
 Eulachon,Thaleichthys pacificus,Osmeridae,Fish,Smelt,FL,119
 Pacific Herring,Clupea pallasii,Clupeidae,Fish,Herring,FL,222
 Longfin Smelt,Spirinchus thaleichthys,Osmeridae,Fish,Smelt,FL,118
-Pacific Sand Lance,Ammodytes hexapterus,Ammodytidae,Fish,Sand lance,TL,125
+Pacific Sand Lance,Ammodytes personatus,Ammodytidae,Fish,Sand lance,TL,125
 Sandfish,Trichodon trichodon,Trichodontidae,Fish,Sandfish,FL,188
 Surf Smelt,Hypomesus pretiosus,Osmeridae,Fish,Smelt,FL,135
 Kelp Greenling,Hexagrammos decagrammus,Hexagrammodae,Fish,Greenling,FL,346
@@ -25,7 +25,7 @@ Unidentified Greenling,Hexagrammodae,Hexagrammodae,Fish,Greenling,FL,
 White Spotted Greenling,Hexagrammos stelleri,Hexagrammodae,Fish,Greenling,FL,280
 Crescent Gunnel,Pholis laeta,Pholidae,Fish,Gunnel,TL,257
 Penpoint Gunnel,Apodichthys flavidus,Pholidae,Fish,Gunnel,TL,270
-Larval,,Larval,Fish,Larval,TL,
+Larval Fish,Osteichthys,Larval,Fish,Larval,TL,
 Sturgeon Poacher,Podothecus accipenserinus,Agonidae,Fish,Poacher,TL,188
 Tubenose Poacher,Pallasina barbata,Agonidae,Fish,Poacher,TL,94
 Slender Eelblenny,Lumpenus fabricii,Stichaeidae,Fish,Prickleback,TL,217
@@ -53,11 +53,13 @@ Three Spine Stickleback,Gasterosteus aculeatus,Gasterosteidae,Fish,Stickleback,T
 Staghorn Sculpin,Leptocottus armatus,Cottidae,Fish,Sculpin,FL,270
 Slender Cockscomb,Anoplarchus insignis,Stichaeidae,Fish,Prickleback,TL,82
 Nine Spine Stickleback,Pungitius pungitus,Gasterosteidae,Fish,Stickleback,TL,64
-Graceful Decorator Crab,Oregonia gracilis,,Invert,Crab,Carapace-Width,
-Graceful Kelp Crab,Pugettia gracilis ,,Invert,Crab,Carapace-Width,
-Dungeness Crab,Metacarcinus magister,,Invert,Crab,Carapace-Width,
-Hermit Crab,,Paguridae,Invert,,Carapace-Width,
+Graceful Decorator Crab,Oregonia gracilis,Oregoniidae,Invert,Crab,CW,
+Graceful Kelp Crab,Pugettia gracilis ,Epialtidae,Invert,Crab,CW,
+Dungeness Crab,Metacarcinus magister,Cancridae,Invert,Crab,CW,
+Hermit Crab,Paguridae,Paguridae,Invert,Crab,CW,
 Pacific Halibut,Hippoglossus stenolepis,Pleuronectidae,Fish,Flatfish,TL,
-Hairy Crab,Hapalogaster mertensii ,Lithodidae,Invert,Crab,Carapace-Width,
-Pandalus Shrimp,Pandalus sp,Pandalidae,Invert,Shrimp,Rostrom-Tail,
-Sand Shrimp,,Crangonidae,Invert,Shrimp,Rostrom-Tail,
+Hairy Crab,Hapalogaster mertensii ,Lithodidae,Invert,Crab,CW,
+Pandalus Shrimp,Pandalus spp.,Pandalidae,Invert,Shrimp,RTL,
+Sand Shrimp,Crangonidae,Crangonidae,Invert,Shrimp,RTL,
+Unidentified Crab,Brachyura,,Invert,Crab,CW,
+Unidentified Shrimp,Caridea,,Invert,Shrimp,RTL,
