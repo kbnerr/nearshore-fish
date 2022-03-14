@@ -75,7 +75,8 @@ ggplot(data = ., aes(x = Date, y = mean)) +
   geom_line(aes(linetype = Site)) +
   geom_linerange(aes(ymin = mean - sd, ymax = mean + sd, linetype = Site),
                  alpha = .8) +
-  labs(y = 'Temperature (°C)', x = "")
+  labs(y = 'Temperature (°C)', x = "") +
+  theme_bw()
 
 plot.Sal = select(env.plot, Site, Date, Salinity) %>%
   group_by(Date) %>%
@@ -87,7 +88,8 @@ plot.Sal = select(env.plot, Site, Date, Salinity) %>%
   geom_line(aes(linetype = Site)) +
   geom_linerange(aes(ymin = mean - sd, ymax = mean + sd, linetype = Site),
                  alpha = .8) +
-  labs(y = 'Salinity')
+  labs(y = 'Salinity') +
+  theme_bw()
 
 plot.DO = select(env.plot, Site, Date, DO_mgL) %>%
   group_by(Date) %>%
@@ -99,7 +101,8 @@ plot.DO = select(env.plot, Site, Date, DO_mgL) %>%
   geom_line(aes(linetype = Site)) +
   geom_linerange(aes(ymin = mean - sd, ymax = mean + sd, linetype = Site),
                  alpha = .8) +
-  labs(y = 'Oxygen saturation (mg/L)', x = "")
+  labs(y = 'Oxygen saturation (mg/L)', x = "") +
+  theme_bw()
 
 plot.Turb = select(env.plot, Site, Date, Turbidity_FNU) %>%
   group_by(Date) %>%
@@ -111,7 +114,8 @@ plot.Turb = select(env.plot, Site, Date, Turbidity_FNU) %>%
   geom_line(aes(linetype = Site)) +
   geom_linerange(aes(ymin = mean - sd, ymax = mean + sd, linetype = Site),
                  alpha = .8) +
-  labs(y = 'Turbidity (FNU)')
+  labs(y = 'Turbidity (FNU)') +
+  theme_bw()
 
 select(env.plot, Site, Date, Turbidity_FNU) %>%
   group_by(Date) %>%
@@ -123,7 +127,8 @@ select(env.plot, Site, Date, Turbidity_FNU) %>%
   geom_line(aes(linetype = Site)) +
   geom_linerange(aes(ymin = mean - sd, ymax = mean + sd, linetype = Site),
                  alpha = .8) +
-  labs(y = 'Turbidity (log[FNU])')
+  labs(y = 'Turbidity (log[FNU])') +
+  theme_bw()
 
 env.fig = ggarrange(plot.T, plot.DO,
                     plot.Sal, plot.Turb,
