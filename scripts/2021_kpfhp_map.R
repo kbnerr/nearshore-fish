@@ -28,7 +28,7 @@ register_google(key = api.google, write = TRUE)
 
 # Read in data ------------------------------------------------------------
 
-# For the map of the study area and sites
+# Locations and labels for constructing map and features
 loc.studyarea = c(lon = -151.749292, lat = 59.921010)
 sites = tibble(lon = c(-151.870914, -151.761859, -151.674213),
                lat = c(59.770073, 59.912396, 60.051749),
@@ -39,6 +39,9 @@ kachemak.bay = tibble(lon = -151.663442,
 cook.inlet = tibble(lon = -152.439149,
                     lat = 59.744073,
                     label = 'Cook Inlet')
+kenai.lowlands = tibble(lon = -150.992202,
+                        lat = 59.914303,
+                        label = 'Kenai \n Lowlands') 
 
 # For the maps of the sample locations at each site
 sediments = read_csv(file = file.path(dir.data, "2021_kpfhp_sediments.csv")) %>%
@@ -63,6 +66,8 @@ fig.studyarea = ggmap(x.1) +
             size = 2.5, fontface = 'bold') +
   geom_text(data = cook.inlet, aes(x = lon, y = lat, label = label),
             size = 3.25, fontface = 'bold') +
+  geom_text(data = kenai.lowlands, aes(x = lon, y = lat, label = label),
+            size = 4, fontface = 'bold', hjust = 0, nudge_x = -0.1) +
   labs(x = 'Longitude', y = 'Latitude')
 
 ggsave(plot = fig.studyarea,
