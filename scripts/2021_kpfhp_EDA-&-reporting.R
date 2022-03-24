@@ -21,6 +21,10 @@ dir.output = file.path(wd, "output")
 dir.figs = file.path(wd, "figs")
 dir.data = file.path(wd,"data")
 dir.R = file.path(wd,"R")
+dir.reports = file.path(wd,"reports")
+dir.nfa = file.path(wd,"noaa-nfa")
+dir.permits = file.path(wd,"permits")
+
 
 # Utility -----------------------------------------------------------------
 
@@ -163,7 +167,7 @@ env.fig = ggarrange(plot.T, plot.DO,
 
 # Export the figure:
 ggsave(plot = env.fig,
-       filename = "2021_kpfhp_WQ-measurements.png", path = file.path(dir.figs),
+       filename = "2021_kpfhp_WQ-measurements.png", path = file.path(dir.reports),
        width = 10.0, height = 6.5, dpi = 'print')
 
 
@@ -237,7 +241,7 @@ fish.tbl = fish.3 %>%
   arrange(Group, `Scientific Name`)
 
 # Export the table:
-write_csv(x = fish.tbl, file = file.path(dir.figs, "2021_kpfhp_spp-counts-lengths.csv"))
+write_csv(x = fish.tbl, file = file.path(dir.reports, "2021_kpfhp_all-spp-tbl.csv"))
 
 
 # Study area and sites ----------------------------------------------------
@@ -261,7 +265,7 @@ fig.studyarea = ggmap(x.1) +
   labs(x = 'Longitude', y = 'Latitude')
 
 ggsave(plot = fig.studyarea,
-       filename = "2021_kpfhp_studyarea.png", path = dir.figs,
+       filename = "2021_kpfhp_studyarea.png", path = dir.reports,
        width = 10, height = 6, units = 'in', dpi = 'print')
 
 # Figure maps of sample locations per site:
@@ -315,7 +319,7 @@ fig.sediments = ggarrange(fig.AP, fig.PB,
 
 # Combine and save
 ggsave(plot = fig.sediments,
-       filename = "2021_kpfhp_sediments.png", path = dir.figs,
+       filename = "2021_kpfhp_sediments.png", path = dir.reports,
        width = 10.5, height = 10.5, units = 'in', dpi = 500)
 
 
