@@ -1,0 +1,143 @@
+﻿SeineID,Site,Replicate,Date,Time,Latitude,Longitude,Tide1,Tide2,Reach_m,Depth_m,Method,Habitat,Notes
+FHP1BR1,Barabara River,1,6/13/18,10:45,59.48787,-151.6507,Flood,Low,,,beach seine,Sand/Gravel,"TSS here.  Environmentals from Chugachee @ 10:05 am (Also took deep measures: T 8.75, sal 30.8, DOmg/l 12.36, %DO 117.5, turb 0.18, pH 8.11, TSS sample)."
+FHP1BR2,Barabara River,2,6/13/18,11:00,59.48563,-151.65707,Flood,Low,,,beach seine,Sand/Gravel,"TSS here.  Environmentals from Chugachee (Also took deep measures: T 8.19, sal 31.10, DOmg/l 11.96, %DO 124.1, turb 0.17, pH 8.20, TSS sample)."
+FHP1BR3,Barabara River,3,6/13/18,11:30,59.48164,-151.6561,Flood,Mid,,,beach seine,Sand/Gravel,
+FHP1BR4,Barabara River,4,6/13/18,11:45,59.48164,-151.6561,Flood,Mid,,,beach seine,Sand/Gravel,
+FHP1BR5,Barabara River,5,6/13/18,13:45,59.48476,-151.64226,Flood,High,,,beach seine,Sand/Gravel,Environmentals taken from Chugachee.
+FHP1BR6,Barabara River,6,6/13/18,14:20,59.48476,-151.64226,Flood,High,,,beach seine,Sand/Gravel,TSS here.  Same environmentals as seine# 5. Environmentals taken from Chugachee.
+FHP1BR7,Barabara River,7,6/13/18,14:45,59.4822,-151.65456,Flood,High,,,beach seine,Sand/Gravel,Environmentals taken from Chugachee.
+FHP1TR1,Tutka River,1,6/14/18,9:45,59.41777,-151.31065,Slack,Low,5,,beach seine,Sand/Gravel,"Environmentals taken from Edgecumbe at 9:05: 3m vert zoop tow, TSS"
+FHP1TR2,Tutka River,2,6/14/18,10:40,59.42102,-151.30568,Flood,Low,8,,beach seine,Sand/Gravel,"Environmentals taken from Edgecumbe at 9:45: 4m vert zoop tow, TSS"
+FHP1TR3,Tutka River,3,6/14/18,14:28,59.41577,-151.29103,Flood,High,7,,beach seine,Sand/Gravel,"Seagrass.  Environmentals taken from Edgecumbe at 16:45 (N59 25.024', W151 17.818') "
+FHP1TR4,Tutka River,4,6/14/18,15:35,59.41039,-151.29868,Flood,High,10,,beach seine,Sand/Gravel,"Environmentals taken from Edgecumbe at 16:00 (N59 24.658', W151 17.901') "
+FHP1AR1,Anchor River,1,6/21/18,10:30,59.79406,-151.8549,Slack,High,5,,beach seine,Sand/Gravel,Environmtnals taken from Seine# 2
+FHP1AR2,Anchor River,2,6/21/18,11:00,59.7883,-151.85847,Ebb,High,10,,beach seine,Sand/Gravel,Environmentals taken at 11:30
+FHP1AR3,Anchor River,3,6/21/18,12:12,59.79264,-151.84727,Ebb,High,15,,beach seine,Sand/Gravel,Environmtnals taken from Seine# 2
+FHP1AR4,Anchor River,4,6/21/18,14:40,59.79258,-151.85896,Ebb,Low,15,,beach seine,Sand/Gravel,Environmentals taken after fish processing
+CMI1HC1,Halibut Cove,1,6/25/18,7:52,59.59332,-151.17509,Slack,Low,10,1.5,beach seine,Sand/Gravel,
+CMI1HC2,Halibut Cove,2,6/25/18,8:40,59.59339,-151.17148,Flood,Low,10,1.5,beach seine,Sand/Gravel,TSS here.
+CMI1HC3,Halibut Cove,3,6/25/18,9:30,59.59299,-151.17035,Flood,Low,10,1.25,beach seine,Sand/Gravel,Sculpin eating pricklebacks in the buckets.
+XTR1OR1,Otter Rock,1,6/26/18,8:57,59.57492,-151.2941,Flood,Low,0,1.2,beach seine,Sand/Gravel,"Two coho, five chum for Kim."
+XTR1OR2,Otter Rock,2,6/26/18,9:53,59.574855,-151.29427,Flood,Low,0,1.25,beach seine,Sand/Gravel,"Same environmentals as seine 1.  Three Coho, three dolly varden, one Chum, + five saffron cod for Kim"
+CMI1BR1,Barabara River,1,6/27/18,9:02,59.48172,-151.65875,Slack,Low,15,1.5,beach seine,Sand/Gravel,TSS here. Shrimp 40-50 mm.
+CMI1BR2,Barabara River,2,6/27/18,9:45,59.48129,-151.65895,Flood,Low,15,1,beach seine,Sand/Gravel,Same environmentals as seine 1.  Shrimp 56 mm.
+CMI1BR3,Barabara River,3,6/27/18,10:16,59.48064,-151.65932,Flood,Low,15,1,beach seine,Sand/Gravel,Same environmentals as seine 1. 
+CMI1GR1,Grewingk River,1,6/28/18,9:15,59.65361,-151.19257,Slack,Low,10,1.5,beach seine,Sand/Gravel,
+CMI1GR2,Grewingk River,2,6/28/18,9:40,59.65416,-151.19243,Slack,Low,10,3,beach seine,Sand/Gravel,
+CMI1GR3,Grewingk River,3,6/28/18,10:00,59.65445,-151.19214,Flood,Low,17,5,beach seine,Sand/Gravel,TSS here. Started at river channel then swung W to beach.
+CMI1TR1,Tutka River,1,6/29/18,9:53,59.42101,-151.30559,Slack,Low,10,1.8,beach seine,Sand/Gravel,TSS here.
+CMI1TR2,Tutka River,2,6/29/18,10:40,59.42051,-151.30544,Flood,Low,15,1.5,beach seine,Sand/Gravel,EXO1 not working - use seine 1 environmentals. Gnats. Jellies.
+CMI1TR3,Tutka River,3,6/29/18,11:30,59.42145,-151.30513,Flood,Low,15,5,beach seine,Sand/Gravel,EXO1 not working - use seine 1 environmentals. 
+CMI1SH1,Seldovia Harbor,1,6/30/18,10:34,59.43542,-151.71591,Slack,Low,5,1.2,beach seine,Sand/Gravel,One greenling voucher - to be ID'ed.  Used adipose to ID Co from CK
+CMI1SH2,Seldovia Harbor,2,6/30/18,11:28,59.43574,-151.71312,Flood,Low,5,0.7,beach seine,Sand/Gravel,TSS here. No environmentals taken - use measurements from seine 1.
+CMI2HC1,Halibut Cove,1,7/10/18,7:04,59.59337,-151.17049,Slack,Low,10,1.25,beach seine,Sand/Gravel,TSS here.  EXO1 not working- using water grab in lab at 10:24am.
+CMI2HC2,Halibut Cove,2,7/10/18,7:45,59.59299,-151.16956,Flood,Low,15,1.25,beach seine,Sand/Gravel,EXO1 not working- no environmentals
+CMI2HC3,Halibut Cove,3,7/10/18,8:20,59.5931,-151.17183,Flood,Low,15,2.25,beach seine,Sand/Gravel,EXO1 not working- no environmentals
+CMI2MP1,Moosehead Point,1,7/11/18,7:15,59.57836,-151.32082,Ebb,Low,15,1,beach seine,Sand/Gravel,TSS here.  Seven sand lance for Kim.
+CMI2MP2,Moosehead Point,2,7/11/18,8:00,59.57872,-151.31998,Slack,Low,10,1,beach seine,Sand/Gravel,
+CMI2MP3,Moosehead Point,3,7/11/18,8:35,59.57916,-151.31868,Flood,Low,10,1,beach seine,Sand/Gravel,
+CMI2BP1,Barabara B,1,7/12/18,8:38,59.4824,-151.63049,Slack,Low,15,0.4,beach seine,Sand/Gravel,Forgot turbidity measurement.  FHP B1.
+CMI2BR2,Barabara River,2,7/12/18,9:50,59.4821,-151.65837,Flood,Low,15,1,beach seine,Sand/Gravel,TSS here.  FHP A1.
+CMI2BR3,Barabara River,3,7/12/18,10:20,59.48128,-151.65897,Flood,Low,20,0.8,beach seine,Sand/Gravel,FHP A2.
+CMI2BR4,Barabara River,4,7/12/18,10:42,59.48049,-151.65932,Flood,Low,15,0.8,beach seine,Sand/Gravel,Two hours past slack.  FHP A3.  Drone footage.
+FHP2AR1,Anchor River,1,7/13/18,8:50,59.79848,-151.85919,Ebb,Low,5,0.9,beach seine,Sand/Gravel,
+FHP2AR2,Anchor River,2,7/13/18,10:05,59.79525,-151.86214,Slack,Low,5,0.8,beach seine,Sand/Gravel,
+CMI2TR1,Tutka River,1,7/14/18,9:53,59.42113,-151.30563,Slack,Low,0,5,beach seine,Sand/Gravel,TSS here.  FHP B1.  Seven saffron cod for Kim.
+CMI2TR2,Tutka River,2,7/14/18,10:44,59.41711,-151.31094,Flood,Low,0,5,beach seine,Sand/Gravel,FHP A1.
+CMI2TR3,Tutka River,3,7/14/18,11:30,59.41838,-151.3094,Flood,Low,0,5,beach seine,Sand/Gravel,FHP A2.
+CMI2GR1,Grewingk River,1,7/17/18,10:30,59.65323,-151.19292,Ebb,Low,10,1.7,beach seine,Sand/Gravel,"One dolly varden and 11 sand lance  for Kim.  Water grab used for DO, salinity, and turbidity. 2 hours before low tide."
+CMI2GR2,Grewingk River,2,7/17/18,11:20,59.65374,-151.19261,Ebb,Low,10,1.5,beach seine,Sand/Gravel,TSS here.  Eight sand lance and four dolly varden for Kim.  
+CMI2GR3,Grewingk River,3,7/17/18,12:35,59.65409,-151.19252,Slack,Low,10,1.4,beach seine,Sand/Gravel,Seven sand lance for Kim.  Same environmentals as seine 2
+CMI2SH1,Seldovia Harbor,1,7/18/18,11:25,59.43533,-151.71599,Ebb,Low,0,1.3,beach seine,Sand/Gravel,TSS here.
+FHP3BP1,Barabara B,1,7/18/18,7:45,59.48182,-151.63162,Ebb,High,5,5,beach seine,Sand/Gravel,TSS here.  Seven Dolly Varden for Kim.
+CMI2SH2,Seldovia Harbor,2,7/18/18,12:15,59.43419,-151.71553,Ebb,Low,10,0.4,beach seine,Sand/Gravel,Seven saffron cod for Kim.  Same environmentals as seine 1
+FHP3BP2,Barabara B,2,7/18/18,8:10,59.48192,-151.63078,Ebb,High,5,5,beach seine,Sand/Gravel,Same environmentals as seine# 1 - same beach. Several PK's have wounds on their sides.
+FHP3BP3,Barabara B,3,7/18/18,8:50,59.48296,-151.6353,Ebb,High,5,3,beach seine,Sand/Gravel,One Lingcod for voucher.
+FHP3TR1,Tutka River,1,7/20/18,10:08,59.42134,-151.30154,Ebb,High,10,1.2,beach seine,Sand/Gravel,TSS here.
+FHP3TR2,Tutka River,2,7/20/18,10:35,59.42155,-151.30188,Ebb,High,25,1.2,beach seine,Sand/Gravel,Same environmentals as seine# 1 - same beach.  Four Chum for Kim.
+FHP3TR3,Tutka River,3,7/20/18,11:05,59.4108,-151.29903,Ebb,High,15,,beach seine,Sand/Gravel,Same environmentals as seine# 1.  One Chum for Kim.
+FHP3AR1,Anchor River,1,7/21/18,11:00,59.7941,-151.8551,Slack,High,10,0.9,beach seine,Sand/Gravel,Light wrack.
+FHP3AR2,Anchor River,2,7/21/18,11:25,59.79382,-151.85561,Slack,High,15,1.1,beach seine,Sand/Gravel,Medium wrack.
+FHP3AR3,Anchor River,3,7/21/18,11:45,59.7934,-151.85632,Ebb,High,10,0.8,beach seine,Sand/Gravel,Medium wrack.
+CMI3MP1,Moosehead Point,1,7/26/18,8:15,59.57826,-151.32042,Ebb,Low,10,1,beach seine,Sand/Gravel,TSS here.
+CMI3MP2,Moosehead Point,2,7/26/18,9:02,59.57877,-151.31908,Slack,Low,20,1,beach seine,Sand/Gravel,
+CMI3MP3,Moosehead Point,3,7/26/18,9:26,59.57914,-151.3179,Flood,Low,25,1,beach seine,Sand/Gravel,Voucher two Herring: ID'ed as same as Kim's voucher from Rd2 Grewingk River
+CMI3GR1,Grewingk River,1,7/27/18,8:50,59.65372,-151.19258,Slack,Low,5,5,beach seine,Sand/Gravel,TSS here.
+CMI3GR2,Grewingk River,2,7/27/18,9:30,59.65419,-151.19241,Slack,Low,10,5,beach seine,Sand/Gravel,
+CMI3GR3,Grewingk River,3,7/27/18,10:18,59.65437,-151.19218,Flood,Low,20,5,beach seine,Sand/Gravel,
+CMI3HC1,Halibut Cove,1,7/28/18,9:15,59.59378,-151.17554,Ebb,Low,25,0.9,beach seine,Sand/Gravel,EXO1 not working- no environmentals
+CMI3HC2,Halibut Cove,2,7/28/18,10:05,59.59361,-151.17039,Slack,Low,15,1.1,beach seine,Sand/Gravel,EXO1 not working- no environmentals.  Two YOY herring for voucher
+CMI3HC3,Halibut Cove,3,7/28/18,10:50,59.59318,-151.1698,Flood,Low,10,0.8,beach seine,Sand/Gravel,TSS here.  Water grab used for environmentals (missing!)
+CMI3BP1,Barabara B,1,7/30/18,10:51,59.48232,-151.63106,Slack,Low,5,0.9,beach seine,Sand/Gravel,"54 Saffron Cod, 3 Sand Lance, + 1 Dolly Varden for Kim."
+CMI3BP2,Barabara B,2,7/30/18,11:26,59.48226,-151.63058,Flood,Low,10,1.5,beach seine,Sand/Gravel,One poacher voucher.  Ten dolly varden + two sand lance for Kim.
+CMI3BP3,Barabara B,3,7/30/18,12:03,59.48218,-151.62959,Flood,Low,10,1.9,beach seine,Sand/Gravel,MV has GoPro video
+CMI3TR1,Tutka River,1,7/31/18,10:32,59.42147,-151.30511,Ebb,Low,15,5,beach seine,Sand/Gravel,"65 Saffron Cod, 12 Lingcod, 3 Pacific Cod, + 2 Chum Salmon for Kim."
+CMI3TR2,Tutka River,2,7/31/18,11:23,59.41803,-151.3084,Slack,Low,25,0.8,beach seine,Sand/Gravel,No environmentals taken.
+CMI3TR3,Tutka River,3,7/31/18,12:07,59.4206,-151.30536,Flood,Low,20,1.2,beach seine,Sand/Gravel,"Three Dolly Varden, 1 Chum Salmon, 2 Sockeye Salmon, + 2 Lingcod for Kim."
+CMI3SH1,Seldovia Harbor,1,8/1/18,11:31,59.43518,-151.71603,Slack,Low,5,1.2,beach seine,Sand/Gravel,TSS here. One Sockeye Salmon for Kim. Lots of green shrimp.
+CMI3SH2,Seldovia Harbor,2,8/1/18,12:02,59.43559,-151.71587,Slack,Low,5,1.1,beach seine,Sand/Gravel,
+CMI3SH3,Seldovia Harbor,3,8/1/18,12:58,59.43566,-151.71352,Flood,Low,0,1.2,beach seine,Sand/Gravel,
+CMI4MP1,Moosehead Point,1,8/8/18,6:17,59.57819,-151.3204,Ebb,Low,15,1,beach seine,Sand/Gravel,TSS here.
+CMI4MP2,Moosehead Point,2,8/8/18,6:47,59.578841,-151.31921,Slack,Low,15,1.2,beach seine,Sand/Gravel,11 Herring for Kim.
+CMI4MP3,Moosehead Point,3,8/8/18,7:27,59.579294,-151.31705,Flood,Low,15,2.2,beach seine,Sand/Gravel,East side of beach.
+CMI4HC1,Halibut Cove,1,8/9/18,6:45,59.59303,-151.16716,Ebb,Low,15,5,beach seine,Sand/Gravel,
+CMI4HC2,Halibut Cove,2,8/9/18,7:56,59.59366,-151.17085,Slack,Low,15,2,beach seine,Sand/Gravel,TSS here.  Datasheet with capelin descrioption
+CMI4HC3,Halibut Cove,3,8/9/18,8:45,59.59311,-151.15826,Flood,Low,20,5,beach seine,Sand/Gravel,Herring by weight
+CMI4GR1,Grewingk River,1,8/10/18,8:00,59.65298,-151.19373,Ebb,Low,5,2,beach seine,Sand/Gravel,Three sand lance for Kim.
+CMI4GR2,Grewingk River,2,8/10/18,9:00,59.65319,-151.19321,Slack,Low,5,1.2,beach seine,Sand/Gravel,TSS here.
+CMI4GR3,Grewingk River,3,8/10/18,9:30,59.65395,-151.19231,Flood,Low,5,1.6,beach seine,Sand/Gravel,
+CMI4BP1,Barabara B,1,8/11/18,9:06,59.48224,-151.62869,Slack,Low,10,1,beach seine,Sand/Gravel,TSS here.
+CMI4BP2,Barabara B,2,8/11/18,10:06,59.48221,-151.62981,Flood,Low,5,0.8,beach seine,Sand/Gravel,
+CMI4BP3,Barabara B,3,8/11/18,10:35,59.4823,-151.63202,Flood,Low,10,0.5,beach seine,Sand/Gravel,
+CMI4TR1,Tutka River,1,8/15/18,11:10,59.42144,-151.30527,Ebb,Low,10,5,beach seine,Sand/Gravel,
+CMI4TR2,Tutka River,2,8/15/18,11:45,59.42103,-151.30559,Slack,Low,10,5,beach seine,Sand/Gravel,TSS here.
+CMI4TR3,Tutka River,3,8/15/18,12:20,59.42064,-151.30544,Flood,Low,10,0.9,beach seine,Sand/Gravel,
+CMI4SH1,Seldovia Harbor,1,8/16/18,11:40,59.43591,-151.71642,Ebb,Low,0,1.8,beach seine,Sand/Gravel,
+CMI4SH2,Seldovia Harbor,2,8/16/18,12:35,59.43547,-151.71581,Slack,Low,0,1,beach seine,Sand/Gravel,TSS here.
+CMI4SH3,Seldovia Harbor,3,8/16/18,13:00,59.43552,-151.71315,Flood,Low,0,1,beach seine,Sand/Gravel,
+FHP4AR1,Anchor River,1,8/22/18,7:20,59.79469,-151.85999,Slack,Low,15,0.6,beach seine,Sand/Gravel,TSS here.
+FHP4AR2,Anchor River,2,8/22/18,7:37,59.79417,-151.86003,Slack,Low,15,1,beach seine,Sand/Gravel,Crashy waves.
+FHP4AR3,Anchor River,3,8/22/18,7:55,59.79355,-151.8598,Flood,Low,20,1.1,beach seine,Sand/Gravel,Waves and surge.
+CMI5BP1,Barabara B,1,8/23/18,8:15,59.48204,-151.62901,Slack,Low,15,2.7,beach seine,Sand/Gravel,TSS here.  Sand lance for Kim.  
+CMI5BP2,Barabara B,2,8/23/18,8:50,59.48215,-151.6299,Flood,Low,10,2.5,beach seine,Sand/Gravel,
+CMI5BP3,Barabara B,3,8/23/18,9:35,59.48213,-151.630814,Flood,Low,10,2.3,beach seine,Sand/Gravel,
+CMI5HC1,Halibut Cove,1,8/25/18,8:30,59.59352,-151.17117,Slack,Low,10,1.2,beach seine,Sand/Gravel,TSS here.
+CMI5HC2,Halibut Cove,2,8/25/18,8:58,59.59335,-151.17033,Slack,Low,15,1.2,beach seine,Sand/Gravel,
+CMI5HC3,Halibut Cove,3,8/25/18,9:29,59.59302,-151.16887,Flood,Low,15,1.2,beach seine,Sand/Gravel,
+CMI5GR1,Grewingk River,1,8/28/18,9:48,59.65324,-151.19295,Ebb,Low,10,1.5,beach seine,Sand/Gravel,One sand lance for Kim.
+CMI5GR2,Grewingk River,2,8/28/18,10:29,59.65463,-151.19272,Slack,Low,10,5,beach seine,Sand/Gravel,TSS here. Sand lance and capelin for Kim.
+CMI5GR3,Grewingk River,3,8/28/18,11:10,59.65274,-151.19347,Flood,Low,10,1.1,beach seine,Sand/Gravel,
+CMI5MP1,Moosehead Point,1,8/29/18,10:00,59.57833,-151.32002,Ebb,Low,20,1.2,beach seine,Sand/Gravel,Ten sand lance for Kim.
+CMI5MP2,Moosehead Point,2,8/29/18,10:45,59.57891,-151.13911,Slack,Low,20,1.2,beach seine,Sand/Gravel,
+CMI5MP3,Moosehead Point,3,8/29/18,11:15,59.57915,-151.31787,Flood,Low,20,1,beach seine,Sand/Gravel,
+CMI6SH1,Seldovia Harbor,1,9/11/18,10:40,59.43587,-151.71609,Slack,Low,0,1.7,beach seine,Sand/Gravel,TSS here.
+CMI6SH2,Seldovia Harbor,2,9/11/18,11:48,59.43532,-151.71452,Flood,Low,0,1.3,beach seine,Sand/Gravel,
+CMI6BP1,Barabara B,1,9/12/18,10:30,59.48206,-151.69834,Slack,Low,0,1.8,beach seine,Sand/Gravel,"TSS here.  Lots of Wrack.  Three pacific cod, one tom cod mortality.  Two herring for vouchers."
+CMI6MP1,Moosehead Point,1,9/13/18,10:50,59.57821,-151.32031,Ebb,Low,10,0.8,beach seine,Sand/Gravel,
+CMI6MP2,Moosehead Point,2,9/13/18,11:22,59.57888,-151.31918,Slack,Low,15,0.9,beach seine,Sand/Gravel,TSS here.
+CMI6MP3,Moosehead Point,3,9/13/18,11:50,59.5793,-151.31691,Flood,Low,20,1.3,beach seine,Sand/Gravel,Saw school of (probably) sand lance ~30m from shore.
+CMI6TR1,Tutka River,1,9/14/18,11:15,59.4213,-151.3051,Ebb,Low,15,2.3,beach seine,Sand/Gravel,
+CMI6TR2,Tutka River,2,9/14/18,12:00,59.41957,-151.30325,Slack,Low,25,0.9,beach seine,Sand/Gravel,TSS here.
+CMI6TR3,Tutka River,3,9/14/18,12:30,59.41846,-151.30345,Flood,Low,25,0.6,beach seine,Sand/Gravel,
+CMI6HC1,Halibut Cove,1,9/15/18,12:15,59.59265,-151.17284,Ebb,Low,15,1.6,beach seine,Sand/Gravel,
+CMI6HC2,Halibut Cove,2,9/15/18,12:30,59.59271,-151.17081,Slack,Low,25,0.7,beach seine,Sand/Gravel,TSS here.
+CMI6HC3,Halibut Cove,3,9/15/18,13:00,59.59248,-151.16945,Slack,Low,25,0.6,beach seine,Sand/Gravel,
+CMI6HC4,Halibut Cove,4,9/15/18,13:20,59.59327,-151.15797,Flood,Low,25,5,beach seine,Sand/Gravel,"Did not process YOY Capelin, lots of them present, 30-40mm."
+CMI6GR1,Grewingk River,1,9/17/18,13:57,59.65346,-151.19199,Ebb,Low,15,1.9,beach seine,Sand/Gravel,
+CMI6GR2,Grewingk River,2,9/17/18,14:57,59.65269,-151.19308,Slack,Low,20,3,beach seine,Sand/Gravel,TSS here.  18 YOY capelin deceased. 
+CMI6GR3,Grewingk River,3,9/17/18,15:40,59.65194,-151.19339,Flood,Low,20,3,beach seine,Sand/Gravel,
+CMI7HC1,Halibut Cove,1,10/11/18,10:01,59.593858,-151.175165,Ebb,Low,15,0.8,beach seine,Sand/Gravel,No GPS - figured out with GIS.
+CMI7HC2,Halibut Cove,2,10/11/18,10:35,59.593656,-151.171073,Slack,Low,15,0.7,beach seine,Sand/Gravel,TSS here. No GPS - figured out with GIS.
+CMI7HC3,Halibut Cove,3,10/11/18,11:21,59.59314,-151.17011,Flood,Low,25,0.8,beach seine,Sand/Gravel,
+CMI7MP1,Moosehead Point,1,10/13/18,11:05,59.57822,-151.31989,Ebb,Low,20,1,beach seine,Sand/Gravel,TSS here.
+CMI7MP2,Moosehead Point,2,10/13/18,11:40,59.57829,-151.31848,Slack,Low,25,0.6,beach seine,Sand/Gravel,One capelin deceased.  Deep pool in last 10m of rope-to-shore.
+CMI7BP1,Barabara B,1,10/14/18,12:13,59.48203,-151.62921,Slack,Low,25,3.6,beach seine,Sand/Gravel,30 capelin deceased.  Two capelin for voucher.
+CMI7BP2,Barabara B,2,10/14/18,12:42,59.48202,-151.63023,Slack,Low,15,2.8,beach seine,Sand/Gravel,TSS here.  Light wrack.
+CMI7BP3,Barabara B,3,10/14/18,13:03,59.48208,-151.63156,Flood,Low,0,2,beach seine,Sand/Gravel,Medium wrack.
+CMI7TR1,Tutka River,1,10/15/18,12:35,59.42149,-151.3035,Ebb,Low,20,0.8,beach seine,Sand/Gravel,
+CMI7TR2,Tutka River,2,10/15/18,13:00,59.42069,-151.30263,Slack,Low,25,0.7,beach seine,Sand/Gravel,TSS here.
+CMI7TR3,Tutka River,3,10/15/18,13:31,59.41831,-151.29736,Flood,Low,25,0.5,beach seine,Sand/Gravel,Some debate/confusion distinguishing tidepool and sharpnose sculpin
+CMI7SH1,Seldovia Harbor,1,10/16/18,14:15,59.43407,-151.71198,Slack,Low,5,2.2,beach seine,Sand/Gravel,TSS here.  Helmet crabs.
+XTR1KS1,Seldovia SWMP,1,10/16/18,14:55,59.4418,-151.71947,Flood,Low,5,3.3,beach seine,Sand/Gravel,Big eatin' shrimp - pictures.
+XTR1KH1,Homer SWMP,1,11/8/18,12:44,59.60118,-151.04964,Flood,Mid,25,3.4,beach seine,Sand/Gravel,Light wrack. Caught LOTS of surfsmelt - threw back most of them.
+XTR1KH2,Homer SWMP,2,11/8/18,13:18,59.60058,-151.4091,Flood,Mid,25,3.6,beach seine,Sand/Gravel,Medium wrack.  Net rolled.
