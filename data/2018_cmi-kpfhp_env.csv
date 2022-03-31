@@ -1,4 +1,4 @@
-﻿SeineID,Temperature_C,Salinity,DO_mgl,DO_perc,Turbidity_FNU,pH
+﻿SeineID,Temperature_C,Salinity,DO_mgL,DO_perc,Turbidity_FNU,pH
 FHP1BR1,7.556,23.18,12.44,120.6,0.32,8.24
 FHP1BR2,8.44,31.14,11.69,122.1,0.29,8.22
 FHP1BR3,,,,,,

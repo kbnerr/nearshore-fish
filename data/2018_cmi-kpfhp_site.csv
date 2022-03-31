@@ -12,7 +12,7 @@ FHP1TR3,Tutka River,3,6/14/18,14:28,59.41577,-151.29103,Flood,High,7,,beach sein
 FHP1TR4,Tutka River,4,6/14/18,15:35,59.41039,-151.29868,Flood,High,10,,beach seine,Sand/Gravel,"Environmentals taken from Edgecumbe at 16:00 (N59 24.658', W151 17.901') "
 FHP1AR1,Anchor River,1,6/21/18,10:30,59.79406,-151.8549,Slack,High,5,,beach seine,Sand/Gravel,Environmtnals taken from Seine# 2
 FHP1AR2,Anchor River,2,6/21/18,11:00,59.7883,-151.85847,Ebb,High,10,,beach seine,Sand/Gravel,Environmentals taken at 11:30
-FHP1AR3,Anchor River,3,6/21/18,12:12,59.79264,-151.84727,Ebb,High,15,,beach seine,Sand/Gravel,Environmtnals taken from Seine# 2
+FHP1AR3,Anchor River,3,6/21/18,12:12,59.79264,-151.85727,Ebb,High,15,,beach seine,Sand/Gravel,Environmtnals taken from Seine# 2
 FHP1AR4,Anchor River,4,6/21/18,14:40,59.79258,-151.85896,Ebb,Low,15,,beach seine,Sand/Gravel,Environmentals taken after fish processing
 CMI1HC1,Halibut Cove,1,6/25/18,7:52,59.59332,-151.17509,Slack,Low,10,1.5,beach seine,Sand/Gravel,
 CMI1HC2,Halibut Cove,2,6/25/18,8:40,59.59339,-151.17148,Flood,Low,10,1.5,beach seine,Sand/Gravel,TSS here.
@@ -138,6 +138,6 @@ CMI7TR1,Tutka River,1,10/15/18,12:35,59.42149,-151.3035,Ebb,Low,20,0.8,beach sei
 CMI7TR2,Tutka River,2,10/15/18,13:00,59.42069,-151.30263,Slack,Low,25,0.7,beach seine,Sand/Gravel,TSS here.
 CMI7TR3,Tutka River,3,10/15/18,13:31,59.41831,-151.29736,Flood,Low,25,0.5,beach seine,Sand/Gravel,Some debate/confusion distinguishing tidepool and sharpnose sculpin
 CMI7SH1,Seldovia Harbor,1,10/16/18,14:15,59.43407,-151.71198,Slack,Low,5,2.2,beach seine,Sand/Gravel,TSS here.  Helmet crabs.
-XTR1KS1,Seldovia SWMP,1,10/16/18,14:55,59.4418,-151.71947,Flood,Low,5,3.3,beach seine,Sand/Gravel,Big eatin' shrimp - pictures.
-XTR1KH1,Homer SWMP,1,11/8/18,12:44,59.60118,-151.04964,Flood,Mid,25,3.4,beach seine,Sand/Gravel,Light wrack. Caught LOTS of surfsmelt - threw back most of them.
-XTR1KH2,Homer SWMP,2,11/8/18,13:18,59.60058,-151.4091,Flood,Mid,25,3.6,beach seine,Sand/Gravel,Medium wrack.  Net rolled.
+XTR1KS1,Seldovia WQ,1,10/16/18,14:55,59.4418,-151.71947,Flood,Low,5,3.3,beach seine,Sand/Gravel,Big eatin' shrimp - pictures.
+XTR1KH1,Homer WQ,1,11/8/18,12:44,59.60118,-151.04964,Flood,Mid,25,3.4,beach seine,Sand/Gravel,Light wrack. Caught LOTS of surfsmelt - threw back most of them.
+XTR1KH2,Homer WQ,2,11/8/18,13:18,59.60058,-151.4091,Flood,Mid,25,3.6,beach seine,Sand/Gravel,Medium wrack.  Net rolled.
