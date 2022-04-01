@@ -16,10 +16,6 @@ wd = getwd()
 dir.output = file.path(wd, "output")
 dir.figs = file.path(wd, "figs")
 dir.data = file.path(wd,"data")
-dir.R = file.path(wd,"R")
-dir.reports = file.path(wd,"reports")
-dir.nfa = file.path(wd,"noaa-nfa")
-dir.permits = file.path(wd,"permits")
 
 # Utility -----------------------------------------------------------------
 

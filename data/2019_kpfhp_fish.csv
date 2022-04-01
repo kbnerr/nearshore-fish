@@ -1,4 +1,4 @@
-﻿SeineID,Common,LifeStage,Count,Length,Lavage,PSP,Deceased,Notes
+﻿SeineID,Common,LifeStage,Count,Length_mm,Lavage,PSP,Deceased,Notes
 ANCN1MAY,Crescent Gunnel,,1,99,,,,
 ANCN1MAY,Staghorn Sculpin,,1,248,,,,
 ANCN1MAY,Snailfish,,1,35,,,,
@@ -446,12 +446,12 @@ ANCH2MAY,Surf Smelt,,1,130,,,,
 ANCH2MAY,Surf Smelt,,1,124,,,,
 ANCH2MAY,Surf Smelt,,1,119,,,,
 ANCH2MAY,Pink Salmon,Juvenile,1,52,,,,
-ANCH2MAY,Larval,YOY,1,30,,,,"Possible Sand fish, JA pics"
+ANCH2MAY,Larval,YOY,1,30,,,,Possibly Sand fish
 ANCH3MAY,Starry Flounder,,1,172,,,,
 ANCH3MAY,Starry Flounder,,1,385,,,,340 on measuring board and guess for extra 
 ANCH3MAY,Staghorn Sculpin,,1,242,,,,
 ANCH3MAY,Pink Salmon,Juvenile,1,48,,,,
-ANCH4MAY,,,0,,,,,
+ANCH4MAY,None,,0,,,,,
 CHPN1MAY,Armorhead Sculpin,,1,48,,,,
 CHPN1MAY,Armorhead Sculpin,,1,120,,,,
 CHPN1MAY,Great Sculpin,,1,79,,,,
@@ -2070,7 +2070,7 @@ HBCN1JUL,Staghorn Sculpin,,1,232,,,,
 HBCN1JUL,Staghorn Sculpin,,1,271,,,,
 HBCN1JUL,Rock Sole,,1,241,,,,
 HBCN1JUL,Great Sculpin,,1,38,,,,
-HBCN1JUL,Pacific Herring,YOY,1000,30,,,,Vouchers. Thought maybe capelin. Count is an estimate.
+HBCN1JUL,Pacific Herring,YOY,1000,30,,,,Count estimated
 HBCN2JUL,Dolly Varden,,1,155,,,,
 HBCN2JUL,Dolly Varden,,1,230,,,,
 HBCN2JUL,Dolly Varden,,1,203,,,,
@@ -2155,7 +2155,7 @@ HBCN2JUL,Pacific Herring,YOY,1,46,,,,
 HBCN2JUL,Pacific Herring,YOY,1,48,,,,
 HBCN2JUL,Pacific Herring,YOY,1,31,,,,
 HBCN2JUL,Pacific Herring,YOY,1,32,,,,
-HBCN2JUL,Pacific Herring,YOY,10000,,,,,Count estimated.
+HBCN2JUL,Pacific Herring,YOY,10000,,,,,Count estimated
 HBCN2JUL,Capelin,,1,95,,1,,
 HBCN2JUL,Great Sculpin,,1,88,,,,
 HBCN2JUL,Crescent Gunnel,,1,136,,,,
@@ -2254,7 +2254,7 @@ HBCN3JUL,Pacific Cod,,1,82,,,,
 HBCN3JUL,Pacific Cod,,1,70,,,,
 HBCN3JUL,White Spotted Greenling,,1,79,,,,
 HBCN3JUL,Crescent Gunnel,,1,161,,,,
-HBCN3JUL,Pacific Herring,YOY,6600,30,,20,,Count estimated.
+HBCN3JUL,Pacific Herring,YOY,6600,30,,20,,Count estimated
 CHPN1JUL,Dolly Varden,,1,176,1,1,,
 CHPN1JUL,Dolly Varden,,1,143,1,1,,
 CHPN1JUL,Dolly Varden,,2,,,,,
@@ -3545,7 +3545,7 @@ TUTN3SEP,Rock Sole,,1,175,,,,
 TUTN3SEP,Rock Sole,,1,157,,,,
 TUTN3SEP,Rock Sole,,1,128,,,,
 TUTN3SEP,Rock Sole,,1,176,,,,
-HBCN1OCT,Larval,YOY,1,,,,,Pacific Sand Lance?
+HBCN1OCT,Larval,YOY,1,,,,,Possibly Pacific Sand Lance
 HBCN2OCT,Pacific Herring,YOY,1,60,,1,,
 HBCN2OCT,Pacific Herring,YOY,1,60,,1,,
 HBCN2OCT,Pacific Herring,YOY,1,60,,1,,

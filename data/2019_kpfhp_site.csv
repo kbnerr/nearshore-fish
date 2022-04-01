@@ -1,108 +1,108 @@
 ﻿SeineID,Site,Replicate,Date,Time,Latitude,Longitude,Tide1,Tide2,Reach_m,Depth_m,Method,Habitat,Notes,Width_,Location
-ANCN1MAY,Anchor River,1,05/09/2019,12:25,59.79289,-151.86183,Slack,Low,25,1.1,beach seine,Sand/Gravel,Shrimp.,14,Nearshore
-ANCN2MAY,Anchor River,2,05/09/2019,13:30,59.79176,-151.86168,Flood,Low,25,0.5,beach seine,Sand/Gravel,,25,Nearshore
-ANCN3MAY,Anchor River,3,05/09/2019,13:57,59.791,-151.86153,Flood,Low,20,1,beach seine,Sand/Gravel,,20,Nearshore
-ANCH1MAY,Anchor River,1,05/09/2019,17:25,59.79362,-151.85591,Flood,High,20,1.5,beach seine,Sand/Gravel,,17,Nearshore
-ANCL1MAY,Anchor River,1,05/10/2019,13:23,59.78003,-151.85822,Slack,Low,25,0.26,pole seine,Salt marsh,,3.3,Lower
-ANCU1MAY,Anchor River,1,05/10/2019,15:23,59.77369,-151.86456,Flood,Low,25,0.9,pole seine,Salt marsh,,4.5,Upper
-ANCL2MAY,Anchor River,2,05/10/2019,14:15,59.77588,-151.85835,Slack,Low,25,0.25,pole seine,Salt marsh,,2.75,Lower
-ANCF1MAY,Anchor River,1,05/10/2019,17:10,59.77098,-151.84303,,,31,1.22,pole seine,Riparian,Snail in water,5.5,Freshwater
-ANCU2MAY,Anchor River,2,05/10/2019,16:30,59.77409,-151.86377,Flood,Mid,21.5,1,pole seine,Salt marsh,Tractor,5,Upper
-TUTU1MAY,Tutka River,1,05/13/2019,13:36,59.41527,-151.28535,Ebb,Mid,33,0.4,pole seine,Salt marsh,Ulva,5,Upper
-TUTU2MAY,Tutka River,2,05/13/2019,14:10,59.41496,-151.28149,Ebb,Mid,16,0.3,pole seine,Salt marsh,"Many went through net, sub group collected. Pic on Jacobs phone of albinos",5.5,Upper
-TUTF1MAY,Tutka River,1,05/13/2019,15:02,59.41367,-151.27802,,,12,2,pole seine,Riparian,"Off channel hole, very little flow. Smolty Coho (saucy)",4,Freshwater
-TUTN1MAY,Tutka River,1,05/13/2019,16:38,59.42028,-151.30463,Slack,Low,25,0.8,beach seine,Sand/Gravel,,21,Nearshore
-TUTN2MAY,Tutka River,2,05/13/2019,17:12,59.42118,-151.30515,Slack,Low,25,1,beach seine,Sand/Gravel,Figure out depth with GPS point,28,Nearshore
-TUTN3MAY,Tutka River,3,05/13/2019,17:43,59.4216,-151.30502,Flood,Low,10,1.5,beach seine,Sand/Gravel,Depth up to neck of Chris,26,Nearshore
-TUTL1MAY,Tutka River,1,05/14/2019,10:04,59.40992,-151.2932,Flood,High,25,0.15,pole seine,Salt marsh,"Shallow, silt salt marsh channel, Ulva",5,Lower
-TUTL2MAY,Tutka River,2,05/14/2019,10:21,59.41013,-151.29317,Flood,High,30,0.6,pole seine,Salt marsh,,5,Lower
-TUTL3MAY,Tutka River,3,05/14/2019,10:44,59.4096,-151.2892,Flood,High,26,0.5,pole seine,Salt marsh,"Gravel, pebble substrate ",5,Lower
-TUTH1MAY,Tutka River,4,05/14/2019,12:34,59.41052,-151.29855,Slack,High,25,1.7,beach seine,Sand/Gravel,,23,Nearshore
-ANCH2MAY,Anchor River,1,05/17/2019,14:15,59.79297,-151.85626,Flood,High,20,1.5,beach seine,Sand/Gravel,,17,Nearshore
-ANCH3MAY,Anchor River,2,05/17/2019,15:00,59.79337,-151.85561,Slack,High,20,1.2,beach seine,Sand/Gravel,,19,Nearshore
-ANCH4MAY,Anchor River,3,05/17/2019,15:15,59.7937,-151.8548,Slack,High,15,1.5,beach seine,Sand/Gravel,"Sand with cobble, steep",26,Nearshore
-CHPN1MAY,China Poot,1,05/23/2019,11:15,59.57815,-151.31956,Ebb,Low,25,0.9,beach seine,Sand/Gravel,Pebble/Cobble,16,Nearshore
-CHPN2MAY,China Poot,2,05/23/2019,11:51,59.57853,-151.31862,Slack,Low,25,1.25,beach seine,Sand/Gravel,Sand/gravel with light benthic diatom,16,Nearshore
-CHPN3MAY,China Poot,3,05/23/2019,12:19,59.57917,-151.31746,Slack,Low,25,1.2,beach seine,Sand/Gravel,Sand/gravel with little diatom,16,Nearshore
-CHPN4MAY,China Poot,4,05/23/2019,12:57,59.57856,-151.31839,Flood,Low,26,1.9,beach seine,Sand/Gravel,Total reach. Sea stars. Sand/gravel/whole-some attached kelp,30,Nearshore
-CHPN1JUN,China Poot,1,06/06/2019,11:00,59.57841,-152.32065,Flood,Low,25,1.2,beach seine,Sand/Gravel,"Sand gravel beach, lots of brown diatom growth",16,Nearshore
-CHPN2JUN,China Poot,2,06/06/2019,12:15,59.57883,-151.31955,Slack,Low,25,1.5,beach seine,Sand/Gravel,,16,Nearshore
-CHPN3JUN,China Poot,3,06/06/2019,12:30,59.57933,-151.3163,Flood,Low,25,2.6,beach seine,Sand/Gravel,,17,Nearshore
-ANCN1JUN,Anchor River,1,06/09/2019,13:28,59.79289,-151.86183,Ebb,Low,20,1.1,beach seine,Sand/Gravel,GPS same as ANCN1MAY,19,Nearshore
-ANCN2JUN,Anchor River,2,06/10/2019,15:10,59.79176,-151.86168,Flood,Low,25,0.85,beach seine,Sand/Gravel,GPS same as ANCN2MAY,18,Nearshore
-ANCU1JUN,Anchor River,1,06/09/2019,20:50,59.74,-151.86383,Ebb,High,22.5,0.65,pole seine,Salt marsh,,45.5,Upper
-ANCL1JUN,Anchor River,1,06/09/2019,16:47,59.77996,-151.85843,Flood,Low,30,0.3,pole seine,Salt marsh,GPS same as ANCL1JUL,3.2,Lower
-ANCL2JUN,Anchor River,2,06/09/2019,17:42,59.77988,-151.85837,Flood,Low,25,0.5,pole seine,Salt marsh,GPS same as ANCL2JUL. Environmentals same as L1,3.25,Lower
-ANCU2JUN,Anchor River,2,06/09/2019,21:18,59.77365,-151.86456,Ebb,High,28,0.75,pole seine,Salt marsh,,4,Upper
-ANCH1JUN,Anchor River,1,06/10/2019,8:25,59.79269,-151.85701,Slack,High,20,1.5,beach seine,Sand/Gravel,,19,Nearshore
-ANCH2JUN,Anchor River,2,06/10/2019,9:15,59.79251,-151.85721,Slack,High,25,2.1,beach seine,Sand/Gravel,,21,Nearshore
-ANCH3JUN,Anchor River,3,06/10/2019,9:54,59.7935,-151.85609,Ebb,High,20,2.5,beach seine,Sand/Gravel,,22,Nearshore
-ANCF1JUN,Anchor River,1,06/10/2019,11:00,59.77101,-151.84286,,,31,1.1,pole seine,Riparian,,4.8,Freshwater
-ANCU3JUN,Anchor River,3,06/11/2019,15:30,59.77418,-151.86319,Slack,Low,22.5,0.75,pole seine,Salt marsh,"Tractor. 2nd GPS points: 59.77512, -151.86459. 4 reaches: pole seine #1=5, pole seine #2=4.5, pole seine #3=6, pole seine #5=7",6,Upper
-TUTU1JUN,Tutka River,1,06/13/2019,13:26,59.41143,-151.28528,Ebb,High,25,0.25,pole seine,Salt marsh,"Pool-sand/gravel, some flow",3,Upper
-TUTU2JUN,Tutka River,2,06/13/2019,14:13,59.41157,-151.28313,Ebb,High,17.5,0.8,pole seine,Salt marsh,"silt/sand/gravel-overhanging veg salt marsh channel. Lots of dead salmonids (60-100mm). Multipe reaches: pole seine #1=6.8, pole seine #2=5.6, pole seine #3=5.1",6,Upper
-TUTF1JUN,Tutka River,1,06/13/2019,15:15,59.41358,-151.27809,Ebb,Mid,11.5,1.5,pole seine,Riparian,"Multiple reaches: pole seine #1=9, pole seine #2=2.5. Width= pole seine+pole seine. Off channel pool",6,Freshwater
-TUTN1JUN,Tutka River,1,06/13/2019,17:15,59.4203,-151.30356,Ebb,Low,25,0.9,beach seine,Sand/Gravel,Brown matted diatoms,16,Nearshore
-TUTN2JUN,Tutka River,2,06/13/2019,17:53,59.42075,-151.30453,Ebb,Low,25,0.9,beach seine,Sand/Gravel,Rockweed and shells,14,Nearshore
-TUTN3JUN,Tutka River,3,06/13/2019,18:12,59.42138,-151.30507,Slack,Low,25,5,beach seine,Sand/Gravel,,24,Nearshore
-TUTL1JUN,Tutka River,1,06/14/2019,10:39,59.40958,-151.28915,Flood,Mid,26,0.4,pole seine,Salt marsh,"Sand gravel w/ulva and rockweed. Multiple reaches: pole seine #1=13.5, pole seine #2=12.5. Sample Width= pole seine x2",6,Lower
-TUTL2JUN,Tutka River,2,06/14/2019,10:52,59.40944,-151.28827,Flood,Mid,29,0.2,pole seine,Salt marsh,released about 2/3 of the catch,6,Lower
-TUTH1JUN,Tutka River,1,06/14/2019,13:00,59.4106,-151.29837,Slack,High,25,2.3,beach seine,Sand/Gravel,Salt marsh and gravel. jellyfish and ctenophores. large brown diatom mats,13.5,Nearshore
-TUTH2JUN,Tutka River,2,06/14/2019,13:36,59.42115,-151.30122,Flood,High,25,1.9,beach seine,Sand/Gravel,,23,Nearshore
-TUTH3JUN,Tutka River,3,06/14/2019,14:01,59.42109,-151.30103,Slack,High,25,1.8,beach seine,Sand/Gravel,"Sand/gravel/beach, some rockweed",23,Nearshore
-HBCN1JUN,Halibut Cove,1,06/19/2019,10:05,59.59365,-151.17003,Slack,Low,25,5,beach seine,Sand/Gravel,"mud flat. released red bucket full (~500). All Capelin to Dom. 3DV, 4CO, 4 Hering, 8 Sand Lance to Dom. ",18,Nearshore
-HBCN2JUN,Halibut Cove,2,06/19/2019,11:33,59.59338,-151.16684,Flood,Low,25,5,beach seine,Sand/Gravel,"mud flat. 11 PK, 5 SO for Dom",18,Nearshore
-ANCN1JUL,Anchor River,1,07/09/2019,12:28,59.79338,-151.8578,Ebb,Low,20,0.8,beach seine,Sand/Gravel,,17,Nearshore
-ANCN2JUL,Anchor River,2,07/09/2019,13:16,59.79412,-151.85835,Ebb,Low,25,0.8,beach seine,Sand/Gravel,EXO1 batteries dead,18,Nearshore
-ANCN3JUL,Anchor River,3,07/09/2019,14:15,59.7944,-151.85971,Slack,Low,25,0.7,beach seine,Sand/Gravel,Spawning Surf Smelt?,18,Nearshore
-ANCU1JUL,Anchor River,1,07/10/2019,10:30,59.77435,-151.86392,Slack,High,19.95,1.2,pole seine,Salt marsh,Reach x Width = [#1: 5 x PS] + [#2: 5.25 x PS] + [#3: 4.5 x PS] + [#4: 5.2 x PS],6,Upper
-ANCL1JUL,Anchor River,1,07/10/2019,12:23,59.77996,-151.85843,Ebb,Low,21,0.5,pole seine,Salt marsh,,3.3,Lower
-ANCL2JUL,Anchor River,2,07/10/2019,12:50,59.77988,-151.85837,Ebb,Low,25,0.25,pole seine,Salt marsh,,1.8,Lower
-ANCF1JUL,Anchor River,1,07/10/2019,14:15,59.77097,-151.84265,,,28,1.3,beach seine,Riparian,,6,Freshwater
-TUTN1JUL,Tutka River,1,07/17/2019,8:15,59.42009,-151.30443,Ebb,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
-TUTN2JUL,Tutka River,2,07/17/2019,8:55,59.42057,-151.30547,Ebb,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
-TUTN3JUL,Tutka River,3,07/17/2019,9:30,59.42142,-151.30528,Slack,Low,25,5,beach seine,Sand/Gravel,Coho were all smolts,17,Nearshore
-HBCN1JUL,Halibut Cove,1,07/18/2019,9:00,59.59336,-151.17072,Ebb,Low,25,1.3,beach seine,Sand/Gravel,,17,Nearshore
-HBCN2JUL,Halibut Cove,2,07/18/2019,10:15,59.59339,-151.1691,Slack,Low,25,5,beach seine,Sand/Gravel,,17,Nearshore
-HBCN3JUL,Halibut Cove,3,07/18/2019,10:50,59.59312,-151.16844,Flood,Low,25,5,beach seine,Sand/Gravel,Capelin spawning.,17,Nearshore
-CHPN1JUL,China Poot,1,07/19/2019,10:15,59.57821,-151.31995,Ebb,Low,25,1,beach seine,Sand/Gravel,Flies. Sand/gravel intertidal,18,Nearshore
-CHPN2JUL,China Poot,2,07/19/2019,11:00,59.57907,-151.31596,Slack,Low,25,1.8,beach seine,Sand/Gravel,,17,Nearshore
-CHPN3JUL,China Poot,3,07/19/2019,11:45,59.57881,-151.3156,Flood,Low,25,4.4,beach seine,Sand/Gravel,,17,Nearshore
-ANCL1AUG,Anchor River,1,08/08/2019,11:00,59.77994,-151.85841,Ebb,High,29,0.25,pole seine,Salt marsh,,3,Lower
-ANCF1AUG,Anchor River,1,08/06/2019,11:25,59.77095,-151.84277,,,26,1.1,pole seine,Riparian,Dragonfly larva,4.5,Freshwater
-ANCN1AUG,Anchor River,1,08/06/2019,13:20,59.79437,-151.86009,Slack,Low,25,1.3,beach seine,Sand/Gravel,Pyropia. Sand,17,Nearshore
-ANCN2AUG,Anchor River,2,08/06/2019,14:05,59.79574,-151.85037,Flood,Low,25,1,beach seine,Sand/Gravel,,19,Nearshore
-ANCN3AUG,Anchor River,3,08/06/2019,14:39,59.79676,-151.85985,Flood,Low,25,1.3,beach seine,Sand/Gravel,,19,Nearshore
-ANCL2AUG,Anchor River,2,08/08/2019,11:35,59.77969,-151.85846,Ebb,High,25,0.25,pole seine,Salt marsh,,2.5,Lower
-ANCU1AUG,Anchor River,1,08/08/2019,12:20,59.77436,-151.86392,Ebb,High,22.2,1,pole seine,Salt marsh,"Reaches: (1) 4.2, (2) 3.9, (3) 4.5 (4) 4.2, (5) 4.5, (6) 5.1",6,Upper
-CHPN1AUG,China Poot,1,08/20/2019,11:15,59.57811,-151.32016,Ebb,Low,25,1.4,beach seine,Sand/Gravel,,17,Nearshore
-CHPN2AUG,China Poot,2,08/20/2019,12:01,59.57892,-151.31817,Slack,Low,30,1.1,beach seine,Sand/Gravel,,17,Nearshore
-CHPN3AUG,China Poot,3,08/20/2019,12:35,59.57881,-151.3156,Flood,Low,25,4.6,beach seine,Sand/Gravel,GPS not recorded - copied from CHPN3JUL,17,Nearshore
-HBCN1AUG,Halibut Cove,1,08/21/2019,11:05,59.59249,-151.17109,Ebb,Low,25,0.6,beach seine,Sand/Gravel,,17,Nearshore
-HBCN2AUG,Halibut Cove,2,08/21/2019,11:30,59.59289,-151.17223,Ebb,Low,25,1.6,beach seine,Sand/Gravel,,18,Nearshore
-HBCN3AUG,Halibut Cove,3,08/21/2019,11:45,59.59252,-151.1741,Slack,Low,25,1.4,beach seine,Sand/Gravel,,17,Nearshore
-HBCN4AUG,Halibut Cove,4,08/21/2019,12:11,59.59266,-151.16872,Slack,Low,25,0.75,beach seine,Sand/Gravel,,17,Nearshore
-HBCN5AUG,Halibut Cove,5,08/21/2019,12:32,59.59241,-151.16534,Slack,Low,25,1.6,beach seine,Sand/Gravel,"Sandbar, gravel, rockweed, mussel shell",17,Nearshore
-HBCN6AUG,Halibut Cove,6,08/21/2019,12:45,59.593,-151.15935,Flood,Low,25,5,beach seine,Sand/Gravel,Chris took fish pictures,17,Nearshore
-TUTN1AUG,Tutka River,1,08/22/2019,13:00,59.42025,-151.30328,Slack,Low,25,1,beach seine,Sand/Gravel,,16,Nearshore
-TUTN2AUG,Tutka River,2,08/22/2019,13:30,59.42099,-151.30403,Slack,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
-TUTN3AUG,Tutka River,3,08/22/2019,14:00,59.41639,-151.30708,Flood,Low,25,1.5,beach seine,Sand/Gravel,Channel - cobble,17,Nearshore
-ANCN1SEP,Anchor River,1,09/13/2019,8:50,59.79428,-151.86021,Ebb,Low,25,0.8,beach seine,Sand/Gravel,,17,Nearshore
-ANCN2SEP,Anchor River,2,09/13/2019,9:30,59.79511,-151.86064,Slack,Low,25,1,beach seine,Sand/Gravel,,17,Nearshore
-ANCN3SEP,Anchor River,3,09/13/2019,10:15,59.79644,-151.86043,Flood,Low,25,1.2,beach seine,Sand/Gravel,,18,Nearshore
-CHPN1SEP,China Poot,1,09/16/2019,9:53,59.57899,-151.31827,Ebb,Low,25,1.4,beach seine,Sand/Gravel,,17,Nearshore
-CHPN2SEP,China Poot,2,09/16/2019,10:45,59.57883,-151.31601,Ebb,Low,25,2,beach seine,Sand/Gravel,"For future reference, seine was ~1/5 full",17,Nearshore
-CHPN3SEP,China Poot,3,09/16/2019,11:30,59.57832,-151.31534,Flood,Low,25,4.3,beach seine,Sand/Gravel,,17,Nearshore
-HBCN1SEP,Halibut Cove,1,09/17/2019,9:46,59.59306,-151.172,Ebb,Low,25,1.9,beach seine,Sand/Gravel,"Cobble, gravel, silt",17,Nearshore
-HBCN2SEP,Halibut Cove,2,09/17/2019,10:15,59.59307,-151.17023,Ebb,Low,54,2,beach seine,Sand/Gravel,"Rocky, mud",17,Nearshore
-HBCN3SEP,Halibut Cove,3,09/17/2019,11:16,59.5927,-151.16788,Flood,Low,35,1.7,beach seine,Sand/Gravel,"Rocky, mud",17,Nearshore
-TUTN1SEP,Tutka River,1,09/18/2019,11:15,59.42079,-151.30425,Ebb,Low,49,1,beach seine,Sand/Gravel,,18,Nearshore
-TUTN2SEP,Tutka River,2,09/18/2019,11:50,59.42002,-151.30286,Ebb,Low,51,1.8,beach seine,Sand/Gravel,,18,Nearshore
-TUTN3SEP,Tutka River,3,09/18/2019,12:25,59.42136,-151.30438,Slack,Low,53,9.1,beach seine,Sand/Gravel,,18,Nearshore
-HBCN1OCT,Halibut Cove,1,10/18/2019,11:15,59.59273,-151.17252,Slack,Low,25,1.8,beach seine,Sand/Gravel,,17,Nearshore
-HBCN2OCT,Halibut Cove,2,10/18/2019,11:30,59.59243,-151.1702,Slack,Low,54,1,beach seine,Sand/Gravel,,17,Nearshore
-HBCN3OCT,Halibut Cove,3,10/18/2019,12:05,59.59207,-151.16615,Flood,Low,35,1.6,beach seine,Sand/Gravel,,17,Nearshore
-HBCN4OCT,Halibut Cove,4,10/18/2019,12:30,59.59308,-151.158,Flood,Low,25,3.6,beach seine,Sand/Gravel,Lots of Pandalis Shrimp - picture! Steeper gravel beach,17,Nearshore
-ANCN1OCT,Anchor River,1,10/19/2019,11:00,59.79313,-151.85779,Ebb,Low,25,1,beach seine,Sand/Gravel,,17,Nearshore
-ANCN2OCT,Anchor River,2,10/19/2019,12:00,59.79419,-151.8577,Slack,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
-ANCN3OCT,Anchor River,3,10/19/2019,12:30,59.7952,-151.85692,Slack,Low,25,0.9,beach seine,Sand/Gravel,,17,Nearshore
+ANCN1MAY,Anchor River,1,5/9/19,12:25,59.79289,-151.86183,Slack,Low,25,1.1,beach seine,Sand/Gravel,Shrimp.,14,Nearshore
+ANCN2MAY,Anchor River,2,5/9/19,13:30,59.79176,-151.86168,Flood,Low,25,0.5,beach seine,Sand/Gravel,,25,Nearshore
+ANCN3MAY,Anchor River,3,5/9/19,13:57,59.791,-151.86153,Flood,Low,20,1,beach seine,Sand/Gravel,,20,Nearshore
+ANCH1MAY,Anchor River,1,5/9/19,17:25,59.79362,-151.85591,Flood,High,20,1.5,beach seine,Sand/Gravel,,17,Nearshore
+ANCL1MAY,Anchor River,1,5/10/19,13:23,59.78003,-151.85822,Slack,Low,25,0.26,pole seine,Salt marsh,,3.3,Lower
+ANCU1MAY,Anchor River,1,5/10/19,15:23,59.77369,-151.86456,Flood,Low,25,0.9,pole seine,Salt marsh,,4.5,Upper
+ANCL2MAY,Anchor River,2,5/10/19,14:15,59.77588,-151.85835,Slack,Low,25,0.25,pole seine,Salt marsh,,2.75,Lower
+ANCF1MAY,Anchor River,1,5/10/19,17:10,59.77098,-151.84303,,,31,1.22,pole seine,Riparian,Snail in water,5.5,Freshwater
+ANCU2MAY,Anchor River,2,5/10/19,16:30,59.77409,-151.86377,Flood,Mid,21.5,1,pole seine,Salt marsh,Tractor,5,Upper
+TUTU1MAY,Tutka River,1,5/13/19,13:36,59.41527,-151.28535,Ebb,Mid,33,0.4,pole seine,Salt marsh,Ulva,5,Upper
+TUTU2MAY,Tutka River,2,5/13/19,14:10,59.41496,-151.28149,Ebb,Mid,16,0.3,pole seine,Salt marsh,"Many went through net, sub group collected. Pic on Jacobs phone of albinos",5.5,Upper
+TUTF1MAY,Tutka River,1,5/13/19,15:02,59.41367,-151.27802,,,12,2,pole seine,Riparian,"Off channel hole, very little flow. Smolty Coho (saucy)",4,Freshwater
+TUTN1MAY,Tutka River,1,5/13/19,16:38,59.42028,-151.30463,Slack,Low,25,0.8,beach seine,Sand/Gravel,,21,Nearshore
+TUTN2MAY,Tutka River,2,5/13/19,17:12,59.42118,-151.30515,Slack,Low,25,1,beach seine,Sand/Gravel,Figure out depth with GPS point,28,Nearshore
+TUTN3MAY,Tutka River,3,5/13/19,17:43,59.4216,-151.30502,Flood,Low,10,1.5,beach seine,Sand/Gravel,Depth up to neck of Chris,26,Nearshore
+TUTL1MAY,Tutka River,1,5/14/19,10:04,59.40992,-151.2932,Flood,High,25,0.15,pole seine,Salt marsh,"Shallow, silt salt marsh channel, Ulva",5,Lower
+TUTL2MAY,Tutka River,2,5/14/19,10:21,59.41013,-151.29317,Flood,High,30,0.6,pole seine,Salt marsh,,5,Lower
+TUTL3MAY,Tutka River,3,5/14/19,10:44,59.4096,-151.2892,Flood,High,26,0.5,pole seine,Salt marsh,"Gravel, pebble substrate ",5,Lower
+TUTH1MAY,Tutka River,4,5/14/19,12:34,59.41052,-151.29855,Slack,High,25,1.7,beach seine,Sand/Gravel,,23,Nearshore
+ANCH2MAY,Anchor River,1,5/17/19,14:15,59.79297,-151.85626,Flood,High,20,1.5,beach seine,Sand/Gravel,,17,Nearshore
+ANCH3MAY,Anchor River,2,5/17/19,15:00,59.79337,-151.85561,Slack,High,20,1.2,beach seine,Sand/Gravel,,19,Nearshore
+ANCH4MAY,Anchor River,3,5/17/19,15:15,59.7937,-151.8548,Slack,High,15,1.5,beach seine,Sand/Gravel,"Sand with cobble, steep",26,Nearshore
+CHPN1MAY,Moosehead Point,1,5/23/19,11:15,59.57815,-151.31956,Ebb,Low,25,0.9,beach seine,Sand/Gravel,Pebble/Cobble,16,Nearshore
+CHPN2MAY,Moosehead Point,2,5/23/19,11:51,59.57853,-151.31862,Slack,Low,25,1.25,beach seine,Sand/Gravel,Sand/gravel with light benthic diatom,16,Nearshore
+CHPN3MAY,Moosehead Point,3,5/23/19,12:19,59.57917,-151.31746,Slack,Low,25,1.2,beach seine,Sand/Gravel,Sand/gravel with little diatom,16,Nearshore
+CHPN4MAY,Moosehead Point,4,5/23/19,12:57,59.57856,-151.31839,Flood,Low,26,1.9,beach seine,Sand/Gravel,Total reach. Sea stars. Sand/gravel/whole-some attached kelp,30,Nearshore
+CHPN1JUN,Moosehead Point,1,6/6/19,11:00,59.57841,-152.32065,Flood,Low,25,1.2,beach seine,Sand/Gravel,"Sand gravel beach, lots of brown diatom growth",16,Nearshore
+CHPN2JUN,Moosehead Point,2,6/6/19,12:15,59.57883,-151.31955,Slack,Low,25,1.5,beach seine,Sand/Gravel,,16,Nearshore
+CHPN3JUN,Moosehead Point,3,6/6/19,12:30,59.57933,-151.3163,Flood,Low,25,2.6,beach seine,Sand/Gravel,,17,Nearshore
+ANCN1JUN,Anchor River,1,6/9/19,13:28,59.79289,-151.86183,Ebb,Low,20,1.1,beach seine,Sand/Gravel,GPS same as ANCN1MAY,19,Nearshore
+ANCN2JUN,Anchor River,2,6/10/19,15:10,59.79176,-151.86168,Flood,Low,25,0.85,beach seine,Sand/Gravel,GPS same as ANCN2MAY,18,Nearshore
+ANCU1JUN,Anchor River,1,6/9/19,20:50,59.74,-151.86383,Ebb,High,22.5,0.65,pole seine,Salt marsh,,45.5,Upper
+ANCL1JUN,Anchor River,1,6/9/19,16:47,59.77996,-151.85843,Flood,Low,30,0.3,pole seine,Salt marsh,GPS same as ANCL1JUL,3.2,Lower
+ANCL2JUN,Anchor River,2,6/9/19,17:42,59.77988,-151.85837,Flood,Low,25,0.5,pole seine,Salt marsh,GPS same as ANCL2JUL. Environmentals same as L1,3.25,Lower
+ANCU2JUN,Anchor River,2,6/9/19,21:18,59.77365,-151.86456,Ebb,High,28,0.75,pole seine,Salt marsh,,4,Upper
+ANCH1JUN,Anchor River,1,6/10/19,8:25,59.79269,-151.85701,Slack,High,20,1.5,beach seine,Sand/Gravel,,19,Nearshore
+ANCH2JUN,Anchor River,2,6/10/19,9:15,59.79251,-151.85721,Slack,High,25,2.1,beach seine,Sand/Gravel,,21,Nearshore
+ANCH3JUN,Anchor River,3,6/10/19,9:54,59.7935,-151.85609,Ebb,High,20,2.5,beach seine,Sand/Gravel,,22,Nearshore
+ANCF1JUN,Anchor River,1,6/10/19,11:00,59.77101,-151.84286,,,31,1.1,pole seine,Riparian,,4.8,Freshwater
+ANCU3JUN,Anchor River,3,6/11/19,15:30,59.77418,-151.86319,Slack,Low,22.5,0.75,pole seine,Salt marsh,"Tractor. 2nd GPS points: 59.77512, -151.86459. 4 reaches: pole seine #1=5, pole seine #2=4.5, pole seine #3=6, pole seine #5=7",6,Upper
+TUTU1JUN,Tutka River,1,6/13/19,13:26,59.41143,-151.28528,Ebb,High,25,0.25,pole seine,Salt marsh,"Pool-sand/gravel, some flow",3,Upper
+TUTU2JUN,Tutka River,2,6/13/19,14:13,59.41157,-151.28313,Ebb,High,17.5,0.8,pole seine,Salt marsh,"silt/sand/gravel-overhanging veg salt marsh channel. Lots of dead salmonids (60-100mm). Multipe reaches: pole seine #1=6.8, pole seine #2=5.6, pole seine #3=5.1",6,Upper
+TUTF1JUN,Tutka River,1,6/13/19,15:15,59.41358,-151.27809,Ebb,Mid,11.5,1.5,pole seine,Riparian,"Multiple reaches: pole seine #1=9, pole seine #2=2.5. Width= pole seine+pole seine. Off channel pool",6,Freshwater
+TUTN1JUN,Tutka River,1,6/13/19,17:15,59.4203,-151.30356,Ebb,Low,25,0.9,beach seine,Sand/Gravel,Brown matted diatoms,16,Nearshore
+TUTN2JUN,Tutka River,2,6/13/19,17:53,59.42075,-151.30453,Ebb,Low,25,0.9,beach seine,Sand/Gravel,Rockweed and shells,14,Nearshore
+TUTN3JUN,Tutka River,3,6/13/19,18:12,59.42138,-151.30507,Slack,Low,25,5,beach seine,Sand/Gravel,,24,Nearshore
+TUTL1JUN,Tutka River,1,6/14/19,10:39,59.40958,-151.28915,Flood,Mid,26,0.4,pole seine,Salt marsh,"Sand gravel w/ulva and rockweed. Multiple reaches: pole seine #1=13.5, pole seine #2=12.5. Sample Width= pole seine x2",6,Lower
+TUTL2JUN,Tutka River,2,6/14/19,10:52,59.40944,-151.28827,Flood,Mid,29,0.2,pole seine,Salt marsh,released about 2/3 of the catch,6,Lower
+TUTH1JUN,Tutka River,1,6/14/19,13:00,59.4106,-151.29837,Slack,High,25,2.3,beach seine,Sand/Gravel,Salt marsh and gravel. jellyfish and ctenophores. large brown diatom mats,13.5,Nearshore
+TUTH2JUN,Tutka River,2,6/14/19,13:36,59.42115,-151.30122,Flood,High,25,1.9,beach seine,Sand/Gravel,,23,Nearshore
+TUTH3JUN,Tutka River,3,6/14/19,14:01,59.42109,-151.30103,Slack,High,25,1.8,beach seine,Sand/Gravel,"Sand/gravel/beach, some rockweed",23,Nearshore
+HBCN1JUN,Halibut Cove,1,6/19/19,10:05,59.59365,-151.17003,Slack,Low,25,5,beach seine,Sand/Gravel,"mud flat. released red bucket full (~500). All Capelin to Dom. 3DV, 4CO, 4 Hering, 8 Sand Lance to Dom. ",18,Nearshore
+HBCN2JUN,Halibut Cove,2,6/19/19,11:33,59.59338,-151.16684,Flood,Low,25,5,beach seine,Sand/Gravel,"mud flat. 11 PK, 5 SO for Dom",18,Nearshore
+ANCN1JUL,Anchor River,1,7/9/19,12:28,59.79338,-151.8578,Ebb,Low,20,0.8,beach seine,Sand/Gravel,,17,Nearshore
+ANCN2JUL,Anchor River,2,7/9/19,13:16,59.79412,-151.85835,Ebb,Low,25,0.8,beach seine,Sand/Gravel,EXO1 batteries dead,18,Nearshore
+ANCN3JUL,Anchor River,3,7/9/19,14:15,59.7944,-151.85971,Slack,Low,25,0.7,beach seine,Sand/Gravel,Spawning Surf Smelt?,18,Nearshore
+ANCU1JUL,Anchor River,1,7/10/19,10:30,59.77435,-151.86392,Slack,High,19.95,1.2,pole seine,Salt marsh,Reach x Width = [#1: 5 x PS] + [#2: 5.25 x PS] + [#3: 4.5 x PS] + [#4: 5.2 x PS],6,Upper
+ANCL1JUL,Anchor River,1,7/10/19,12:23,59.77996,-151.85843,Ebb,Low,21,0.5,pole seine,Salt marsh,,3.3,Lower
+ANCL2JUL,Anchor River,2,7/10/19,12:50,59.77988,-151.85837,Ebb,Low,25,0.25,pole seine,Salt marsh,,1.8,Lower
+ANCF1JUL,Anchor River,1,7/10/19,14:15,59.77097,-151.84265,,,28,1.3,pole seine,Riparian,,6,Freshwater
+TUTN1JUL,Tutka River,1,7/17/19,8:15,59.42009,-151.30443,Ebb,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
+TUTN2JUL,Tutka River,2,7/17/19,8:55,59.42057,-151.30547,Ebb,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
+TUTN3JUL,Tutka River,3,7/17/19,9:30,59.42142,-151.30528,Slack,Low,25,5,beach seine,Sand/Gravel,Coho were all smolts,17,Nearshore
+HBCN1JUL,Halibut Cove,1,7/18/19,9:00,59.59336,-151.17072,Ebb,Low,25,1.3,beach seine,Sand/Gravel,,17,Nearshore
+HBCN2JUL,Halibut Cove,2,7/18/19,10:15,59.59339,-151.1691,Slack,Low,25,5,beach seine,Sand/Gravel,,17,Nearshore
+HBCN3JUL,Halibut Cove,3,7/18/19,10:50,59.59312,-151.16844,Flood,Low,25,5,beach seine,Sand/Gravel,Capelin spawning.,17,Nearshore
+CHPN1JUL,Moosehead Point,1,7/19/19,10:15,59.57821,-151.31995,Ebb,Low,25,1,beach seine,Sand/Gravel,Flies. Sand/gravel intertidal,18,Nearshore
+CHPN2JUL,Moosehead Point,2,7/19/19,11:00,59.57907,-151.31596,Slack,Low,25,1.8,beach seine,Sand/Gravel,,17,Nearshore
+CHPN3JUL,Moosehead Point,3,7/19/19,11:45,59.57881,-151.3156,Flood,Low,25,4.4,beach seine,Sand/Gravel,,17,Nearshore
+ANCL1AUG,Anchor River,1,8/8/19,11:00,59.77994,-151.85841,Ebb,High,29,0.25,pole seine,Salt marsh,,3,Lower
+ANCF1AUG,Anchor River,1,8/6/19,11:25,59.77095,-151.84277,,,26,1.1,pole seine,Riparian,Dragonfly larva,4.5,Freshwater
+ANCN1AUG,Anchor River,1,8/6/19,13:20,59.79437,-151.86009,Slack,Low,25,1.3,beach seine,Sand/Gravel,Pyropia. Sand,17,Nearshore
+ANCN2AUG,Anchor River,2,8/6/19,14:05,59.79574,-151.85037,Flood,Low,25,1,beach seine,Sand/Gravel,,19,Nearshore
+ANCN3AUG,Anchor River,3,8/6/19,14:39,59.79676,-151.85985,Flood,Low,25,1.3,beach seine,Sand/Gravel,,19,Nearshore
+ANCL2AUG,Anchor River,2,8/8/19,11:35,59.77969,-151.85846,Ebb,High,25,0.25,pole seine,Salt marsh,,2.5,Lower
+ANCU1AUG,Anchor River,1,8/8/19,12:20,59.77436,-151.86392,Ebb,High,22.2,1,pole seine,Salt marsh,"Reaches: (1) 4.2, (2) 3.9, (3) 4.5 (4) 4.2, (5) 4.5, (6) 5.1",6,Upper
+CHPN1AUG,Moosehead Point,1,8/20/19,11:15,59.57811,-151.32016,Ebb,Low,25,1.4,beach seine,Sand/Gravel,,17,Nearshore
+CHPN2AUG,Moosehead Point,2,8/20/19,12:01,59.57892,-151.31817,Slack,Low,30,1.1,beach seine,Sand/Gravel,,17,Nearshore
+CHPN3AUG,Moosehead Point,3,8/20/19,12:35,59.57881,-151.3156,Flood,Low,25,4.6,beach seine,Sand/Gravel,GPS not recorded - copied from CHPN3JUL,17,Nearshore
+HBCN1AUG,Halibut Cove,1,8/21/19,11:05,59.59249,-151.17109,Ebb,Low,25,0.6,beach seine,Sand/Gravel,,17,Nearshore
+HBCN2AUG,Halibut Cove,2,8/21/19,11:30,59.59289,-151.17223,Ebb,Low,25,1.6,beach seine,Sand/Gravel,,18,Nearshore
+HBCN3AUG,Halibut Cove,3,8/21/19,11:45,59.59252,-151.1741,Slack,Low,25,1.4,beach seine,Sand/Gravel,,17,Nearshore
+HBCN4AUG,Halibut Cove,4,8/21/19,12:11,59.59266,-151.16872,Slack,Low,25,0.75,beach seine,Sand/Gravel,,17,Nearshore
+HBCN5AUG,Halibut Cove,5,8/21/19,12:32,59.59241,-151.16534,Slack,Low,25,1.6,beach seine,Sand/Gravel,"Sandbar, gravel, rockweed, mussel shell",17,Nearshore
+HBCN6AUG,Halibut Cove,6,8/21/19,12:45,59.593,-151.15935,Flood,Low,25,5,beach seine,Sand/Gravel,Chris took fish pictures,17,Nearshore
+TUTN1AUG,Tutka River,1,8/22/19,13:00,59.42025,-151.30328,Slack,Low,25,1,beach seine,Sand/Gravel,,16,Nearshore
+TUTN2AUG,Tutka River,2,8/22/19,13:30,59.42099,-151.30403,Slack,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
+TUTN3AUG,Tutka River,3,8/22/19,14:00,59.41639,-151.30708,Flood,Low,25,1.5,beach seine,Sand/Gravel,Channel - cobble,17,Nearshore
+ANCN1SEP,Anchor River,1,9/13/19,8:50,59.79428,-151.86021,Ebb,Low,25,0.8,beach seine,Sand/Gravel,,17,Nearshore
+ANCN2SEP,Anchor River,2,9/13/19,9:30,59.79511,-151.86064,Slack,Low,25,1,beach seine,Sand/Gravel,,17,Nearshore
+ANCN3SEP,Anchor River,3,9/13/19,10:15,59.79644,-151.86043,Flood,Low,25,1.2,beach seine,Sand/Gravel,,18,Nearshore
+CHPN1SEP,Moosehead Point,1,9/16/19,9:53,59.57899,-151.31827,Ebb,Low,25,1.4,beach seine,Sand/Gravel,,17,Nearshore
+CHPN2SEP,Moosehead Point,2,9/16/19,10:45,59.57883,-151.31601,Ebb,Low,25,2,beach seine,Sand/Gravel,"For future reference, seine was ~1/5 full",17,Nearshore
+CHPN3SEP,Moosehead Point,3,9/16/19,11:30,59.57832,-151.31534,Flood,Low,25,4.3,beach seine,Sand/Gravel,,17,Nearshore
+HBCN1SEP,Halibut Cove,1,9/17/19,9:46,59.59306,-151.172,Ebb,Low,25,1.9,beach seine,Sand/Gravel,"Cobble, gravel, silt",17,Nearshore
+HBCN2SEP,Halibut Cove,2,9/17/19,10:15,59.59307,-151.17023,Ebb,Low,54,2,beach seine,Sand/Gravel,"Rocky, mud",17,Nearshore
+HBCN3SEP,Halibut Cove,3,9/17/19,11:16,59.5927,-151.16788,Flood,Low,35,1.7,beach seine,Sand/Gravel,"Rocky, mud",17,Nearshore
+TUTN1SEP,Tutka River,1,9/18/19,11:15,59.42079,-151.30425,Ebb,Low,49,1,beach seine,Sand/Gravel,,18,Nearshore
+TUTN2SEP,Tutka River,2,9/18/19,11:50,59.42002,-151.30286,Ebb,Low,51,1.8,beach seine,Sand/Gravel,,18,Nearshore
+TUTN3SEP,Tutka River,3,9/18/19,12:25,59.42136,-151.30438,Slack,Low,53,9.1,beach seine,Sand/Gravel,,18,Nearshore
+HBCN1OCT,Halibut Cove,1,10/18/19,11:15,59.59273,-151.17252,Slack,Low,25,1.8,beach seine,Sand/Gravel,,17,Nearshore
+HBCN2OCT,Halibut Cove,2,10/18/19,11:30,59.59243,-151.1702,Slack,Low,54,1,beach seine,Sand/Gravel,,17,Nearshore
+HBCN3OCT,Halibut Cove,3,10/18/19,12:05,59.59207,-151.16615,Flood,Low,35,1.6,beach seine,Sand/Gravel,,17,Nearshore
+HBCN4OCT,Halibut Cove,4,10/18/19,12:30,59.59308,-151.158,Flood,Low,25,3.6,beach seine,Sand/Gravel,Lots of Pandalis Shrimp - picture! Steeper gravel beach,17,Nearshore
+ANCN1OCT,Anchor River,1,10/19/19,11:00,59.79313,-151.85779,Ebb,Low,25,1,beach seine,Sand/Gravel,,17,Nearshore
+ANCN2OCT,Anchor River,2,10/19/19,12:00,59.79419,-151.8577,Slack,Low,25,1.1,beach seine,Sand/Gravel,,17,Nearshore
+ANCN3OCT,Anchor River,3,10/19/19,12:30,59.7952,-151.85692,Slack,Low,25,0.9,beach seine,Sand/Gravel,,17,Nearshore

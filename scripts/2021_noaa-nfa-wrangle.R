@@ -40,6 +40,9 @@ eci.env = read_csv(file = file.path(dir.data, "2021_kpfhp_env.csv"))
 # Fish species information
 species_list = read_csv(file = file.path(dir.data, "species-list.csv"))
 
+# KBNERR sites information
+sites_list = read_csv(file = file.path(dir.data, "sites-list.csv"))
+
 ## There are data from two projects can be included for the NOAA NFA.
 # The data format requires three different spreadsheets: Sites, Events, Catch
 
@@ -49,31 +52,28 @@ species_list = read_csv(file = file.path(dir.data, "species-list.csv"))
 # Let's check that our site vars match
 colnames(eci.site) == colnames(stx.site)
 
-mutate(stx.site, Depth_m = as.double(Depth_m)) %>% # matching var types
-  bind_rows(eci.site, .) -> x.1
-
+x.1 = bind_rows(eci.site, stx.site)
 
 unique(x.1$Site) # take a look at what we have
 
-# We'll want to keep Barabara A/B separate sites but name it the same 'Location',
-# and we'll need to provide a single lat/lon coordinate per site...
-
+# We'll need to provide a single lat/lon coordinate per site,
+# And make a distinction between 'Raw Site' and 'Location' for the NFA:
 x.2 = x.1 %>%
   group_by(Site) %>%
   mutate(avg_lat = mean(Latitude),
          avg_lon = mean(Longitude)) %>%
   ungroup() %>%
-  select(`Raw Site` = Site,
+  left_join(select(sites_list, Site, nfa_Location), by = 'Site') %>%
+  select(Location = nfa_Location,
+         'Raw Site' = Site,
          Latitude = avg_lat,
          Longitude = avg_lon,
          Habitat) %>%
   distinct()
 
+# Add the SiteID identifier (1,2,etc.) the NFA uses
 x.3 = x.2 %>%
-  rownames_to_column(var = 'SiteID') %>% # This is the identifier the NFA uses
-  mutate(Location = if_else(`Raw Site` %in% c('Barabara A', 'Barabara B'),
-                            'Barabara Point',
-                            `Raw Site`)) %>%
+  rownames_to_column(var = 'SiteID') %>%
   relocate(Location, .after = 1)
 
 anyNA(x.3) # final check for NAs
@@ -85,12 +85,12 @@ write_csv(x = x.3,
 
 # 'Events' datasheet ------------------------------------------------------
 
-## most of the info we need is in our combined site df:
+## Most of the info we need is in our first site df (x.1):
 
 y.1 = x.1 %>%
   mutate(Date = mdy(Date), # The NFA asks for mm/dd/yyyy format
          Date = format(Date, '%m/%d/%Y')) %>%
-  select(`Raw Site` = Site,
+  select('Raw Site' = Site,
          SeineID, # we'll rename this after we're done joining df's
          Date,
          Gear = Method,
@@ -118,7 +118,7 @@ y.2 = left_join(y.1, TS, by = "SeineID") %>%
 
 kpfhp.sites = c('Anchor Point', 'Ninilchik', 'Plumb Bluff')
 nerrsc.sites = sites[!sites %in% kpfhp.sites]
-(nerrsc.sites = nerrsc.sites[-7]) # Dropping 'Outside Beach"
+(nerrsc.sites = nerrsc.sites[-6]) # Dropping 'Outside Beach"
 
 # Add info, mutate Gear, and an empty col for 'Crew'
 y.3 = select(x.3, SiteID, `Raw Site`) %>%
@@ -151,7 +151,7 @@ write_csv(x = y.4,
 # 'Catch' datasheet -------------------------------------------------------
 
 ## The Catch information needs to be tied back to unique seine sets (i.e., EventID),
-# so we'll start by taking this info from the 'Events' df:
+# so we'll start by taking this info from the df (y.3) before renaming 'SeineID':
 
 z.1 = select(y.3, EventID, SeineID)
 
@@ -179,7 +179,7 @@ unique(z.2$Notes)
 z.3 = z.2 %>%
   left_join(., z.1, by = 'SeineID') %>%
   relocate(EventID, .before = 1) %>%
-  mutate(Count = if_else(Count > 1,
+  mutate(Count = if_else(is.na(Length_mm),
                          Count,
                          0),
          Notes = if_else(Notes == 'Hatchery',
@@ -199,7 +199,11 @@ z.4 = select(species_list, Common, LengthType) %>%
   relocate(LengthType, .after = Length) %>%
   select(-SeineID) %>%
   rename(SpeciesName = Common) %>% # clean up
-  mutate(LengthType = replace_na(LengthType, '')) # replace any NAs in new col
+  mutate(LengthType = case_when(Length > 0 & LengthType == 'FL' ~ 'FL',
+                                Length > 0 & LengthType == 'TL' ~ 'TL',
+                                Length > 0 & LengthType == 'RTL' ~ 'Rostrum-tail length',
+                                Length > 0 & LengthType == 'CW' ~ 'Carapice width',
+                                Length == '' ~ ''))
 
 anyNA(z.4) # final check for any NAs
 
