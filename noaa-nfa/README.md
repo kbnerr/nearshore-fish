@@ -7,7 +7,7 @@ Description of Files
 
 Name                                    | Description
 ----------------------------------------|--------------------------------
-FishAtlas_2007-kbnerr_sub.2022.03.31      Homer Harbor project retrieved from old KBNERR files
+FishAtlas_2008-kbnerr_sub.2022.04.02      Homer Harbor project retrieved from old KBNERR files
 FishAtlas_2018-kbnerr_sub.2022.03.31      Initial year of KBNERR nearshore fish program
 FishAtlas_2019-kbnerr_sub.2022.03.31      Continued KPFHP sampling from 2018, some protocol change
 FishAtlas_2021-kbnerr_sub.2022.03.31      Data focused on East Cook Inlet beaches
