@@ -8,7 +8,11 @@
 
 
 # Load packages -----------------------------------------------------------
-
+library(tidyverse)
+library(lubridate)
+library(ggmap)
+library(ggrepel)
+library(ggpubr)
 
 # Define workflow paths ---------------------------------------------------
 
@@ -54,6 +58,39 @@ env.all = bind_rows(env.18, env.19, env.21a, env.21b)
 
 ## Fish
 fish.all = bind_rows(fish.18, fish.19, fish.21a, fish.21b)
+
+
+# Simple maps -------------------------------------------------------------
+
+map.center = c(-152.112897, 58.823421) # location is for the catalyst data report map
+
+sites = c(unique(site.21a$Site), unique(site.21b$Site)) # find only sites reported under the nerr sc project
+
+# Create a tibble with site lat/lon
+map.dat = site.all %>%
+  filter(Site %in% sites) %>%
+  select(Site, Latitude, Longitude) %>%
+  group_by(Site) %>%
+  summarise(lat = mean(Latitude),
+            lon = mean(Longitude))
+
+# generate map
+map = get_map(location = map.center,
+              source = "google", maptype = "terrain",
+              crop = FALSE, zoom = 7)
+
+# add site points
+map.print = ggmap(map) +
+  geom_point(data = map.dat, aes(x = lon, y = lat),
+             color = "black", size = 3, shape = 19, alpha = .7) +
+  labs(x = 'Longitude', y = 'Latitude')
+
+# map.print
+
+# save as an image file
+ggsave(plot = map.print,
+       filename = "2021_nerrsc_data-map.png", path = dir.output,
+       width = 10, height = 6, units = 'in', dpi = 'print')
 
 # Pacific Sand Lance ------------------------------------------------------
 

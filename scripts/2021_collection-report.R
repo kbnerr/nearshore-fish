@@ -70,7 +70,7 @@ x.2 = x.1 %>%
                                   is.na(`Life Stage`) ~ 'Juvenile/Adult'),
          Disposition = 'sacrificed',
          Comments = '',
-         Size_mm = replace_na(Size_mm, '')) # in case there are any unmeasured fish
+         Size_mm = replace_na(as.character(Size_mm), '')) # in case there are any unmeasured fish
 
 anyNA(x.2) # check for NAs
 
@@ -102,7 +102,7 @@ y.2 = y.1 %>%
                                   `Life Stage` == 'Adult' ~ 'Adult',
                                   is.na(`Life Stage`) ~ 'Juvenile/Adult'),
          Comments = '',
-         Size_mm = replace_na(Size_mm, '')) %>%
+         Size_mm = replace_na(as.character(Size_mm), '')) %>%
   select(-c(Sacrificed, `Fish Tank`, Deceased), # clean up
          Date,
          Site,
@@ -189,7 +189,7 @@ kbrr.2 = kbrr.1 %>%
                            'Hatchery',
                            NA),
          Comments = replace_na(Comments, ''),
-         Size_mm = replace_na(Size_mm, ''))
+         Size_mm = replace_na(as.character(Size_mm), ''))
   
 anyNA(kbrr.2) # check for NAs
 
