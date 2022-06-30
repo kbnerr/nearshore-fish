@@ -1,0 +1,69 @@
+﻿Common,Scientific,Family,Group,Behavior,LengthType,atMaturity
+Pacific Cod,Gadus macrocephalus,Gadidae,Cod,Schooling,FL,587
+Saffron Cod,Eleginus gracilis,Gadidae,Cod,Schooling,FL,316
+Pacific Tomcod,Microgadus proximus,Gadidae,Cod,Schooling,FL,188
+Unidentified Gadid,Gadidae,Gadidae,Cod,Schooling,FL,
+Walleye Pollock,Gadus chalcogrammus,Gadidae,Cod,Schooling,FL,290
+Alaska Plaice,Pleuronectes quadrituberculatus,Pleuronectidae,Flatfish,Demersal,TL,315
+English Sole,Parophrys vetulus,Pleuronectidae,Flatfish,Demersal,TL,238
+Unidentified Flatfish (Juvenile),Pleuronectidae,Pleuronectidae,Flatfish,Demersal,TL,
+Rock Sole,Lepidopsetta spp.,Pleuronectidae,Flatfish,Demersal,TL,305
+Sand Sole,Psettichthys melanostictus,Pleuronectidae,Flatfish,Demersal,TL,356
+Starry Flounder,Platichthys stellatus,Pleuronectidae,Flatfish,Demersal,TL,493
+Unidentified Flatfish,Pleuronectidae,Pleuronectidae,Flatfish,Demersal,TL,
+Capelin,Mallotus villosus,Osmeridae,Smelt,Schooling,FL,106
+Eulachon,Thaleichthys pacificus,Osmeridae,Smelt,Schooling,FL,119
+Pacific Herring,Clupea pallasii,Clupeidae,Herring,Schooling,FL,222
+Longfin Smelt,Spirinchus thaleichthys,Osmeridae,Smelt,Schooling,FL,118
+Pacific Sand Lance,Ammodytes hexapterus,Ammodytidae,Sand lance,Schooling,TL,125
+Sandfish,Trichodon trichodon,Trichodontidae,Sandfish,Dwelling,FL,188
+Surf Smelt,Hypomesus pretiosus,Osmeridae,Smelt,Schooling,FL,135
+Kelp Greenling,Hexagrammos decagrammus,Hexagrammodae,Greenling,Dwelling,FL,346
+Lingcod,Ophiodon elongatus,Hexagrammodae,Greenling,Dwelling,FL,457
+Masked Greenling,Hexagrammos octogrammus,Hexagrammodae,Greenling,Dwelling,FL,249
+Rock Greenling,Hexagrammos lagocephalus,Hexagrammodae,Greenling,Dwelling,FL,346
+Unidentified Greenling,Hexagrammodae,Hexagrammodae,Greenling,Dwelling,FL,
+White Spotted Greenling,Hexagrammos stelleri,Hexagrammodae,Greenling,Dwelling,FL,280
+Crescent Gunnel,Pholis laeta,Pholidae,Gunnel,Dwelling,TL,257
+Penpoint Gunnel,Apodichthys flavidus,Pholidae,Gunnel,Dwelling,TL,270
+Larval Fish,,Larval,Larval,Other,TL,
+Sturgeon Poacher,Podothecus accipenserinus,Agonidae,Poacher,Dwelling,TL,188
+Tubenose Poacher,Pallasina barbata,Agonidae,Poacher,Dwelling,TL,94
+Slender Eelblenny,Lumpenus fabricii,Stichaeidae,Prickleback,Dwelling,TL,217
+Snake Prickleback,Lumpenus sagitta,Stichaeidae,Prickleback,Dwelling,TL,295
+Chinook Salmon,Oncorhynchus tshawytscha,Salmonidae,Salmonid,Schooling,FL,767
+Chinook Salmon (Adult),Oncorhynchus tshawytscha,Salmonidae,Salmonid,Schooling,FL,
+Chinook Salmon (Juvenile),Oncorhynchus tshawytscha,Salmonidae,Salmonid,Schooling,FL,
+Chum Salmon,Oncorhynchus keta,Salmonidae,Salmonid,Schooling,FL,532
+Chum Salmon (Adult),Oncorhynchus keta,Salmonidae,Salmonid,Schooling,FL,
+Chum Salmon (Juvenile),Oncorhynchus keta,Salmonidae,Salmonid,Schooling,FL,
+Coho Salmon,Oncorhynchus kisutch,Salmonidae,Salmonid,Schooling,FL,573
+Coho Salmon (Adult),Oncorhynchus kisutch,Salmonidae,Salmonid,Schooling,FL,
+Coho Salmon (Juvenile),Oncorhynchus kisutch,Salmonidae,Salmonid,Schooling,FL,
+Dolly Varden,Salvelinus malma,Salmonidae,Salmonid,Schooling,FL,420
+Dolly Varden (Adult),Salvelinus malma,Salmonidae,Salmonid,Schooling,FL,
+Dolly Varden (Juvenile),Salvelinus malma,Salmonidae,Salmonid,Schooling,FL,
+Pink Salmon,Oncorhynchus gorbuscha,Salmonidae,Salmonid,Schooling,FL,420
+Pink Salmon (Adult),Oncorhynchus gorbuscha,Salmonidae,Salmonid,Schooling,FL,
+Pink Salmon (Juvenile),Oncorhynchus gorbuscha,Salmonidae,Salmonid,Schooling,FL,
+Sockeye Salmon,Oncorhynchus nerka,Salmonidae,Salmonid,Schooling,FL,374
+Sockeye Salmon (Adult),Oncorhynchus nerka,Salmonidae,Salmonid,Schooling,FL,
+Sockeye Salmon (Juvenile),Oncorhynchus nerka,Salmonidae,Salmonid,Schooling,FL,
+Armorhead Sculpin,Gymnocanthus galeatus,Cottidae,Sculpin,Demersal,TL,217
+Brown Irish Lord,Hemilepidotus spinosus,Cottidae,Sculpin,Demersal,TL,179
+Buffalo Sculpin,Enophrys bison,Cottidae,Sculpin,Demersal,TL,223
+Great Sculpin,Myoxocephalus polyacanthocephalus,Cottidae,Sculpin,Demersal,TL,420
+Unidentified Sculpin (Juvenile),Cottidae,Cottidae,Sculpin,Demersal,TL,
+Padded Sculpin,Artedius fenestralis,Cottidae,Sculpin,Demersal,TL,94
+Red Irish Lord,Hemilepidotus hemilepidotus,Cottidae,Sculpin,Demersal,TL,295
+Scalyhead Sculpin,Artedius harringtoni,Cottidae,Sculpin,Demersal,TL,70
+Sharpnose Sculpin,Clinocottus acuticeps,Cottidae,Sculpin,Demersal,TL,47
+Shorthorn Sculpin,Myoxocephalus scorpius,Cottidae,Sculpin,Demersal,TL,488
+Silver Spotted Sculpin,Blepsias cirrhosus,Hemitripteridae,Sculpin,Demersal,TL,129
+Tidepool Sculpin,Oligocottus maculosus,Cottidae,Sculpin,Demersal,TL,67
+Unidentified Sculpin,Cottidae,Cottidae,Sculpin,Demersal,TL,
+Snailfish,Liparis spp.,Liparidae,Snailfish,Demersal,TL,
+Three Spine Stickleback,Gasterosteus aculeatus,Gasterosteidae,Stickleback,Schooling,TL,57
+Staghorn Sculpin,Leptocottus armatus,Cottidae,Sculpin,Demersal,FL,270
+Slender Cockscomb,Anoplarchus insignis,Stichaeidae,Prickleback,Dwelling,TL,82
+Nine Spine Stickleback,Pungitius pungitus,Gasterosteidae,Stickleback,Schooling,TL,64
