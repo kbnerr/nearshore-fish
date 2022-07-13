@@ -95,6 +95,7 @@ events.1 %>% group_by(Date, Location) %>% summarise(events = n()) %>%
 # but the Date and Locations are telling us they should actually be the same:
 
 library(sf)
+library(geosphere)
 
 # Convert data to sf object:
 events.sf = events.1 %>%
@@ -111,6 +112,16 @@ events.dist.mat = st_distance(events.sf[ ,-1])
 events.dist.df = data.frame(events.dist.mat)
 rownames(events.dist.df) = events.names
 colnames(events.dist.df) = events.names
+
+# Let's figure out a good distance at which to group events on the same day..
+# We can use the information on hand to find a total or average distance per site visit:
+events.1 %>%
+  select(SiteID, Date, EventID, Lon, Lat) %>%
+  group_by(SiteID, Date) %>%
+  mutate(n_sets = n_distinct(EventID)) %>%
+  filter(n_sets > 1) %>%
+  summarise(dist = distHaversine(p1 = cbind(Lon, Lat), cbind(lead(Lon), lead(Lat))))
+
 
 # Find the closest EventID within 250 m of any EventID
 events.250m = events.dist.df %>% 
