@@ -1,2 +1,2 @@
 # KBNERR/nearshore-fish
-Data and script repository for nearshore fish research from KBNERR projects and efforts.
+Repository for nearshore fish research at KBNERR, including multiple funded projects and other efforts.
