@@ -97,61 +97,99 @@ events.1 %>% group_by(Date, Location) %>% summarise(events = n()) %>%
 library(sf)
 library(geosphere)
 
-# Convert data to sf object:
-events.sf = events.1 %>%
-  select(EventID, Lon, Lat) %>%
-  st_as_sf(., coords = c("Lon", "Lat"), crs = 4326)
+# So it looks like we only have position data at the SiteID level...
+n_distinct(events.1$EventID)
+n_distinct(events.1$SiteID)
+n_distinct(events.1$Lat) # pretty much same as SiteID
+n_distinct(events.1$Lon) # pretty much same as SiteID
 
-# Set aside EventID's for renaming rows/cols of distance matrix later:
-events.names = events.sf$EventID
+# Convert data to sf object:
+sites.sf = events.1 %>%
+  select(SiteID, Lon, Lat) %>%
+  distinct() %>%
+  st_as_sf(., coords = c("Lon", "Lat"), crs = 4326) # matches our n_distinct(SiteID)
+
+# Set aside SiteID's for renaming rows/cols of distance matrix later:
+sites.names = sites.sf$SiteID
 
 # Create a matrix of distances among all points:
-events.dist.mat = st_distance(events.sf[ ,-1])
+sites.dist.mat = st_distance(sites.sf[ ,-1])
 
 # Convert matrix to data frame and set column and row names
-events.dist.df = data.frame(events.dist.mat)
-rownames(events.dist.df) = events.names
-colnames(events.dist.df) = events.names
+sites.dist.df = data.frame(sites.dist.mat)
+rownames(sites.dist.df) = sites.names
+colnames(sites.dist.df) = sites.names
 
-# Let's figure out a good distance at which to group events on the same day..
-# We can use the information on hand to find a total or average distance per site visit:
-events.1 %>%
-  select(SiteID, Date, EventID, Lon, Lat) %>%
-  group_by(SiteID, Date) %>%
-  mutate(n_sets = n_distinct(EventID)) %>%
-  filter(n_sets > 1) %>%
-  summarise(dist = distHaversine(p1 = cbind(Lon, Lat), cbind(lead(Lon), lead(Lat))))
-
-
-# Find the closest EventID within 250 m of any EventID
-events.250m = events.dist.df %>% 
-  mutate(EventID = rownames(.)) %>% 
-  pivot_longer(names_to = 'Closest_EventID', values_to = 'Dist_m', -EventID) %>% 
-  mutate(EventID = as.integer(EventID),
-         Closest_EventID = as.integer(Closest_EventID),
+# Find the events within 500m of any SiteID
+sites.500m = sites.dist.df %>% 
+  mutate(SiteID = rownames(.)) %>% 
+  pivot_longer(names_to = 'Closest_SiteID', values_to = 'Dist_m', -SiteID) %>% 
+  mutate(SiteID = as.integer(SiteID),
+         Closest_SiteID = as.integer(Closest_SiteID),
          Dist_m = as.numeric(Dist_m)) %>%
-  filter(Dist_m > 0 & Dist_m < 250) %>%
-  group_by(EventID) %>% 
-  arrange(Dist_m) %>% 
-  slice(1)
+  filter(Dist_m > 0 & Dist_m < 500) %>%
+  group_by(SiteID) %>% 
+  arrange(Dist_m) %>%
+  ungroup()
 
-# Clean up the environment:
-# rm(events.sf, events.dist.df, events.dist.mat, events.names)
+# Find the events within 1000m of any SiteID
+sites.1000m = sites.dist.df %>% 
+  mutate(SiteID = rownames(.)) %>% 
+  pivot_longer(names_to = 'Closest_SiteID', values_to = 'Dist_m', -SiteID) %>% 
+  mutate(SiteID = as.integer(SiteID),
+         Closest_SiteID = as.integer(Closest_SiteID),
+         Dist_m = as.numeric(Dist_m)) %>%
+  filter(Dist_m > 0 & Dist_m < 1000) %>%
+  group_by(SiteID) %>% 
+  arrange(Dist_m) %>%
+  ungroup()
 
-# Subset the data for events that have another event within 250m
-events.closest = events.1 %>%
-  right_join(events.250m, by = "EventID") %>%
-  relocate(Closest_EventID, Dist_m, .after = EventID) %>%
-  select(SiteID,
-         EventID,
-         Closest_EventID,
+# Let's compare all combinations of SiteIDs within 500m to see if they fall on the same day:
+left_join(sites.500m, select(events.1, SiteID, Date), by = "SiteID") %>%
+  select(SiteID.x = SiteID,
+         Date.x = Date,
          Dist_m,
-         Date)
+         SiteID = Closest_SiteID) %>%
+  left_join(select(events.1, SiteID, Date), by = 'SiteID') %>%
+  distinct() %>% 
+  rename(SiteID.y = SiteID,
+         Date.y = Date) %>%
+  filter(Date.x == Date.y) %>%
+  unite(col = 'X', SiteID.x, Date.x, sep = '_', remove = FALSE) %>%
+  unite(col = 'Y', SiteID.y, Date.y, sep = '_', remove = FALSE) %>%
+  rowwise() %>%
+  mutate(pair = paste(sort(c(X, Y)), collapse = "_")) %>%
+  group_by(Dist_m, pair) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(-pair, -X, -Y) %>%
+  arrange(SiteID.x, SiteID.y)
+# 441 pairs
 
-# Now we need to find cases where these 'close' events occur on the same day...
+# Now let's do the same for SiteIDs within 1000m:
+left_join(sites.1000m, select(events.1, SiteID, Date), by = "SiteID") %>%
+  select(SiteID.x = SiteID,
+         Date.x = Date,
+         Dist_m,
+         SiteID = Closest_SiteID) %>%
+  left_join(select(events.1, SiteID, Date), by = 'SiteID') %>%
+  distinct() %>% 
+  rename(SiteID.y = SiteID,
+         Date.y = Date) %>%
+  filter(Date.x == Date.y) %>%
+  unite(col = 'X', SiteID.x, Date.x, sep = '_', remove = FALSE) %>% # next 7 lines remove duplicate pairs
+  unite(col = 'Y', SiteID.y, Date.y, sep = '_', remove = FALSE) %>%
+  rowwise() %>%
+  mutate(pair = paste(sort(c(X, Y)), collapse = "_")) %>%
+  group_by(Dist_m, pair) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(-pair, -X, -Y) %>%
+  arrange(SiteID.x, SiteID.y) -> sites.1000m.pairs
+# 760 pairs
 
-
-
+# One of our largest-distanced beach is Anchor Point, where we've seined along ~800m.
+# So let's group SiteID's from the same day within 1000m of each other:
 
 
 
