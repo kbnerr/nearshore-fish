@@ -92,7 +92,7 @@ events.1 %>% group_by(Date, Location) %>% summarise(events = n()) %>%
 
 # However, this grouping may not be accurate because of the loose definition of 'Location'
 # Let's try to subset the data into occasions where SiteID's are different,
-# but the Date and Locations are telling us they should actually be the same:
+# but the Date and location are telling us they should be similar:
 
 library(sf)
 library(geosphere)
@@ -270,39 +270,48 @@ catch.1$Sp_CommonName %>% unique()
 
 
 # new df with col for actual count, called 'Measured':
-catch.ak = mutate(catch.plus, Measured = if_else(catch.plus$Unmeasured < 1, 1, as.double(catch.plus$Unmeasured)))
+tmp1 = mutate(data,
+              Measured = if_else(data$Unmeasured < 1,
+                                 1,
+                                 as.double(data$Unmeasured)),
+              Date = mdy(Date),
+              Week = week(Date),
+              Month = month(Date, label = TRUE))
 
-sort(unique(catch.ak$SpCode))
+sort(unique(tmp1$SpCode))
 
-tmp = filter(catch.ak, SpCode == "HERRING") # try: CODPAC, CODTOM, SALPINK, SALCOHO, DOLLY, SCULGRT, CAPELIN, HERRING, SANDLCP, HALIBUT, CRABDUN
+tmp2 = tmp1 %>%
+  filter(SpCode == "SANDLNCP") %>% # try: CODPAC, CODTOM, SALPINK, SALCOHO, DOLLY, SCULGRT, CAPELIN, HERRING, SANDLCP, HALIBUT, CRABDUN
+  group_by(Month) %>%
+  mutate(n = n_distinct(Length_mm)) %>%
+  filter(n > 50)
 
-tmp %>%
-  mutate(Week = week(Date),
-         Month = month(Date, label = TRUE)) %>%
+tmp2  %>%
   ggplot(data = ., aes(x = Month, y = Measured)) + 
   geom_col() +
-  labs(title = tmp$SpCode[1])
+  labs(title = tmp2$Sp_CommonName[1])
 
-tmp %>%
-  mutate(Month = month(Date, label = TRUE)) %>%
-  ggplot(data = ., aes(x = Length)) + 
+tmp2 %>%
+  ggplot(data = ., aes(x = Length_mm)) + 
   geom_freqpoly(aes(color = Month), size = 1, bins = 40) +
-  labs(title = tmp$SpCode[1]) +
+  labs(title = tmp2$Sp_CommonName[1]) +
   theme(panel.background = element_rect(fill = "grey25"),
         legend.key = element_rect(fill = "grey35"),
         panel.border = element_blank(),
         panel.grid.major = element_blank(),
-        panel.grid.minor = element_line(color = "grey45"))
+        panel.grid.minor = element_line(color = "grey45")) +
+  facet_wrap( ~ Month, ncol = 1)
 
-tmp %>%
-  filter(Length < 200) %>%
+tmp2 %>%
+  filter(Length_mm < 200) %>%
   mutate(Month = month(Date, label = TRUE)) %>%
-  ggplot(data = ., aes(x = Length)) + 
+  ggplot(data = ., aes(x = Length_mm)) + 
   geom_freqpoly(aes(color = Month), size = 1, bins = 40) +
-  labs(title = paste(tmp$SpCode[1], "<200 mm")) +
+  labs(title = paste(tmp2$Sp_CommonName[1], "<200 mm")) +
   theme(panel.background = element_rect(fill = "grey25"),
         legend.key = element_rect(fill = "grey35"),
         panel.border = element_blank(),
         panel.grid.major = element_blank(),
-        panel.grid.minor = element_line(color = "grey45"))
+        panel.grid.minor = element_line(color = "grey45")) +
+  facet_wrap( ~  Month, ncol = 1)
 

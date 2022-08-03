@@ -30,6 +30,9 @@ source(file = "../Desktop/Rlocal/scripts/utility.R")
 # Read in data ------------------------------------------------------------
 
 # Data collected
+site.22 = read_csv(file = file.path(dir.data, "2022_kbnerr_site.csv"))
+fish.22 = read_csv(file = file.path(dir.data, "2022_kbnerr_fish.csv"))
+env.22 = read_csv(file = file.path(dir.data, "2022_kbnerr_env.csv"))
 site.21a = read_csv(file = file.path(dir.data, "2021_kpfhp_site.csv"))
 fish.21a = read_csv(file = file.path(dir.data, "2021_kpfhp_fish.csv"))
 env.21a = read_csv(file = file.path(dir.data, "2021_kpfhp_env.csv"))
@@ -51,13 +54,14 @@ sites_list = read_csv(file = file.path(dir.data, "sites-list.csv"))
 
 ## Sites
 # Note: the only df that seems to differ in columns is 2019:
-site.all = bind_rows(site.18, site.19, site.21a, site.21b)
+site.all = bind_rows(site.18, site.19, site.21a, site.21b, site.22) %>%
+  mutate(Date = mdy(Date))
 
 ## Environmentals
-env.all = bind_rows(env.18, env.19, env.21a, env.21b)
+env.all = bind_rows(env.18, env.19, env.21a, env.21b, env.22)
 
 ## Fish
-fish.all = bind_rows(fish.18, fish.19, fish.21a, fish.21b)
+fish.all = bind_rows(fish.18, fish.19, fish.21a, fish.21b, fish.22)
 
 
 # Simple maps -------------------------------------------------------------
@@ -85,7 +89,7 @@ map.print = ggmap(map) +
              color = "black", size = 3, shape = 19, alpha = .7) +
   labs(x = 'Longitude', y = 'Latitude')
 
-# map.print
+map.print
 
 # save as an image file
 ggsave(plot = map.print,
@@ -132,4 +136,30 @@ ggplot(data = psl.2, aes(x = Length_mm)) +
   facet_grid(. ~ month(Date)) +
   labs(title = "4. PSL size freq by month")
 
+# Coowe request 7/19/22 ---------------------------------------------------
+
+# How many of juvenile salmon were there from 2021 and 2022
+kenai.lowlands = c("Anchor Point",
+                   "Ninilchik",
+                   "Plumb Bluff")
+salmonids = c("Chinook Salmon",
+              "Coho Salmon",
+              "Sockeye Salmon",
+              "Chum Salmon",
+              "Pink Salmon",
+              "Dolly Varden")
+
+site.all %>%
+  filter(Date > '2021-01-01') %>%
+  select(SeineID, Site, Date) %>%
+  filter(Site %in% kenai.lowlands) %>%
+  left_join(fish.all, by = "SeineID") %>%
+  filter(Common %in% salmonids) %>%
+  select(-c(LifeStage, PSP, Deceased, Notes, Lavage, Sacrificed, `Fish Tank`)) %>%
+  group_by(Site, Date, Common) %>%
+  summarise(Total.Count = sum(Count),
+            Avg.Length = mean(Length_mm) %>% round(., 0)) %>%
+  arrange(Common, Site, Date) %>%
+  relocate(Common, .before = 1) %>%
+  write.csv(x = ., file = file.path(dir.output, "2021-22_salmonids.csv"), row.names = FALSE)
 
