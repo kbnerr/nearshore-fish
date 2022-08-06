@@ -64,7 +64,7 @@ catch.1 = data %>%
 events.1$Region %>% unique()
 events.1$Location %>% unique() # that's a lot... but could be useful to group seines by visit
 
-## We also have different gear tyoes used by different projects
+## We also have different gear types used by different projects
 events.1$GearSpecific %>% unique()
 events.1$ProjectName %>% unique()
 
@@ -94,102 +94,199 @@ events.1 %>% group_by(Date, Location) %>% summarise(events = n()) %>%
 # Let's try to subset the data into occasions where SiteID's are different,
 # but the Date and location are telling us they should be similar:
 
+
+# Solving the Site vs Event issue -----------------------------------------
+
 library(sf)
 library(geosphere)
 
-# So it looks like we only have position data at the SiteID level...
+# Basically, we are trying to combine Events that are currently separate SiteIDs,
+# but that should be the same SiteID (i.e., samples of the same day + beach).
+# We'll need to figure out what a beach is...
+
+# It looks like we only have position data at the SiteID level...
 n_distinct(events.1$EventID)
 n_distinct(events.1$SiteID)
-n_distinct(events.1$Lat) # pretty much same as SiteID
-n_distinct(events.1$Lon) # pretty much same as SiteID
+events.1 %>% distinct(Lat, Lon) %>% n_distinct()
+# Looks like we have more distinct SiteID's than distinct locations (not taking Date into account)
+
+# To thorough, let's work with Site-Event combinations to find any obs that occur on the same day on the same beach:
 
 # Convert data to sf object:
-sites.sf = events.1 %>%
-  select(SiteID, Lon, Lat) %>%
+ID.sf = events.1 %>%
+  select(SiteID, EventID, Lon, Lat) %>%
+  unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE) %>% # unique Site/Event ID
   distinct() %>%
   st_as_sf(., coords = c("Lon", "Lat"), crs = 4326) # matches our n_distinct(SiteID)
 
-# Set aside SiteID's for renaming rows/cols of distance matrix later:
-sites.names = sites.sf$SiteID
+# Set aside ID's for renaming rows/cols of distance matrix later:
+ID.names = ID.sf$ID
 
 # Create a matrix of distances among all points:
-sites.dist.mat = st_distance(sites.sf[ ,-1])
+ID.dist.mat = st_distance(ID.sf[ ,-1])
 
-# Convert matrix to data frame and set column and row names
-sites.dist.df = data.frame(sites.dist.mat)
-rownames(sites.dist.df) = sites.names
-colnames(sites.dist.df) = sites.names
+# Convert matrix to df and set column and row names
+ID.dist.df = data.frame(ID.dist.mat)
+rownames(ID.dist.df) = ID.names
+colnames(ID.dist.df) = ID.names
 
-# Find the events within 500m of any SiteID
-sites.500m = sites.dist.df %>% 
-  mutate(SiteID = rownames(.)) %>% 
-  pivot_longer(names_to = 'Closest_SiteID', values_to = 'Dist_m', -SiteID) %>% 
-  mutate(SiteID = as.integer(SiteID),
-         Closest_SiteID = as.integer(Closest_SiteID),
-         Dist_m = as.numeric(Dist_m)) %>%
-  filter(Dist_m > 0 & Dist_m < 500) %>%
-  group_by(SiteID) %>% 
-  arrange(Dist_m) %>%
-  ungroup()
-
-# Find the events within 1000m of any SiteID
-sites.1000m = sites.dist.df %>% 
-  mutate(SiteID = rownames(.)) %>% 
-  pivot_longer(names_to = 'Closest_SiteID', values_to = 'Dist_m', -SiteID) %>% 
-  mutate(SiteID = as.integer(SiteID),
-         Closest_SiteID = as.integer(Closest_SiteID),
-         Dist_m = as.numeric(Dist_m)) %>%
-  filter(Dist_m > 0 & Dist_m < 1000) %>%
-  group_by(SiteID) %>% 
-  arrange(Dist_m) %>%
-  ungroup()
-
-# Let's compare all combinations of SiteIDs within 500m to see if they fall on the same day:
-left_join(sites.500m, select(events.1, SiteID, Date), by = "SiteID") %>%
-  select(SiteID.x = SiteID,
-         Date.x = Date,
-         Dist_m,
-         SiteID = Closest_SiteID) %>%
-  left_join(select(events.1, SiteID, Date), by = 'SiteID') %>%
-  distinct() %>% 
-  rename(SiteID.y = SiteID,
-         Date.y = Date) %>%
-  filter(Date.x == Date.y) %>%
-  unite(col = 'X', SiteID.x, Date.x, sep = '_', remove = FALSE) %>%
-  unite(col = 'Y', SiteID.y, Date.y, sep = '_', remove = FALSE) %>%
-  rowwise() %>%
-  mutate(pair = paste(sort(c(X, Y)), collapse = "_")) %>%
-  group_by(Dist_m, pair) %>%
-  slice(1) %>%
-  ungroup() %>%
-  select(-pair, -X, -Y) %>%
-  arrange(SiteID.x, SiteID.y)
-# 441 pairs
-
-# Now let's do the same for SiteIDs within 1000m:
-left_join(sites.1000m, select(events.1, SiteID, Date), by = "SiteID") %>%
-  select(SiteID.x = SiteID,
-         Date.x = Date,
-         Dist_m,
-         SiteID = Closest_SiteID) %>%
-  left_join(select(events.1, SiteID, Date), by = 'SiteID') %>%
-  distinct() %>% 
-  rename(SiteID.y = SiteID,
-         Date.y = Date) %>%
-  filter(Date.x == Date.y) %>%
-  unite(col = 'X', SiteID.x, Date.x, sep = '_', remove = FALSE) %>% # next 7 lines remove duplicate pairs
-  unite(col = 'Y', SiteID.y, Date.y, sep = '_', remove = FALSE) %>%
-  rowwise() %>%
-  mutate(pair = paste(sort(c(X, Y)), collapse = "_")) %>%
-  group_by(Dist_m, pair) %>%
-  slice(1) %>%
-  ungroup() %>%
-  select(-pair, -X, -Y) %>%
-  arrange(SiteID.x, SiteID.y) -> sites.1000m.pairs
-# 760 pairs
-
+# What is a 'beach'?
 # One of our largest-distanced beach is Anchor Point, where we've seined along ~800m.
-# So let's group SiteID's from the same day within 1000m of each other:
+# So let's find SiteID's from the same day within 1000m of each other:
+
+ID.1km.1 = ID.dist.df %>% 
+  mutate(ID = rownames(.)) %>% 
+  pivot_longer(names_to = 'Closest_ID', values_to = 'Dist_m', -ID) %>% 
+  mutate(Dist_m = as.numeric(Dist_m)) %>%
+  filter(Dist_m > 0 & Dist_m < 1000) %>%
+  arrange(ID, Dist_m)  %>% # Code to filter for pairs of the same day:
+  left_join(select(events.1, SiteID, EventID, Date) %>% # add dates for the 'left side' of ID pair
+              unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE),
+            by = "ID") %>% 
+  select(ID.a = ID,
+         Date.a = Date,
+         Dist_m,
+         ID = Closest_ID) %>%
+  left_join(select(events.1, SiteID, EventID, Date) %>% # add dates for the 'right side' of ID pair
+              unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE),
+            by = "ID") %>% 
+  distinct() %>% 
+  rename(ID.b = ID,
+         Date.b = Date) %>%
+  filter(Date.a == Date.b) %>% # Code to remove duplicate pairs:
+  unite(col = 'A', ID.a, Date.a, sep = '_', remove = FALSE) %>% 
+  unite(col = 'B', ID.b, Date.b, sep = '_', remove = FALSE) %>%
+  rowwise() %>%
+  mutate(pair = paste(sort(c(A, B)), collapse = "_")) %>% distinct(pair, .keep_all = TRUE) %>%
+  select(-pair, -A, -B) %>%
+  arrange(ID.a, Dist_m)
+
+# Rename the 'right side' as our ID to replace, and use the 'eft side' for the ID to replace with (ID.a):
+ID.1km.2 = ID.1km.1 %>%
+  select(ID = ID.b,
+         Date = Date.a,
+         ID.a,
+         Dist_m) %>%
+  arrange(ID, Date)
+
+# When we join this to our orig df, we end up with more observations than we began with...
+select(events.1, SiteID, EventID, Date) %>%
+  unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE) %>%
+  left_join(., ID.1km.2, by = c('ID'))
+
+# This means that there are duplicated obs in our 'A' dataset. Which ones:
+check = ID.1km.2$ID %>% duplicated() %>% which()
+
+ID.1km.3 = ID.1km.2[check,] %>% arrange(Date)
+ID.1km.3 %>% arrange(desc(Dist_m))
+# ^These are the the obs with multiple ID's that will might need to be grouped;
+# however, we only know of pairs that are <1km of each other: A within 1km of B, and B within 1km of C,
+# But we do not know if A is within 1km of C... and we do not really care.
+# We just want to find all sites within 1km within the same day. 
+
+ID.1km.3 %>%
+  group_by(Date) %>%
+  summarise(total.dist = sum(Dist_m)) %>%
+  arrange(desc(total.dist))
+# Here, we see dates that likely contain multiple groups, which needs to be delineated
+
+# We will use a clustering approach to define a distance threshold for which sites to group (within dates).
+# but first we need to reshape our list of Site-Event ID's...
+
+# Our issue is that location info is at the SiteID level and Date information is at the EventID level.
+# So not all Events belonging to a SiteID should be grouped together.. only those occurring on the same day.
+
+# Let's go back to our ID.1km.1, which has all of our obs within 1000m of other obs.
+
+# We will bind ID-Dates from both A and B sides to get a list of all Site-Date-Locations to feed our clustering algorithm
+A = select(ID.1km.1,
+           ID = ID.a,
+           Date = Date.a) %>%
+  unite(col = 'ID_Date', ID, Date, sep = '_', remove = TRUE)
+B = select(ID.1km.1,
+           ID = ID.b,
+           Date = Date.b) %>%
+  unite(col = 'ID_Date', ID, Date, sep = '_', remove = TRUE)
+ID.1km.4 = bind_rows(A, B) %>%
+  distinct() %>%
+  arrange(ID_Date) %>%
+  left_join(select(events.1, SiteID, EventID, Date, Lat, Lon) %>%
+              unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE) %>%
+              unite(col = "ID_Date", ID, Date, remove = TRUE),
+            by = "ID_Date")
+rm(A, B)
+
+# Hierarchical clustering approach to grouping SiteID's and averaging Location:
+# Code provided by Jeffrey Evans from https://gis.stackexchange.com/questions/64392/finding-clusters-of-points-based-distance-rule-using-r
+
+library(sp)
+library(rgdal)
+
+# Extract location data and transform into projected coordinate system
+lon = ID.1km.4$Lon
+lat = ID.1km.4$Lat
+ID_Date = ID.1km.4$ID_Date
+dist = 1000 # This is using the 'furthest neighbor' algorithm,
+# where clusters are defined by the 'dist' between an obs within that cluster and an obs in another cluster
+
+xy = SpatialPointsDataFrame(matrix(c(lon, lat), ncol = 2),
+                            data.frame(ID_Date = ID_Date),
+                            proj4string = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
+
+xy = spTransform(xy, CRS("+init=epsg:27700 +datum=WGS84"))
+
+xy.clust = hclust(dist(data.frame(rownames = rownames(xy@data),
+                                  x = coordinates(xy)[, 1],
+                                  y = coordinates(xy)[, 2])),
+                  method = "complete")
+
+
+# Distance with a 1000m furthest neighbor threshold  
+xy.1000m = cutree(xy.clust, h = dist)
+
+# Join results to the sp points
+xy@data = data.frame(xy@data, Cluster = xy.1000m)
+
+# Make a new df containing the clusters with associated lat/lon's:
+clust.1 = xy@data %>%
+  left_join(ID.1km.4, by = 'ID_Date') %>%
+  separate(ID_Date, into = c('SiteID', 'EventID', 'Date'), sep = '_') %>%
+  mutate(SiteID = as.double(SiteID),
+         EventID = as.double(EventID),
+         Date = ymd(Date)) %>%
+  relocate(Cluster, .before = 1) %>%
+  arrange(Cluster, Date)
+
+# Nest the data by Cluster (space) and Date (time):
+clust.2 = clust.1 %>%
+  group_by(Cluster, Date) %>%
+  nest(Sites = SiteID,
+       Events = EventID,
+       Lats = Lat,
+       Lons = Lon) %>%
+  ungroup()
+
+# Replace SiteID's with the lowest common ID number, and find mean Lat/Lon positions.
+# Then unnest the data the the EventID level
+clust.3 = clust.2 %>% 
+  rowwise() %>%
+  mutate(new.SiteID = min(Sites),
+         new.Lat = mean(Lats$Lat),
+         new.Lon = mean(Lons$Lon)) %>%
+  select(-c(Sites, Lats, Lons)) %>%
+  unnest_longer(Events) %>%
+  unpack(cols = Events) %>%
+  select(-c(Cluster, Date))
+
+# Join the new SiteID's, Lat's, and Lon's to the original df by EventID
+events.2 = left_join(events.1, clust.3, by = c('EventID'))
+
+
+
+
+
+
+
 
 
 
