@@ -190,12 +190,19 @@ ID.1km.3 %>%
   arrange(desc(total.dist))
 # Here, we see dates that likely contain multiple groups, which needs to be delineated
 
-# We will use a clustering approach to define a distance threshold for which sites to group (within dates).
-# but first we need to reshape our list of Site-Event ID's...
+
+# Hierarchical clustering approach to grouping SiteID's and Locations --------
+
+library(sp)
+library(rgdal)
 
 # Our issue is that location info is at the SiteID level and Date information is at the EventID level.
 # So not all Events belonging to a SiteID should be grouped together.. only those occurring on the same day.
 
+# We will use a clustering approach to define a distance threshold for which sites to group.
+# Code provided by Jeffrey Evans from https://gis.stackexchange.com/questions/64392/finding-clusters-of-points-based-distance-rule-using-r
+
+# But first we need to reshape our list of Site-Event ID's...
 # Let's go back to our ID.1km.1, which has all of our obs within 1000m of other obs.
 
 # We will bind ID-Dates from both A and B sides to get a list of all Site-Date-Locations to feed our clustering algorithm
@@ -215,12 +222,6 @@ ID.1km.4 = bind_rows(A, B) %>%
               unite(col = "ID_Date", ID, Date, remove = TRUE),
             by = "ID_Date")
 rm(A, B)
-
-# Hierarchical clustering approach to grouping SiteID's and averaging Location:
-# Code provided by Jeffrey Evans from https://gis.stackexchange.com/questions/64392/finding-clusters-of-points-based-distance-rule-using-r
-
-library(sp)
-library(rgdal)
 
 # Extract location data and transform into projected coordinate system
 lon = ID.1km.4$Lon
@@ -267,25 +268,40 @@ clust.2 = clust.1 %>%
   ungroup()
 
 # Replace SiteID's with the lowest common ID number, and find mean Lat/Lon positions.
-# Then unnest the data the the EventID level
+# Then unnest the data to the EventID level
 clust.3 = clust.2 %>% 
   rowwise() %>%
-  mutate(new.SiteID = min(Sites),
-         new.Lat = mean(Lats$Lat),
-         new.Lon = mean(Lons$Lon)) %>%
+  mutate(SiteID.clust = min(Sites),
+         mean.Lat = mean(Lats$Lat),
+         mean.Lon = mean(Lons$Lon)) %>%
   select(-c(Sites, Lats, Lons)) %>%
   unnest_longer(Events) %>%
   unpack(cols = Events) %>%
-  select(-c(Cluster, Date))
+  select(-Cluster, -Date)
 
-# Join the new SiteID's, Lat's, and Lon's to the original df by EventID
-events.2 = left_join(events.1, clust.3, by = c('EventID'))
+# Join the new SiteID's, Lat's, and Lon's to the original df by EventID,
+# and replace the SiteID's and location info where appropriate:
+events.2 = left_join(events.1, clust.3, by = c('Date', 'EventID')) %>%
+  mutate(SiteID = ifelse(is.na(SiteID.clust),
+                         SiteID,
+                         SiteID.clust),
+         Lat = ifelse(is.na(mean.Lat),
+                      Lat,
+                      mean.Lat),
+         Lon = ifelse(is.na(mean.Lon),
+                      Lon,
+                      mean.Lon)) %>%
+  select(-c(Cluster, SiteID.clust, mean.Lat, mean.Lon))
+  
+# Great! But this join only really solves the spatial issue..
+# i.e., we have correctly grouped Site IDs and locations that were within 1km on the same day.
+# But we still need to separate SiteID obs into temporally explicit 'Visits':
 
+events.3 = unite(events.2, col = 'VisitID', SiteID, Date, remove = FALSE)
 
-
-
-
-
+# Now we can label our catch data with VisitIDs:
+catch.2 = left_join(catch.1, select(events.3, EventID, VisitID), by = 'EventID') %>%
+  relocate(VisitID, .before = 1)
 
 
 
