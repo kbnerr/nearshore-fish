@@ -241,7 +241,6 @@ xy.clust = hclust(dist(data.frame(rownames = rownames(xy@data),
                                   y = coordinates(xy)[, 2])),
                   method = "complete")
 
-
 # Distance with a 1000m furthest neighbor threshold  
 xy.1000m = cutree(xy.clust, h = dist)
 

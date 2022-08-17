@@ -137,11 +137,11 @@ y.4 = y.3 %>%
   select(-`Raw Site`) %>%
   rename(`Raw Event` = SeineID) %>%
   relocate(SiteID, .before = 1) %>%
-  replace_na(list(Temp = '',
-                  Salinity = '',
-                  Comments = ''))
+  mutate(Temp = replace_na(as.character(Temp), ''),
+         Salinity = replace_na(as.character(Salinity), ''),
+         Comments = replace_na(Comments, ''))
   
-anyNA(y.4) # final checkfor NAs
+anyNA(y.4) # final check for NAs
 
 # Export this 'Events' df as a spreadsheet:
 write_csv(x = y.4,
@@ -188,10 +188,10 @@ z.3 = z.2 %>%
   rename(Unmeasured = Count,
          Length = Length_mm,
          Comments = Notes) %>%
-  replace_na(list(LifeStage = '',
-                  Unmeasured = '',
-                  Length = '',
-                  Comments = ''))
+  mutate(LifeStage = replace_na(LifeStage, ''),
+         Unmeasured = replace_na(as.character(Unmeasured), ''),
+         Length = replace_na(as.character(Length), ''),
+         Comments = replace_na(Comments, ''))
 
 ## We need to add in LengthType info stored in the species_list df:
 z.4 = select(species_list, Common, LengthType) %>%
