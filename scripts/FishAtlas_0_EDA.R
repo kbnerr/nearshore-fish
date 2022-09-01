@@ -9,10 +9,6 @@
 
 ## Shorezone/FishAtlas web link: https://alaskafisheries.noaa.gov/mapping/sz/
 
-## Each 'EventID' corresponds to a unique seine pull...
-# It'd be nice if we could group seines that were close in time at the same location.
-
-
 # Load packages -----------------------------------------------------------
 
 library(tidyverse)
