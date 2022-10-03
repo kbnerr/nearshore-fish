@@ -321,21 +321,23 @@ catch.2 = left_join(catch.1, select(events.3, EventID, VisitID), by = 'EventID')
 events.3 %>%
   group_by(VisitID) %>%
   summarise(events = n_distinct(EventID))
-# Slightly different.. we can see in the first obs that there are two eventsnow instead of one
+# Slightly different.. we can see in the first obs that there are two events instead of one now
 
 # Let's take a look at a frequency plot of these events:
 events.3 %>% group_by(VisitID) %>% summarise(events = n_distinct(EventID)) %>%
   ggplot(data = ., aes(x = events)) +
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
-  labs(title = "Frequency of visits with # of events (seines)")
+  labs(title = "Frequency of visits by # of events (seines)")
+ggsave("nfa_freq-visits-by-seines", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 # Compare this to our previous grouping...
 
 events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
   ggplot(data = ., aes(x = events)) +
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
-  labs(title = "Frequency of SiteID-Date pairs with # of events (seines)")
+  labs(title = "Frequency of SiteID-Date pairs by # of events (seines)")
+ggsave("nfa_freq-Site&Date-by-seines", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 # Wow. Glad we combined some of these Sites! There are way less single set data points. 
 
 
