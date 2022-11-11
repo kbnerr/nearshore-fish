@@ -61,5 +61,37 @@ catch %>%
 # looks like about 2/5 of our events have missing length and lifestage info,
 # even after assigning avg lengths to missing obs
 
+catch$Sp_CommonName %>% unique()
+catch$Sp_ScientificName %>% unique() %>% sort()
+
+fam_sci_names = catch$Fam_ScientificName %>% unique()
+catch %>% filter(Sp_ScientificName %in% fam_sci_names)
+
+catch$Fam_CommonName %>% unique()
+catch$Fam_ScientificName %>% unique() 
+catch %>% filter(Fam_CommonName == "") # 9 fish from the EPSCOR project. We'll drop these. 
+catch %>% filter(Fam_CommonName == "bony fishes") # 10,982 fish only identified to Teleostei. We'll drop these too.
+
+# QAQC of catch data ------------------------------------------------------
+
+catch.1 = catch %>%
+  filter(!Fam_CommonName %in% c("", "bony fishes")) %>% # dropping obs not ID'ed to family level
+  mutate(Count = ifelse(Unmeasured == 0,
+                        1,
+                        Unmeasured))
 
 
+# Creating subsets of QAQC'd data -----------------------------------------
+
+fam_abun = catch.1 %>%
+  select(VisitID,
+         EventID,
+         Fam_CommonName,
+         Count) %>%
+  group_by(VisitID, Fam_CommonName) %>%
+  summarise(Abundance = sum(Count) / n_distinct(EventID)) %>%
+  ungroup()
+  
+  
+  
+       
