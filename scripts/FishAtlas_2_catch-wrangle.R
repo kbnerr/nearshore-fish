@@ -80,10 +80,21 @@ catch.1 = catch %>%
                         1,
                         Unmeasured))
 
+catch.2 = catch.1 %>%
+  mutate(Sp_ScientificName = ifelse(Sp_ScientificName == 'Anisarchus medius or Lumpenus fabricii',
+                                    'Stichaeidae',
+                                    Sp_ScientificName))
+
+# Rename to final version name,
+catch_qc = catch.2 
+
+rm(catch.1, catch.2)
 
 # Creating subsets of QAQC'd data -----------------------------------------
 
-fam_abun = catch.1 %>%
+## Family level
+
+fam_abun = catch_qc %>%
   select(VisitID,
          EventID,
          Fam_CommonName,
@@ -92,6 +103,19 @@ fam_abun = catch.1 %>%
   summarise(Abundance = sum(Count) / n_distinct(EventID)) %>%
   ungroup()
   
-  
-  
-       
+## Genus level
+
+catch_qc %>%
+  separate(Sp_ScientificName, into = c("Gen_ScientificName", "drop"), sep = " ", remove = FALSE) %>%
+  select(-drop)
+# Warning messages are cases where fish were ID'ed to family level
+
+
+
+
+
+
+
+
+
+ 
