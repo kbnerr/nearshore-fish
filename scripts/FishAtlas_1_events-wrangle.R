@@ -343,12 +343,15 @@ ggsave("nfa_freq-Site&Date-by-seines", plot = last_plot(), device = 'png', path 
 
 # Environment clean-up ----------------------------------------------------
 
-# Moving forward we only need the most recent version of the events and catch data:
-events = events.3
+# Moving forward we only need the most a couple versions of the data:
+# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
+events_qc = events.3
+events = data
 catch = catch.2
 
 # We'll keep these plus our wd objects:
 keep = c('events',
+         'events_qc',
          'catch',
          'wd',
          'dir.data',
