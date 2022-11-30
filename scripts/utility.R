@@ -28,6 +28,22 @@ dir.R = file.path(wd,"R")
 # dir.create(dir.figs, recursive=TRUE)
 
 
+# For plotting ------------------------------------------------------------
+
+pca_theme = theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+nmds_theme = theme(axis.title = element_text(face = NULL, colour = "black"), 
+                   panel.background = element_blank(),
+                   panel.border = element_rect(fill = NA, colour = "black"), 
+                   axis.ticks = element_blank(),
+                   axis.text = element_blank(),
+                   legend.key = element_blank(), 
+                   legend.title = element_text(face = NULL, colour = "black"), 
+                   legend.text = element_text(colour = "black"))
+
+
 # Useful spatial objects --------------------------------------------------
 
 # Bounding Boxes

@@ -25,7 +25,7 @@ dir.scripts = file.path(wd,"scripts")
 # source(file = file.path(dir.scripts, "FishAtlas_1_events-wrangle.R"))
 
 
-# Some EDA to begin with --------------------------------------------------
+# Code --------------------------------------------------------------------
 
 # These are all the categories that have finer resolution than VisitID,
 n_distinct(events_qc$VisitID)
@@ -84,17 +84,33 @@ visits.3 %>%
 which(check$n_not_reported > 1)
 # Ok great, looks like no habitat reported only occurs by itself
 
-# We should now deal with cases where multiple habitats are reported
-visits.4 = visits.3 %>%
+# We should now deal with cases where multiple habitats are reported.
+# First we need to break down all habitat types as single classes to be reassigned to visits,
+visits.4a = visits.3 %>%
   rowwise() %>%
   unnest_longer(Habitats) %>%
   unpack(Habitats) %>%
   arrange(VisitID, Habitat) %>%
   separate_rows(Habitat, sep = "-") %>%
-  distinct() %>%
+  mutate(Habitat = ifelse(Habitat == "not reported", NA, Habitat)) %>%
+  distinct()
+# Save the habitat types as a vector,
+visits.4a$Habitat %>% unique() %>% sort() -> habitats
+# Recombine habitat combinations when visits include multiple habitat types,
+visits.4b = visits.4a %>%
   pivot_wider(names_from = Habitat, values_from = Habitat, values_fill = NA) %>%
   replace(is.null(.), NA) %>%
-  unite(col = Habitat, habitats, sep = "-", na.rm = TRUE) %>%
+  unite(col = Habitat, all_of(habitats), sep = "-", na.rm = TRUE) %>%
+  mutate(Habitat = ifelse(Habitat == "", "not reported", Habitat)) %>%
   relocate(Habitat, .after = Locations)
+
+# let's check out the different habitat classes we now have,
+visits.4b$Habitat %>% unique()
+
+
+
+
+
+
 
 

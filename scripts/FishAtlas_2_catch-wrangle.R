@@ -72,23 +72,82 @@ catch$Fam_ScientificName %>% unique()
 catch %>% filter(Fam_CommonName == "") # 9 fish from the EPSCOR project. We'll drop these. 
 catch %>% filter(Fam_CommonName == "bony fishes") # 10,982 fish only identified to Teleostei. We'll drop these too.
 
+# Let's first designate a count col in the df,
+catch.1 = mutate(catch, Count = ifelse(Unmeasured == 0,
+                                       1,
+                                       Unmeasured))
+
 # QAQC of catch data ------------------------------------------------------
 
-catch.1 = catch %>%
-  filter(!Fam_CommonName %in% c("", "bony fishes")) %>% # dropping obs not ID'ed to family level
-  mutate(Count = ifelse(Unmeasured == 0,
-                        1,
-                        Unmeasured))
+# Dropping obs that are not ID'ed to family level
+catch.2 = catch.1  %>% filter(!Fam_CommonName %in% c("", "bony fishes"))
+# Note- this removes EventID = 3156, VisitID = 379_2007-08-09:
+catch.1 %>% filter(VisitID == '379_2007-08-09')
 
-catch.2 = catch.1 %>%
+# Re-label "or" cases to the family level
+catch.3 = catch.2 %>%
   mutate(Sp_ScientificName = ifelse(Sp_ScientificName == 'Anisarchus medius or Lumpenus fabricii',
                                     'Stichaeidae',
                                     Sp_ScientificName))
 
-# Rename to final version name,
-catch_qc = catch.2 
+# Initial nmds plots show wrymouths and eelpouts as outlier catches.
+# Let's take a look,
+catch.3 %>% filter(Fam_CommonName %in% c("wrymouths", "eelpouts"))
+# Wow, only two incidences of catching these... Let's see where they come from,
+events_qc %>% filter(EventID %in% c("6227", "8042"))
+# Was anything else caught with them?
+catch.3 %>% filter(EventID %in% c("6227", "8042"))
 
-rm(catch.1, catch.2)
+# Also from initial nmds, I see three visits (upper left) that seem pretty different too,
+events_qc %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09", "36_2004-03-17"))
+catch.3 %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09", "36_2004-03-17"))
+# These three cases also seem to be single taxa incidences,
+# so what we want to do about extremely rare cases...
+# Let's first graph family abundance and frequencies of occurrence,
+
+catch.3 %>%
+  group_by(Fam_CommonName) %>%
+  summarise(Abundance = sum(Count)) %>%
+  mutate(Fam_CommonName = fct_reorder(as.factor(Fam_CommonName), desc(Abundance))) %>% 
+  ggplot(aes(x = Fam_CommonName, y = Abundance)) +
+  geom_col() +
+  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggsave("nfa_fam_abundance_raw", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+fam_freq_occur = catch.3 %>%
+  group_by(VisitID, Fam_CommonName) %>%
+  summarise(Presence = n_distinct(Fam_CommonName)) %>%
+  ungroup() %>%
+  group_by(Fam_CommonName) %>%
+  summarise(Occurrence = sum(Presence)) %>%
+  mutate(Perc_Occurrence = Occurrence / n_distinct(catch.3$VisitID) * 100,
+         Fam_CommonName = fct_reorder(as.factor(Fam_CommonName), desc(Perc_Occurrence)))
+
+fam_freq_occur %>%
+  ggplot(aes(x = Fam_CommonName, y = Perc_Occurrence)) +
+  geom_col() +
+  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggsave("nfa_fam_freq_occurrence", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# There are 10 families that occur in less than 1% of visits.
+# We will consider these our extreme rare cases and remove them from the df,
+rare_families = fam_freq_occur %>%
+  filter(Perc_Occurrence < 1) %>%
+  mutate(Fam_CommonName = as.character(Fam_CommonName)) %>%
+  select(Fam_CommonName) %>%
+  as_vector()
+
+catch.4 = filter(catch.3, !Fam_CommonName %in% rare_families)
+
+catch.4 %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09"))
+
+
+# Rename to final version name,
+catch_qc = catch.4
+
+rm(catch.1, catch.2, catch.3)
 
 # Creating subsets of QAQC'd data -----------------------------------------
 
