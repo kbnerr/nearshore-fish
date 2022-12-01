@@ -42,6 +42,13 @@ scores(nmds)
 plot(nmds, type = "t")
 nmds_res = scores(nmds, "sites") %>% as.data.frame()
 
+# Add Region and Habitat classes to the NMDS df,
+nmds_forplotting = nmds_res %>%
+  mutate(VisitID = rownames(nmds_res)) %>%
+  left_join(select(visits.5d, VisitID, Region, Habitat, Date), by = "VisitID") %>%
+  mutate(Year = year(Date),
+         Month = month(Date))
+
 # Add env variables to df of nmds scores:
 # (nmds2.res = cbind(nmds2.res, envfit.env)) # grabbing the env variables from the envfit analysis
 
@@ -58,29 +65,38 @@ nmds_res = scores(nmds, "sites") %>% as.data.frame()
 
 # NMDS ordination plots ---------------------------------------------------
 
-# Recreate the base plot of nmds results, species scores, and envfit results
-ggplot(nmds_res, aes(x = NMDS1, y = NMDS2)) +
-  geom_point(size = 1, alpha = 1) +
-  geom_text_repel(label = rownames(nmds_res), size = 1.2) +
-  geom_text(data = nmds_fam_scores,
-            aes(x = NMDS1, y = NMDS2, label = Fam_Names),
-            alpha = .5, check_overlap = NULL) +
-#  geom_segment(data = envfit.con,
-#               aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
-#               arrow = arrow(angle = 20, length = unit(2, "mm"), ends = "last", type = "open"),
-#               size = .5, alpha = 0.5, colour = "red") +
-#  geom_text_repel(data = envfit.con, aes(x = NMDS1, y = NMDS2),
-#                  label = row.names(envfit.con), colour = "red", fontface = "bold") + 
-#  geom_point(data = envfit.cat, aes(x = NMDS1, y = NMDS2), 
-#             shape = "diamond", size = 3, alpha = 0.5, colour = "navy") +
-#  geom_text_repel(data = envfit.cat, aes(x = NMDS1, y = NMDS2), 
-#                  label = row.names(envfit.cat),
-#                  colour = "navy", fontface = "bold") + 
+# Graph the nmds ordination
+ggplot(nmds_forplotting, aes(x = NMDS1, y = NMDS2)) +
+  geom_point(aes(color = Month)) +
+  scale_color_continuous() +
   nmds_theme + 
   coord_fixed()
 
 
 # Below is old script but maybe useful code -------------------------------
+
+# Recreate the base plot of nmds results, species scores, and envfit results
+ggplot(nmds_forplotting, aes(x = NMDS1, y = NMDS2)) +
+  geom_point(aes(color = Year)) +
+  scale_color_continuous() +
+  geom_text_repel(label = rownames(nmds_res), size = 1.2) +
+  geom_text(data = nmds_fam_scores,
+            aes(x = NMDS1, y = NMDS2, label = Fam_Names),
+            alpha = .5, check_overlap = NULL) +
+  geom_segment(data = envfit.con,
+               aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
+               arrow = arrow(angle = 20, length = unit(2, "mm"), ends = "last", type = "open"),
+               size = .5, alpha = 0.5, colour = "red") +
+  geom_text_repel(data = envfit.con, aes(x = NMDS1, y = NMDS2),
+                  label = row.names(envfit.con), colour = "red", fontface = "bold") + 
+  geom_point(data = envfit.cat, aes(x = NMDS1, y = NMDS2), 
+             shape = "diamond", size = 3, alpha = 0.5, colour = "navy") +
+  geom_text_repel(data = envfit.cat, aes(x = NMDS1, y = NMDS2), 
+                  label = row.names(envfit.cat),
+                  colour = "navy", fontface = "bold") + 
+nmds_theme + 
+  coord_fixed()
+
 
 # There are lots of species in the background, some of which are cut off at the plot edges.
 # Maybe we should only show some of the more abundant species.

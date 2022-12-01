@@ -113,7 +113,7 @@ catch.3 %>%
   geom_col() +
   geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-ggsave("nfa_fam_abundance_raw", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+ggsave("nfa_fam_abundance_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 
 fam_freq_occur = catch.3 %>%
   group_by(VisitID, Fam_CommonName) %>%
@@ -129,7 +129,7 @@ fam_freq_occur %>%
   geom_col() +
   geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-ggsave("nfa_fam_freq_occurrence", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+ggsave("nfa_fam_freq_occurrence.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 
 # There are 10 families that occur in less than 1% of visits.
 # We will consider these our extreme rare cases and remove them from the df,
@@ -143,11 +143,6 @@ catch.4 = filter(catch.3, !Fam_CommonName %in% rare_families)
 
 catch.4 %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09"))
 
-
-# Rename to final version name,
-catch_qc = catch.4
-
-rm(catch.1, catch.2, catch.3)
 
 # Creating subsets of QAQC'd data -----------------------------------------
 
@@ -170,6 +165,26 @@ catch_qc %>%
 # Warning messages are cases where fish were ID'ed to family level
 
 
+# Environment clean-up ----------------------------------------------------
+
+# Moving forward we only need the most a couple versions of the data:
+# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
+catch_qc = catch.4
+
+# We'll keep these plus our wd objects:
+keep = c('events',
+         'events_qc',
+         'catch',
+         'catch_qc',
+         'fam_abun',
+         'wd',
+         'dir.data',
+         'dir.figs',
+         'dir.output',
+         'dir.scripts')
+
+# And remove the rest, so we have a clean env when sourcing this code in next steps analyses:
+rm(list = ls()[!ls() %in% keep])
 
 
 

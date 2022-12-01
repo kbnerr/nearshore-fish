@@ -329,7 +329,7 @@ events.3 %>% group_by(VisitID) %>% summarise(events = n_distinct(EventID)) %>%
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
   labs(title = "Frequency of visits by # of events (seines)")
-ggsave("nfa_freq-visits-by-seines", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+ggsave("nfa_freq-visits-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 # Compare this to our previous grouping...
 
 events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
@@ -337,7 +337,7 @@ events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) 
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
   labs(title = "Frequency of SiteID-Date pairs by # of events (seines)")
-ggsave("nfa_freq-Site&Date-by-seines", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+ggsave("nfa_freq-Site&Date-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 # Wow. Glad we combined some of these Sites! There are way less single set data points. 
 
 
@@ -359,7 +359,7 @@ keep = c('events',
          'dir.output',
          'dir.scripts')
 
-# And remove the rest, so we have a clean env when source in this code in next steps analyses:
+# And remove the rest, so we have a clean env when sourcing this code in next steps analyses:
 rm(list = ls()[!ls() %in% keep])
 
 
