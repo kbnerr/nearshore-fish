@@ -187,13 +187,56 @@ events_qc$TidalStage %>% unique() %>% sort()
 visits.6 = select(visits.5d, -TidalStages)
 
 
+# Location ----------------------------------------------------------------
+
+# We may be interested in Location down the line, but onyl as a QAQC check,
+visits.7 = visits.6 %>%
+  rowwise() %>%
+  mutate(Locations = list(as_vector(Locations) %>% unique()))
 
 
+# Project Name ------------------------------------------------------------
+
+visits.8a = visits.7 %>%
+  rowwise() %>%
+  unnest_longer(ProjectNames) %>%
+  unpack(ProjectNames) %>%
+  arrange(VisitID, ProjectName) %>%
+  distinct()
+visits.8a$ProjectName %>% unique() %>% sort() -> projects
+visits.8b = visits.8a %>%
+  pivot_wider(names_from = ProjectName, values_from = ProjectName) %>%
+  replace(is.null(.), NA) %>%
+  unite(col = ProjectName, all_of(projects), sep = "_", na.rm = TRUE)
+visits.8b$ProjectName %>% unique()
+
+mult_projects = visits.8b %>%
+  filter(ProjectName %in% c("CBJ eelgrass_SYNTHESIS", "ABL Nearshore Task - SEAK_SYNTHESIS")) %>%
+  .$EventIDs %>% as_vector() %>% unname() %>% sort()
+
+filter(catch_qc, EventID %in% mult_projects) %>% View()
+filter(events_qc, EventID %in% mult_projects) %>% View()
+filter(data, EventID %in% mult_projects) %>% View()
 
 
+# Gear Specific -----------------------------------------------------------
 
+visits.9a = visits.7 %>%
+  rowwise() %>%
+  unnest_longer(GearSpecifics) %>%
+  unpack(GearSpecifics) %>%
+  arrange(VisitID, GearSpecific) %>%
+  distinct()
+visits.9a$GearSpecific %>% unique() %>% sort() -> gear
+visits.9b = visits.9a %>%
+  pivot_wider(names_from = GearSpecific, values_from = GearSpecific) %>%
+  replace(is.null(.), NA) %>%
+  unite(col = GearSpecific, all_of(gear), sep = "_", na.rm = TRUE)
+visits.9b$GearSpecific %>% unique()
 
-
+mult_gear = visits.9b %>%
+  filter(str_detect(GearSpecific, "_")) %>%
+  .$GearSpecific %>% as_vector() %>% unname() %>% unique() %>% sort()
 
 
 
@@ -204,7 +247,8 @@ visits.6 = select(visits.5d, -TidalStages)
 visits_qc = placeholder
 
 # We'll keep these plus our wd objects:
-keep = c('events',
+keep = c('data',
+         'events',
          'events_qc',
          'catch',
          'catch_qc',

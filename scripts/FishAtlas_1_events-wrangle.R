@@ -350,7 +350,8 @@ events = data
 catch = catch.2
 
 # We'll keep these plus our wd objects:
-keep = c('events',
+keep = c('data',
+         'events',
          'events_qc',
          'catch',
          'wd',
