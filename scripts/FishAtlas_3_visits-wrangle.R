@@ -197,6 +197,7 @@ visits.7 = visits.6 %>%
 
 # Project Name ------------------------------------------------------------
 
+# We'll do the same processing as Region to find combos of Projects,
 visits.8a = visits.7 %>%
   rowwise() %>%
   unnest_longer(ProjectNames) %>%
@@ -208,6 +209,8 @@ visits.8b = visits.8a %>%
   pivot_wider(names_from = ProjectName, values_from = ProjectName) %>%
   replace(is.null(.), NA) %>%
   unite(col = ProjectName, all_of(projects), sep = "_", na.rm = TRUE)
+
+# let's take a look,
 visits.8b$ProjectName %>% unique()
 
 mult_projects = visits.8b %>%
@@ -221,7 +224,8 @@ filter(data, EventID %in% mult_projects) %>% View()
 
 # Gear Specific -----------------------------------------------------------
 
-visits.9a = visits.7 %>%
+# Same process as Region/Project to learn where we have combo gear types
+visits.9a = visits.8c %>%
   rowwise() %>%
   unnest_longer(GearSpecifics) %>%
   unpack(GearSpecifics) %>%
@@ -233,10 +237,11 @@ visits.9b = visits.9a %>%
   replace(is.null(.), NA) %>%
   unite(col = GearSpecific, all_of(gear), sep = "_", na.rm = TRUE)
 visits.9b$GearSpecific %>% unique()
-
+# Let's take a look,
 mult_gear = visits.9b %>%
   filter(str_detect(GearSpecific, "_")) %>%
   .$GearSpecific %>% as_vector() %>% unname() %>% unique() %>% sort()
+filter(visits.9b, GearSpecific %in% mult_gear) %>% View()
 
 
 
