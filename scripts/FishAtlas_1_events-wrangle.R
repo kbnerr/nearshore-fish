@@ -33,7 +33,7 @@ dir.scripts = file.path(wd,"scripts")
 
 # Downloaded directly from the Fish Atlas website:
 data = read.csv(file.path(dir.data, "FishAtlas_BeachSeines_2022.07.12.csv"), header = TRUE)
-
+GearLookup = read_csv(file = file.path(dir.data, "FishAtlasExpansion_040422_Lookup_Gear.csv"))
 
 # Initial subset of data into events and catch ----------------------------
 
@@ -306,25 +306,49 @@ filter(events.2, SiteID %in% which(events.1$SiteID != events.2$SiteID))
 
 ## Great! But this join only really solves the spatial issue..
 # i.e., we have correctly grouped SiteIDs that were within 1km.
-# But we still need to separate SiteID obs into temporally explicit 'Visits':
 
-events.3 = unite(events.2, col = 'VisitID', SiteID, Date, remove = FALSE)
+# But we still need to separate SiteID obs into temporally explicit 'Visits',
+# And separate the visits by different mesh sizes, if appropriate,
+
+# First, let's join mesh size to the data, grouping similar sizes together (< 0.5 mm difference),
+events.4 = events.3 %>%
+  left_join(select(GearLookup, GearSpecific, MeshSize), by = "GearSpecific") %>%
+  mutate(MeshSize_rounded = round(MeshSize, 0))
+events.4$MeshSize_rounded %>% unique() 
+# Great, we have four different mesh sizes in the data, but also some NAs.
+# Let's take a look,
+events.4 %>% filter(is.na(MeshSize))
+# These are all from the GOAIERP project (PI Olav Ormseth)...
+# The report from that project says the nets had 6 mm stretched mesh,
+events.5 = events.4 %>%
+  mutate(MeshSize = ifelse(is.na(MeshSize),
+                           6,
+                           MeshSize),
+         MeshSize_rounded = round(MeshSize, 0))
+
+events.5$MeshSize_rounded %>% unique() # Great, no more NA's
+
+# Now we can unite our event data by Site, Date, and grouped MeshSize:
+events.6 = unite(events.5, col = 'VisitID', SiteID, Date, MeshSize_rounded, remove = FALSE) %>%
+  select(-GearSpecific, -MeshSize) %>%
+  relocate(MeshSize_rounded, .after = Date) %>%
+  rename(MeshSize = MeshSize_rounded)
 
 ## Finally, let's re-label our catch data with the VisitIDs:
-catch.2 = left_join(catch.1, select(events.3, EventID, VisitID), by = 'EventID') %>%
+catch.2 = left_join(catch.1, select(events.6, EventID, VisitID), by = 'EventID') %>%
   relocate(VisitID, .before = 1)
 
 
 # Re-visualize using new SiteIDs & VisitIDs -------------------------------
 
 # This is the number of EventID's per SiteID and Date:
-events.3 %>%
+events.6 %>%
   group_by(VisitID) %>%
   summarise(events = n_distinct(EventID))
 # Slightly different.. we can see in the first obs that there are two events instead of one now
 
 # Let's take a look at a frequency plot of these events:
-events.3 %>% group_by(VisitID) %>% summarise(events = n_distinct(EventID)) %>%
+events.6 %>% group_by(VisitID) %>% summarise(events = n_distinct(EventID)) %>%
   ggplot(data = ., aes(x = events)) +
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
@@ -345,7 +369,7 @@ ggsave("nfa_freq-Site&Date-by-seines.png", plot = last_plot(), device = 'png', p
 
 # Moving forward we only need the most a couple versions of the data:
 # QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
-events_qc = events.3
+events_qc = events.6
 events = data
 catch = catch.2
 

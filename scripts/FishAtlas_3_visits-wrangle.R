@@ -25,7 +25,7 @@ dir.scripts = file.path(wd,"scripts")
 
 # source(file = file.path(dir.scripts, "FishAtlas_1_events-wrangle.R"))
 # source(file = file.path(dir.scripts, "FishAtlas_2_catch-wrangle.R"))
-
+source(file = file.path(dir.scripts, "utility.R"))
 
 # Some EDA to begin with --------------------------------------------------
 
@@ -38,7 +38,6 @@ events_qc %>% select(VisitID, Habitat) %>% n_distinct()
 events_qc %>% select(VisitID, TidalStage) %>% n_distinct()
 events_qc %>% select(VisitID, Temp_C) %>% n_distinct()
 events_qc %>% select(VisitID, Salinity) %>% n_distinct()
-events_qc %>% select(VisitID, GearSpecific) %>% n_distinct()
 events_qc %>% select(VisitID, ProjectName) %>% n_distinct()
 
 
@@ -55,7 +54,6 @@ visits.1 = events_qc %>%
        TidalStages = TidalStage,
        Temps= Temp_C,
        Sals = Salinity,
-       GearSpecifics = GearSpecific,
        ProjectNames = ProjectName) %>%
   relocate(PointOfContact, .after = last_col())
 
@@ -217,39 +215,16 @@ mult_projects = visits.8b %>%
   filter(ProjectName %in% c("CBJ eelgrass_SYNTHESIS", "ABL Nearshore Task - SEAK_SYNTHESIS")) %>%
   .$EventIDs %>% as_vector() %>% unname() %>% sort()
 
-filter(catch_qc, EventID %in% mult_projects) %>% View()
-filter(events_qc, EventID %in% mult_projects) %>% View()
-filter(data, EventID %in% mult_projects) %>% View()
-
-
-# Gear Specific -----------------------------------------------------------
-
-# Same process as Region/Project to learn where we have combo gear types
-visits.9a = visits.8c %>%
-  rowwise() %>%
-  unnest_longer(GearSpecifics) %>%
-  unpack(GearSpecifics) %>%
-  arrange(VisitID, GearSpecific) %>%
-  distinct()
-visits.9a$GearSpecific %>% unique() %>% sort() -> gear
-visits.9b = visits.9a %>%
-  pivot_wider(names_from = GearSpecific, values_from = GearSpecific) %>%
-  replace(is.null(.), NA) %>%
-  unite(col = GearSpecific, all_of(gear), sep = "_", na.rm = TRUE)
-visits.9b$GearSpecific %>% unique()
-# Let's take a look,
-mult_gear = visits.9b %>%
-  filter(str_detect(GearSpecific, "_")) %>%
-  .$GearSpecific %>% as_vector() %>% unname() %>% unique() %>% sort()
-filter(visits.9b, GearSpecific %in% mult_gear) %>% View()
-
+filter(catch_qc, EventID %in% mult_projects)
+filter(events_qc, EventID %in% mult_projects)
+filter(data, EventID %in% mult_projects)
 
 
 # Environment clean-up ----------------------------------------------------
 
 # Moving forward we only need the most a couple versions of the data:
 # QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
-visits_qc = placeholder
+visits_qc = visits.8b
 
 # We'll keep these plus our wd objects:
 keep = c('data',
@@ -268,7 +243,6 @@ keep = c('data',
 
 # And remove the rest, so we have a clean env when sourcing this code in next steps analyses:
 rm(list = ls()[!ls() %in% keep])
-
 
 
 

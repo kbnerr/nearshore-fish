@@ -1,0 +1,51 @@
+GearCode,GearSpecific,Description,GearBasic,MeshSize,Specifications
+1,BSEINE-4FT,Darcie's short beach seine,beach seine,3.2,37 m long pelagic beach seine with 3.2 mm mesh and 4 ft (1.2 m) depth throughout; floats remain on surface in water deeper than net
+34,BSEINE-5P,NERRS 5-panel beach seine,beach seine,3.2,"30.5 X 3.7 m and was comprised of 5 variable mesh panels (31.8, 6.4, 3.2 mm). Panels were symmetric about the midline of the net with the smallest mesh at the center."
+39,BSEINE-76,Blackburn's beach seine from 1976 sampling,beach seine,3.2,
+17,BSEINE-A,"USGS ""Apex"" beach seine",beach seine,3,35 m long pelagic beach seine  with wing mesh of 6 mm; center panel 5.4 m deep and 3 mm mesh; floats remain on surface in water deeper than net
+29,BSEINE-B,Beaudreau's black beach seine,beach seine,9.5,"black net: 15.2 m long x 2.4 m deep with 0.95 cm stretched knotless black mesh, Manufacturer = Christensen"
+18,BSEINE-C,"USGS-""Chisik"" beach seine",beach seine,3,18 m long pelagic beach seine with wing mesh of 6 mm; center panel 5.5 m deep and 3 mm mesh; floats remain on surface in water deeper than net
+31,BSEINE-DEM3,ABL demersal beach seine,beach seine,3.2,37-m long demersal beach seine with wing mesh of 12.7 mm; net tapering in height from 0.9 m at end to 2.4m in center; center bag 2.4 m deep and 3.2 mm mesh; lead line remains on substrate in water deeper than net
+2,BSEINE-DEM5,Ben Laurel's demersal beach seine,beach seine,5.2,37-m long demersal beach seine with wing mesh of 12.7 mm; net tapering in height from 0.9 m at end to 2.4m in center; center bag 2.4 m deep and 5.2 mm mesh; lead line remains on substrate in water deeper than net
+19,BSEINE-K,"USGS ""Kachemak"" beach seine",beach seine,3,44 m long pelagic beach seine with variable wing mesh from 13 to 6 mm; center panel 3.9 m deep and 3 mm mesh; floats remain on surface in water deeper than net
+50,BSEINE-NERRa,34 m KBNERR nearshore fish program net,beach seine,3,34 m tapered nylon mesh net; middle section 8 m width x  5 m depth with 3 mm mesh
+51,BSEINE-NERRb,23 m KBNERR nearshore fish program net,beach seine,3,22.9  m  non-tapered nylon mesh net; middle section 7.6 m  width x 3 m  depth with 3 mm mesh
+20,BSEINE-P,"USGS ""Puget Sound"" beach seine",beach seine,3,37 m long pelagic beach seine with wing mesh of 6 mm; center panel 2.4 m deep and 3 mm mesh; floats remain on surface in water deeper than net
+21,BSEINE-S,"USGS ""SFFEP"" beach seine",beach seine,6,37 m long with wing mesh of 28 mm; center panel 2.4 m deep and 6 mm mesh
+25,BSEINE-SM,Olav's small beach seine,beach seine,6,
+28,BSEINE-small,Beaudreau's small mesh beach seine,beach seine,6.4,"small net: 10-m long × 2.4 m deep with 0.64 cm stretched knotless white mesh, Manufacturer = Memphis Net & Twine"
+3,BSEINE-STD,standard beach seine,beach seine,3.2,"37 m long pelagic beach seine with variable mesh, 12 ft deep and 3.2 mm mesh at center panel of codend; floats remain on surface in water deeper than net"
+30,BSEINE-W,Beaudreau's white beach seine,beach seine,12.7,"white net: 15.2 m long x 2.4 m deep with 1.27 cm stretched knotless white mesh, Manufacturer = Memphis Net & Twine"
+4,BSEINE-WCS,Robard's small beach seine,beach seine,3.2,"3.1x15 m beach seine is used to sample fish at any location where beaches allowed for deployment (e.g., sandy with no protruding rocks). We walk the net out to about 20 m into the water then draw it parallel to shore the retrieved the net in a symmetrical manner with people drawing the wing lines attached to the net’s ends simultaneously at a constant rate. When the depth of the lagoon will not allow a walk set we perform a similar tow using the boat to drag the net and pull it parallel to the shore."
+33,CAST-USGS,Yumi's cast net,cast net,,
+42,DIPNET-USGS,Yumi's dip net,dip net,,
+5,DIPNET-WCS,Robard's dip net,dip net,,
+48,FYKE-Est,Mitch Lorenz's estuarine fyke net,fyke net,,
+32,FYKE-vonBiela,von Biela's fyke net,fyke net,,"Fyke nets consisted of a lead net extending perpendicular from the shoreline connected to the middle of a metal framed trap. A set of net wings extended from the side of the metal frame, angled toward the shoreline. Fish swimming along the shoreline encounter the lead net and are funneled towards the trap and collected in the cod-end. Fyke nets have been used extensively to study fishes in the Beaufort Sea as they are less-size selective, less-lethal, and are less-destructive to habitat than nearly any alternative (e.g., gillnet, beam trawl) and can be fished unattended for ~24 h. In addition, fyke nets are effective at catching fish because many species travel parallel to the shoreline of lagoons in between forays to other locations in the central part of the lagoons and other coastal areas (Craig, 1984). Fyke net specifications were similar among the sampling eras with a 61 m lead net and 15 m net wings constructed of 2.54 cm stretch mesh and the fyke net trap with an opening of 1.5 m wide and 1.2 m height made from 1.27 cm stretch mesh. The fyke net trap was set away from the shoreline at a water depth of ~1 m and no more than 60 m distance from shore. "
+6,FYKE-WCS,Robard's fyke net,fyke net,,"Fyke net is constructed with 3.1 mm stretch mesh, a 91.5 x 122 cm frame made of two rectangular conduit frames, 5 steel hoops, 2 throats, and a 15.2 m lead. The wings are anchored using rebar with the main line attached perpendicular to shore and the wings set at approximately 45˚. Set time for fyke nets was more standardized than scientific gillnets throughout the three field seasons, however soak time still varied between sets to avoid mortality where catches were large."
+36,GILLNET-USGS,Yumi's gillnet,gill net,,
+27,GILLNET-V,Olav's vertical gill net used for acoustic verification,gill net,,
+7,GILLNET-WCS,Robard's experimental gill net,gill net,,"Experimental gill nets consist of 5 panels, each 25ft in length, for a total net length of 125ft. Stretch measurement of the individual panels were: 1 inch, 1.5 inch, 2 inch, 3 inch, and 4 inch. Set sites are selected in areas near the inflow/outflow (regardless of whether the connection is  open or closed), and points next to water quality sample points through the lagoon (i.e., central, marine edge, terrestrial edge and freshwater inlet ). Soaking nets are monitored in order to minimize risk of a) birds or other unintended animals being caught, and b) unnecessarily heavy fish mortalities. Set times vary based on success rate at the sample site. We use fyke nets to collect larger volumes of fish in locations where the depth and substrate were favorable."
+52,HAND,KBNERR capture of sand lance by hand,by hand,,shovel and bucket
+8,JIG,hook and line jigging,jig,,
+44,JIG-GOA,Olav's jigging set up,jig,,
+43,JIG-SSL,jigging set up for Sea Lion Prey study,jig,,
+45,JIG-USGS,Yumi's jigging set up,jig,,
+46,JIG-WCS,Robard's jigging set up,jig,,
+9,MINNOW,Robard's minnow trap,minnow trap,,
+41,POT,USACE crab pot,crab pot,,
+10,PSEINE-ABL,ABL purse seine used by ABL in PWS and by Olave in GOAIERP,purse seine,,
+47,PSEINE-USGS,Yumi's purse seine,purse seine,,
+49,TRAWL-1m,Ken Dunton's 1m beam trawl,trawl-bottom,,
+35,TRAWL-3m,von Biela's 3m plumb staff beam trawl,trawl-bottom,,"Beam trawl was the 3m plumb staff beam trawl for 2018 and 2019 that is described in Gunderson and Ellis 1986; in 2017 I used a 1m beam trawl that Ken Dunton had on the boat... I don't think we ever captured any fish with that so I doubt any trawls from 2017 made it in the data set you had. Ken uses this gear for inverts and once I saw it in action, we figured it just wasn't useful for fish and I started bringing the 3m PSBT."
+12,TRAWL-A,ABL aluette trawl (midwater) used by Johanna in Arctic and Katharine in Norton Sound,trawl-midwater,,
+22,TRAWL-AMOD,modified Aluette trawl used by Katharine in Norton Sound,trawl-surface,,SOP of 20 minute tows at ~2.8 mph
+23,TRAWL-B,Olav's beam trawl,trawl-bottom,,
+13,TRAWL-M,Mamou trawl (surface) used by Katharine in Norton Sound,trawl-surface,,SOP of 20 minute tows at ~2.8 mph
+40,TRAWL-MH,Yumi's modified herring trawl,trawl-midwater,,
+24,TRAWL-MMM,Olav's mini me trawl fished at midwater,trawl-midwater,,
+26,TRAWL-MMS,Olav's mini me trawl fished at surface,trawl-surface,,
+37,TRAWL-N,Seitz's surface trawl,trawl-surface,,Nordic 264 rope trawl with 3-m doors and a 1.2-cm mesh liner in the cod end that fishes approximately 11 m deep with a width of 14.3 m.
+38,TRAWL-NE,Seitz's bottom trawl,trawl-bottom,,"400-mesh eastern trawl with 364 kg, Nor-Eastern Astoria V trawl doors, 3.2 cm mesh in the cod end, 8.9 cm in the intermediate and 10.2 cm in the body and wings"
+14,TRAWL-O,"ABL otter trawl (bottom) used by ABL, USACE, and Mitch Lorenz",trawl-bottom,,
+15,TRAWL-PSB,Plumb staff beam trawl (bottom) used by Johanna in Arctic,trawl-bottom,,

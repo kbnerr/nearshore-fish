@@ -30,7 +30,7 @@ dir.scripts = file.path(wd,"scripts")
 # source(file = file.path(dir.scripts, "utility.R"))
 # source(file = file.path(dir.scripts, "FishAtlas_1_events-wrangle.R"))
 # source(file = file.path(dir.scripts, "FishAtlas_2_catch-wrangle.R"))
-
+# source(file = file.path(dir.scripts, "FishAtlas_3_visits-wrangle.R"))
 
 # Calculating diversity measures ------------------------------------------
 

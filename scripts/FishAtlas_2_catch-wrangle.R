@@ -143,6 +143,9 @@ catch.4 = filter(catch.3, !Fam_CommonName %in% rare_families)
 
 catch.4 %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09"))
 
+# Moving forward we only need the most a couple versions of the data:
+# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
+catch_qc = catch.4 %>% arrange(VisitID) # Won't hurt to end by ordering our df by VisitID's
 
 # Creating subsets of QAQC'd data -----------------------------------------
 
@@ -166,10 +169,6 @@ catch_qc %>%
 
 
 # Environment clean-up ----------------------------------------------------
-
-# Moving forward we only need the most a couple versions of the data:
-# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
-catch_qc = catch.4 %>% arrange(VisitID) # Won't hurt to end by ordering our df by VisitID's
 
 # We'll keep these plus our wd objects:
 keep = c('data',
