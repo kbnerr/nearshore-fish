@@ -27,10 +27,10 @@ dir.scripts = file.path(wd,"scripts")
 
 # Read in data ------------------------------------------------------------
 
-# source(file = file.path(dir.scripts, "utility.R"))
-# source(file = file.path(dir.scripts, "FishAtlas_1_events-wrangle.R"))
-# source(file = file.path(dir.scripts, "FishAtlas_2_catch-wrangle.R"))
-# source(file = file.path(dir.scripts, "FishAtlas_3_visits-wrangle.R"))
+source(file = file.path(dir.scripts, "utility.R"))
+source(file = file.path(dir.scripts, "FishAtlas_1_events-wrangle.R"))
+source(file = file.path(dir.scripts, "FishAtlas_2_catch-wrangle.R"))
+source(file = file.path(dir.scripts, "FishAtlas_3_visits-wrangle.R"))
 
 # Calculating diversity measures ------------------------------------------
 
@@ -51,7 +51,7 @@ fam_abun_div.2 = diversity(data = fam_abun_div.1)
 # The entropy diversity indices (HCDT & renyi) and Hill numbers should be parsed into cols for q = 0, 1, and 2
 # Let's first remove these indices from our df,
 remove_names = diversity(data = slice(fam_abun_div.2, 1), type = c("td", "re", "hcdt")) %>% colnames()
-fam_abun_div.3 = select(fam_abun_div.2, -remove_names)
+fam_abun_div.3 = select(fam_abun_div.2, -all_of(remove_names))
 
 # Calculate diversity for HCDT, renyi, and Hill numbers when q = 0
 fam_abun_q0 = diversity(data = fam_abun_div.1, type = c("td", "re", "hcdt"), q = 0)
@@ -76,6 +76,10 @@ fam_abun_diverse = fam_abun_div.4
 rm(fam_abun_q0, fam_abun_q1, fam_abun_q2, remove_names,
    fam_abun_div.1, fam_abun_div.2, fam_abun_div.3, fam_abun_div.4) # clean up
 
+
+# diverse EDA -------------------------------------------------------------
+
+# 
 
 
 
