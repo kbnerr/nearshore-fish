@@ -84,7 +84,9 @@ rm(fam_abun_q0, fam_abun_q1, fam_abun_q2, remove_names,
 
 # diverse EDA -------------------------------------------------------------
 
-# Proportion of familers over time:
+# Proportion of families over time:
+
+# By Year,
 left_join(fam_abun, select(visits_qc, VisitID, Date), by = "VisitID") %>%
   mutate(Year = year(Date)) %>%
   filter(Year > 1980) %>%
@@ -103,9 +105,28 @@ left_join(fam_abun, select(visits_qc, VisitID, Date), by = "VisitID") %>%
                 aes(label = round(Year_Fam_Abun/Year_Tot_Abun, 2)),
                 position = position_stack(), size = 3)
   }
-  
 
+# By Month,
+left_join(fam_abun, select(visits_qc, VisitID, Date), by = "VisitID") %>%
+  mutate(Month = month(Date)) %>%
+  group_by(Month) %>%
+  mutate(Month_Tot_Abun = sum(Abundance),
+         Month_n_Visits = n_distinct(VisitID)) %>%
+  group_by(Month, Fam_CommonName) %>%
+  mutate(Month_Fam_Abun = sum(Abundance)) %>%
+  ungroup() %>%
+  select(Month, Fam_CommonName, Month_Fam_Abun, Month_Tot_Abun, Month_n_Visits) %>%
+  distinct() %>%
+  {
+    ggplot(data = ., aes(x = Month, y = Month_Fam_Abun/Month_Tot_Abun, fill = Fam_CommonName)) +
+      geom_col(aes(fill = Fam_CommonName)) +
+      geom_text(data = filter(., Month_Fam_Abun/Month_Tot_Abun > 0.1),
+                aes(label = round(Month_Fam_Abun/Month_Tot_Abun, 2)),
+                position = position_stack(), size = 3) +
+      scale_x_discrete(limits = month.abb)
+  }
 
+# For labels in the following  boxplot graphs,
 boxplot.n <- function(x){
   return(c(y = max(x), label = length(x)))
 }

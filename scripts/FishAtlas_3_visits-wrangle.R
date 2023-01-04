@@ -12,6 +12,7 @@
 
 library(tidyverse)
 library(ggmap) # Remember to register api key with google if needed
+# register_google(key = api.google, write = TRUE)
 
 # Define workflow paths ---------------------------------------------------
 
