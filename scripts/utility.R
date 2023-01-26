@@ -30,6 +30,18 @@ dir.R = file.path(wd,"R")
 
 # For plotting ------------------------------------------------------------
 
+## For adding labels to boxplot graphs,
+boxplot.n.max <- function(x){
+  return(c(y = max(x), label = length(x)))
+}
+boxplot.n.min <- function(x){
+  return(c(y = min(x), label = length(x)))
+}
+boxplot.n.median <- function(x){
+  return(c(y = median(x), label = length(x)))
+}
+
+## Themes
 pca_theme = theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())

@@ -352,7 +352,7 @@ events.5 %>% group_by(VisitID) %>% summarise(events = n_distinct(EventID)) %>%
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
   labs(title = "Frequency of visits by # of events (seines)")
-ggsave("nfa_freq-visits-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_freq-visits-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 # Compare this to our previous grouping...
 
 events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
@@ -360,7 +360,7 @@ events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) 
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
   labs(title = "Frequency of SiteID-Date pairs by # of events (seines)")
-ggsave("nfa_freq-Site&Date-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_freq-Site&Date-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 # Wow. Glad we combined some of these Sites! There are way less single set data points. 
 
 

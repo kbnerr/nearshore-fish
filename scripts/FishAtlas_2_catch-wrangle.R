@@ -72,17 +72,17 @@ catch$Fam_ScientificName %>% unique()
 catch %>% filter(Fam_CommonName == "") # 9 fish from the EPSCOR project. We'll drop these. 
 catch %>% filter(Fam_CommonName == "bony fishes") # 10,982 fish only identified to Teleostei. We'll drop these too.
 
+# QAQC of catch data ------------------------------------------------------
+
 # Let's first designate a count col in the df,
 catch.1 = mutate(catch, Count = ifelse(Unmeasured == 0,
                                        1,
                                        Unmeasured))
 
-# QAQC of catch data ------------------------------------------------------
-
 # Dropping obs that are not ID'ed to family level
 catch.2 = catch.1  %>% filter(!Fam_CommonName %in% c("", "bony fishes"))
 # Note- this removes EventID = 3156, VisitID = 379_2007-08-09:
-catch.1 %>% filter(VisitID == '379_2007-08-09')
+catch.1 %>% filter(VisitID == '379_2007-08-09') # check
 
 # Re-label "or" cases to the family level
 catch.3 = catch.2 %>%
@@ -101,11 +101,25 @@ catch.3 %>% filter(EventID %in% c("6227", "8042"))
 # Also from initial nmds, I see three visits (upper left) that seem pretty different too,
 events_qc %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09", "36_2004-03-17"))
 catch.3 %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09", "36_2004-03-17"))
-# These three cases also seem to be single taxa incidences,
-# so what we want to do about extremely rare cases...
-# Let's first graph family abundance and frequencies of occurrence,
+# These three cases also seem to be single family incidences
+# We will want to remove extremely rare cases...
 
-catch.3 %>%
+# We may also want to examine at a finer taxon: genus level
+
+# Let's first check out what Genuses we're working with,
+(species = catch.3$Sp_ScientificName %>% unique() %>% sort())
+# Looks to have some Family-level data mixed in. Let's isolate and view these,
+species %>% word(., 1) %>% str_view("ae$", match = TRUE)
+# We'll put these families into an object to subset out,
+(drop_families = str_subset(word(species, 1), "ae$"))
+
+catch.4 = catch.3 %>%
+  mutate(Gen_ScientificName = word(Sp_ScientificName, 1)) %>%
+  filter(!Gen_ScientificName %in% drop_families)
+
+
+# Now, let's graph family abundance,
+catch.4 %>%
   group_by(Fam_CommonName) %>%
   summarise(Abundance = sum(Count)) %>%
   mutate(Fam_CommonName = fct_reorder(as.factor(Fam_CommonName), desc(Abundance))) %>% 
@@ -113,9 +127,10 @@ catch.3 %>%
   geom_col() +
   geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-ggsave("nfa_fam_abundance_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_fam_abundance_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 
-fam_freq_occur = catch.3 %>%
+# Graph Family frequency of occurrence
+fam_freq_occur = catch.4 %>%
   group_by(VisitID, Fam_CommonName) %>%
   summarise(Presence = n_distinct(Fam_CommonName)) %>%
   ungroup() %>%
@@ -129,7 +144,43 @@ fam_freq_occur %>%
   geom_col() +
   geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-ggsave("nfa_fam_freq_occurrence.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_fam_freq_occurrence.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Next, let's graph genus abundance
+catch.4 %>%
+  group_by(Gen_ScientificName) %>%
+  summarise(Abundance = sum(Count)) %>%
+  mutate(Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), desc(Abundance))) %>% 
+  ggplot(aes(x = Gen_ScientificName, y = Abundance)) +
+  geom_col() +
+  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# ggsave("nfa_gen_abundance_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Graph frequency of occurrence
+gen_freq_occur = catch.4 %>%
+  group_by(VisitID, Gen_ScientificName) %>%
+  summarise(Presence = n_distinct(Gen_ScientificName)) %>%
+  ungroup() %>%
+  group_by(Gen_ScientificName) %>%
+  summarise(Occurrence = sum(Presence)) %>%
+  mutate(Perc_Occurrence = Occurrence / n_distinct(catch.4$VisitID) * 100,
+         Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), desc(Perc_Occurrence)))
+
+gen_freq_occur %>%
+  ggplot(aes(x = Gen_ScientificName, y = Perc_Occurrence)) +
+  geom_col() +
+  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# ggsave("nfa_gen_freq_occurrence.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# View the common names for rare Genuses, i.e., occuring in <0.25% of visits
+# These include 34 different taxa
+rare_genus = gen_freq_occur %>%
+  filter(Perc_Occurrence < 0.25) %>%
+  mutate(Gen_ScientificName = as.character(Gen_ScientificName)) %>%
+  select(Gen_ScientificName) %>%
+  as_vector()
 
 # There are 10 families that occur in less than 1% of visits.
 # We will consider these our extreme rare cases and remove them from the df,
@@ -139,13 +190,26 @@ rare_families = fam_freq_occur %>%
   select(Fam_CommonName) %>%
   as_vector()
 
-catch.4 = filter(catch.3, !Fam_CommonName %in% rare_families)
-
-catch.4 %>% filter(VisitID %in% c("288_1998-08-09", "291_1998-08-09"))
+# We will go with Genus level for now, removing the rarest taxa
+catch.5 = filter(catch.4, !Gen_ScientificName %in% rare_genus)
 
 # Moving forward we only need the most a couple versions of the data:
-# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
-catch_qc = catch.4 %>% arrange(VisitID) # Won't hurt to end by ordering our df by VisitID's
+# QC'ed events level data, original events level data (for comparison purposes),
+# and most recent catch level data:
+catch_qc = catch.5 %>% arrange(VisitID) # Won't hurt to end by ordering our df by VisitID's
+
+
+# What if we try to use biomass? ------------------------------------------
+
+# Let's first figure out how many samples we would have...
+tmp = catch_qc %>%
+  group_by(VisitID, Fam_CommonName) %>%
+  transmute(Abundance = sum(Count, na.rm = TRUE),
+            Avg_Length = mean(Length_mm, na.rm = TRUE)) %>%
+  drop_na()
+tmp %>% distinct()
+  anti_join(tmp, select(visits_qc, VisitID), by = "VisitID")
+# Looks like we don't lose any visits...
 
 # Creating subsets of QAQC'd data -----------------------------------------
 
@@ -162,21 +226,22 @@ fam_abun = catch_qc %>%
   
 ## Genus level
 
-catch_qc %>%
-  separate(Sp_ScientificName, into = c("Gen_ScientificName", "drop"), sep = " ", remove = FALSE) %>%
-  select(-drop)
-# Warning messages are cases where fish were ID'ed to family level
-
+gen_abun = catch_qc %>%
+  select(VisitID,
+         EventID,
+         Gen_ScientificName,
+         Count) %>%
+  group_by(VisitID, Gen_ScientificName) %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% round(2)) %>%
+  ungroup()
 
 # Environment clean-up ----------------------------------------------------
 
 # We'll keep these plus our wd objects:
 keep = c('data',
-         'events',
          'events_qc',
-         'catch',
          'catch_qc',
-         'fam_abun',
+         'gen_abun',
          'wd',
          'dir.data',
          'dir.figs',

@@ -171,3 +171,25 @@ tmp2 %>%
         panel.grid.minor = element_line(color = "grey45")) +
   facet_wrap( ~  Month, ncol = 1)
 
+
+# 2023 --------------------------------------------------------------------
+
+left_join(fam_abun, select(visits_qc, VisitID, Region)) %>%
+  ggplot(data = ., aes(x = Region, fill = Region)) + 
+  geom_bar()
+
+catch_qc %>%
+  group_by(VisitID, Fam_CommonName) %>%
+  summarise(Presence = n_distinct(Fam_CommonName)) %>%
+  ungroup() %>%
+  group_by(Fam_CommonName) %>%
+  mutate(Occurrence = sum(Presence),
+         Perc_Occurrence = Occurrence / n_distinct(visits_qc$VisitID) * 100,
+         Fam_CommonName = fct_reorder(as.factor(Fam_CommonName), desc(Perc_Occurrence))) %>%
+  left_join(select(visits_qc, VisitID, Region), by = "VisitID") %>%
+  ggplot(data = ., aes(x = Fam_CommonName, y = Perc_Occurrence, fill = Region)) +
+  geom_col() +
+  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+filter(data, Region == "Aleutian Islands") %>% View()

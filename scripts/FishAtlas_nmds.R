@@ -14,13 +14,15 @@ library(cowplot)
 # Data prep ---------------------------------------------------------------
 
 fam_abun_wide = fam_abun %>%
+  left_join(select(visits_qc, VisitID, Region), by = "VisitID") %>%
+  filter(Region %in% c('Beaufort Sea', 'Chukchi Sea', 'Beau-Chuk Sea', 'Bering Sea', 'Aleutian Islands')) %>%
   mutate(Abun_4rt = Abundance^-4) %>% # 4th root Transformation
   select(-Abundance) %>%
   pivot_wider(names_from = Fam_CommonName,
               values_from = Abun_4rt,
               values_fill = 0)
 
-fam_abun_mat = as.matrix(fam_abun_wide[,-1]) %>% wisconsin() # Wisconsin dbl Standardization
+fam_abun_mat = as.matrix(fam_abun_wide[, -(1:2)]) %>% wisconsin() # Wisconsin dbl Standardization
 rownames(fam_abun_mat) = fam_abun_wide$VisitID
 
 # Let's add rownames to our fam abund matrix:
@@ -33,8 +35,8 @@ env$SiteID == spp$SiteID # double checking that our env and spp order of samples
 # We will proceed with caution as our ordination in 2 dimensions is suspect
 
 # NMDS in 2 dimensions:
-(nmds = metaMDS(fam_abun_mat, distance = "bray", trymax = 100,
-                k = 2, noshare = 0.1,
+(nmds = metaMDS(fam_abun_mat, distance = "bray",
+                noshare = 0.1, k = 2,
                 tidy = TRUE))
 stressplot(nmds)
 # our non-metric fit is ok (R2 = 0.947), linear fit is no beuno (R2 = 0.72)
@@ -45,7 +47,7 @@ nmds_res = scores(nmds, "sites") %>% as.data.frame()
 # Add Region and Habitat classes to the NMDS df,
 nmds_forplotting = nmds_res %>%
   mutate(VisitID = rownames(nmds_res)) %>%
-  left_join(select(visits.5d, VisitID, Region, Habitat, Date), by = "VisitID") %>%
+  left_join(select(visits_qc, VisitID, Region, Habitat, Date), by = "VisitID") %>%
   mutate(Year = year(Date),
          Month = month(Date))
 
@@ -67,9 +69,7 @@ nmds_forplotting = nmds_res %>%
 
 # Graph the nmds ordination
 ggplot(nmds_forplotting, aes(x = NMDS1, y = NMDS2)) +
-  geom_point(aes(color = Month)) +
-  scale_color_continuous() +
-  nmds_theme + 
+  geom_point(aes(color = Region)) +
   coord_fixed()
 
 
@@ -94,7 +94,7 @@ ggplot(nmds_forplotting, aes(x = NMDS1, y = NMDS2)) +
   geom_text_repel(data = envfit.cat, aes(x = NMDS1, y = NMDS2), 
                   label = row.names(envfit.cat),
                   colour = "navy", fontface = "bold") + 
-nmds_theme + 
+  nmds_theme + 
   coord_fixed()
 
 

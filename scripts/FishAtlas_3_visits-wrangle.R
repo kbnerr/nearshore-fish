@@ -13,6 +13,7 @@
 library(tidyverse)
 library(ggmap) # Remember to register api key with google if needed
 # register_google(key = api.google, write = TRUE)
+library(lubridate)
 
 # Define workflow paths ---------------------------------------------------
 
@@ -46,7 +47,8 @@ events_qc %>% select(VisitID, ProjectName) %>% n_distinct()
 
 # So let's nest these and deal with them one by one,
 visits.1 = events_qc %>%
-  inner_join(catch_qc %>% select(VisitID) %>% distinct(), by = "VisitID") %>% # Drop any visits removed during catch QAQC
+  # Drop any visits removed during catch QAQC
+  inner_join(catch_qc %>% select(VisitID) %>% distinct(), by = "VisitID") %>% #
   group_by(VisitID) %>%
   nest(EventIDs = EventID,
        Regions = Region,
@@ -135,15 +137,15 @@ visits.5b = visits.5a %>%
 visits.5b$Region %>% unique()
 # hmm looks like we have visits where seines occurred in both the beaufort and chukchi regions.
 # Let's take a look at them on a map,
-map.arctic = get_map(location = geocode("Utqiagvik"), source = "google", maptype = "satellite", color = "bw", crop = FALSE, zoom = 7)
-ggmap(map.arctic) +
-  geom_point(data = filter(visits.5b, Region %in% c('Chukchi Sea', 'Beaufort Sea', 'Beaufort Sea_Chukchi Sea')),
-             aes(x = Lon, y = Lat, color = Region, alpha = Region, size = Region)) +
-  scale_color_manual(values = c("yellow", "green", "blue")) +
-  scale_alpha_manual(values = c(0.4, 1, 0.4)) +
-  scale_size_manual(values = c(1, 3, 1)) +
-  labs(title = "NFA Visits in the Arctic")
-ggsave("nfa_map_beaufort-chukchi_overlap.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+#map.arctic = get_map(location = geocode("Utqiagvik"), source = "google", maptype = "satellite", color = "bw", crop = FALSE, zoom = 7)
+#ggmap(map.arctic) +
+#  geom_point(data = filter(visits.5b, Region %in% c('Chukchi Sea', 'Beaufort Sea', 'Beaufort Sea_Chukchi Sea')),
+#             aes(x = Lon, y = Lat, color = Region, alpha = Region, size = Region)) +
+#  scale_color_manual(values = c("yellow", "green", "blue")) +
+#  scale_alpha_manual(values = c(0.4, 1, 0.4)) +
+#  scale_size_manual(values = c(1, 3, 1)) +
+#  labs(title = "NFA Visits in the Arctic")
+#ggsave("nfa_map_beaufort-chukchi_overlap.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 
 # These double regions seem to occur around Utqiavik.
 # It makes sense to me that Beaufort and Chukchi visits could be combined to an 'Arctic' region,
@@ -153,11 +155,11 @@ visits.5c = visits.5b %>%
                          Region))
 
 # Let's take a look at all our visits by Region,
-map.ak = get_map(location = geocode("Alaska"), source = "google", maptype = "hybrid", color = "bw", crop = FALSE, zoom = 4)
-ggmap(map.ak) +
-  geom_point(data = visits.5c, aes(x = Lon, y = Lat, color = Region)) +
-  geom_vline(aes(xintercept = -142), color = "white", alpha = 0.5) + # add a vert longitude line at -142 degrees
-  labs(title = "All NFA visits by Region")
+#map.ak = get_map(location = geocode("Alaska"), source = "google", maptype = "hybrid", color = "bw", crop = FALSE, zoom = 4)
+#ggmap(map.ak) +
+#  geom_point(data = visits.5c, aes(x = Lon, y = Lat, color = Region)) +
+#  geom_vline(aes(xintercept = -142), color = "white", alpha = 0.5) + # add a vert longitude line at -142 degrees
+#  labs(title = "All NFA visits by Region")
 # ggsave("nfa_map_combined-arctic_combined-goa.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 
 # We may want to split the GoA visits (for now),
@@ -168,14 +170,35 @@ visits.5d = visits.5c %>%
                                 "East GoA",
                                 Region)))
 # Let's take a look at the map again,
-ggmap(map.ak) +
-  geom_point(data = visits.5d, aes(x = Lon, y = Lat, color = Region)) +
-  labs(title = "All NFA visits by Region")
-ggsave("nfa_map_split_goa.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
-# Looks ok for now.. we will want to address how we treat the samples in space at some point,
-# seems kinda subjective that we have scattered patches of Arctic samples,
-# but consider it one region when the Bering Sea is its own region.
+#ggmap(map.ak) +
+#  geom_point(data = visits.5d, aes(x = Lon, y = Lat, color = Region)) +
+#  labs(title = "All NFA visits by Region") +
+#  geom_hline(yintercept = seq(50, 75, by = 1)) +
+#  geom_vline(xintercept = seq(-170, -130, by = 1))
+#ggsave("nfa_map_split_goa.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+# Seems kinda subjective that we have scattered patches of Arctic samples,
+# Let's split the 'Arctic' samples into 3 regions:
+visits.5e = visits.5d %>%
+  mutate(Region = ifelse(Region == "Arctic",
+                         case_when(Lat < 69 ~ "Chukchi Sea",
+                                   Lat > 69 & Lon < -150 ~ "Beau-Chuk Sea",
+                                   Lat > 69 & Lon > -150 ~ "Beaufort Sea"),
+                         Region))
 
+# ggmap(map.ak) +
+#  geom_point(data = visits.5e, aes(x = Lon, y = Lat, color = Region)) +
+#  labs(title = "All NFA visits by Region")
+# ggsave("nfa_map_split-Arctic.png", plot = last_plot(), device = 'png', path = file.path(dir.figs), dpi = 300)
+
+# Here, we mark the ecological division at Samalga Pass (HUnt and Stabeno, 2005)
+# We may want to address the Aletutians specially in the future...
+# Perhaps we model along the entire GoA as a GAM: Diversity ~ s(lon) + s(lat)
+ggmap(map.ak) +
+  geom_point(data = visits.5e, aes(x = Lon, y = Lat, color = Region)) +
+  geom_point(data = data.frame(lat = 52.739, lon = -169.317),
+             aes(x = lon, y = lat), size = 5, shape = "diamond", color = "yellow", alpha = 0.75) +
+  labs(title = "All NFA visits by Region")
+# ggsave("nfa_map_final.png", plot = last_plot(), device = 'png', path = file.path(dir.figs), dpi = 300)
 
 # TidalStage --------------------------------------------------------------
 
@@ -183,7 +206,7 @@ ggsave("nfa_map_split_goa.png", plot = last_plot(), device = 'png', path = file.
 events_qc$TidalStage %>% unique() %>% sort()
 # These Tidal stages are inconsistent and pretty incomplete...
 # I think we just drop TidalStage,
-visits.6 = select(visits.5d, -TidalStages)
+visits.6 = select(visits.5e, -TidalStages)
 
 
 # Location ----------------------------------------------------------------
@@ -221,6 +244,36 @@ filter(events_qc, EventID %in% mult_projects)
 filter(data, EventID %in% mult_projects)
 
 
+# Some EDA graphs ---------------------------------------------------------
+
+## Spatial distribution of visits by region:
+
+# Placeholder for mapping samples across the state
+ggmap(map.ak) +
+  geom_point(data = visits_qc, aes(x = Lon, y = Lat, color = Region)) +
+  geom_point(data = data.frame(lat = 52.739, lon = -169.317), # Samalga Pass coordinates
+             aes(x = lon, y = lat), size = 5, shape = "diamond", color = "yellow", alpha = 0.75) +
+  labs(title = "All NFA visits by Region")
+
+## Temporal spread of visits by region:
+
+# Over all years,
+select(visits_qc, VisitID, Region, Date) %>%
+  ggplot(data = ., aes(x = Date, y = Region, color = Region)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(fun.data = boxplot.n.max, geom = "text", hjust = -1)
+# ggsave("nfa_distrib_year-by-Region.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# By month with no. samples per month,
+select(visits_qc, VisitID, Region, Date) %>%
+  mutate(Month = month(Date)) %>%
+  ggplot(data = ., aes(x = Month, y = Region, color = Region)) +
+  geom_boxplot() +
+  stat_summary(fun.data = boxplot.n.median, geom = "text", vjust = -3.8) +
+  scale_x_discrete(limits = month.abb)
+# ggsave("nfa_distrib_month-by-Region.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+  
 # Environment clean-up ----------------------------------------------------
 
 # Moving forward we only need the most a couple versions of the data:
@@ -229,12 +282,9 @@ visits_qc = visits.8b
 
 # We'll keep these plus our wd objects:
 keep = c('data',
-         'events',
          'events_qc',
-         'catch',
          'catch_qc',
-         'fam_abun',
-         'visits',
+         'gen_abun',
          'visits_qc',
          'wd',
          'dir.data',
