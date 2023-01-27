@@ -28,10 +28,10 @@ dir.scripts = file.path(wd,"scripts")
 
 # Read in data ------------------------------------------------------------
 
-source(file = file.path(dir.scripts, "utility.R"))
 source(file = file.path(dir.scripts, "FishAtlas_1_events-wrangle.R"))
 source(file = file.path(dir.scripts, "FishAtlas_2_catch-wrangle.R"))
 source(file = file.path(dir.scripts, "FishAtlas_3_visits-wrangle.R"))
+source(file = file.path(dir.scripts, "utility.R"))
 
 # Calculating diversity measures ------------------------------------------
 
@@ -88,7 +88,8 @@ rm(gen_abun_q0, gen_abun_q1, gen_abun_q2, remove_names,
 ggplot(data = gen_abun_diverse, aes(x = variety)) +
   geom_histogram(stat = 'count') +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
-  labs(title = "Frequency of visits with # of taxa (Richness)")
+  labs(title = "Frequency of visits where variety (Richness) = 1 through 22")
+ggsave("nfa_diversity_freq-visits-by-richness.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 
 ## Proportion of taxa over time:
 
