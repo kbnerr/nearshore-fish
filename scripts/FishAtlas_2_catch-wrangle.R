@@ -207,8 +207,8 @@ tmp = catch_qc %>%
   transmute(Abundance = sum(Count, na.rm = TRUE),
             Avg_Length = mean(Length_mm, na.rm = TRUE)) %>%
   drop_na()
-tmp %>% distinct()
-  anti_join(tmp, select(visits_qc, VisitID), by = "VisitID")
+
+anti_join(tmp, select(events_qc, VisitID), by = "VisitID")
 # Looks like we don't lose any visits...
 
 # Creating subsets of QAQC'd data -----------------------------------------
