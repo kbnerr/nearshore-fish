@@ -155,7 +155,7 @@ visits.5c = visits.5b %>%
                          Region))
 
 # Let's take a look at all our visits by Region,
-#map.ak = get_map(location = geocode("Alaska"), source = "google", maptype = "hybrid", color = "bw", crop = FALSE, zoom = 4)
+map.ak = get_map(location = geocode("Alaska"), source = "google", maptype = "hybrid", color = "bw", crop = FALSE, zoom = 4)
 #ggmap(map.ak) +
 #  geom_point(data = visits.5c, aes(x = Lon, y = Lat, color = Region)) +
 #  geom_vline(aes(xintercept = -142), color = "white", alpha = 0.5) + # add a vert longitude line at -142 degrees
@@ -193,11 +193,11 @@ visits.5e = visits.5d %>%
 # Here, we mark the ecological division at Samalga Pass (HUnt and Stabeno, 2005)
 # We may want to address the Aletutians specially in the future...
 # Perhaps we model along the entire GoA as a GAM: Diversity ~ s(lon) + s(lat)
-ggmap(map.ak) +
-  geom_point(data = visits.5e, aes(x = Lon, y = Lat, color = Region)) +
-  geom_point(data = data.frame(lat = 52.739, lon = -169.317),
-             aes(x = lon, y = lat), size = 5, shape = "diamond", color = "yellow", alpha = 0.75) +
-  labs(title = "All NFA visits by Region")
+# ggmap(map.ak) +
+#  geom_point(data = visits.5e, aes(x = Lon, y = Lat, color = Region)) +
+#  geom_point(data = data.frame(lat = 52.739, lon = -169.317),
+#             aes(x = lon, y = lat), size = 5, shape = "diamond", color = "yellow", alpha = 0.75) +
+#  labs(title = "All NFA visits by Region")
 # ggsave("nfa_map_final.png", plot = last_plot(), device = 'png', path = file.path(dir.figs), dpi = 300)
 
 # TidalStage --------------------------------------------------------------
@@ -244,6 +244,13 @@ filter(events_qc, EventID %in% mult_projects)
 filter(data, EventID %in% mult_projects)
 
 
+# Finalize tibble ---------------------------------------------------------=
+
+# Moving forward we only need the most a couple versions of the data:
+# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
+visits_qc = visits.8b
+
+
 # Some EDA graphs ---------------------------------------------------------
 
 ## Spatial distribution of visits by region:
@@ -274,11 +281,8 @@ select(visits_qc, VisitID, Region, Date) %>%
   scale_x_discrete(limits = month.abb)
 # ggsave("nfa_distrib_month-by-Region.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
   
-# Environment clean-up ----------------------------------------------------
 
-# Moving forward we only need the most a couple versions of the data:
-# QC'ed events level data, original events level data (for comparison purposes), and most recent catch level data:
-visits_qc = visits.8b
+# Environment clean-up ----------------------------------------------------
 
 # We'll keep these plus our wd objects:
 keep = c('data',
