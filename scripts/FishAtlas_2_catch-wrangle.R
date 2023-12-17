@@ -155,7 +155,7 @@ p_gen_abun = catch.4 %>%
   geom_col() +
   geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# ggsave("nfa_gen_abundance_raw.png", plot = p_gen_abun, device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_gen_abun_raw.png", plot = p_gen_abun, device = 'png', path = file.path(dir.figs))
 
 # Graph frequency of occurrence
 gen_freq_occur = catch.4 %>%
@@ -172,9 +172,10 @@ p_gen_freq_occur = gen_freq_occur %>%
   geom_col() +
   geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# ggsave("nfa_gen_freq_occurrence.png", plot = p_freq_occur, device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_gen_abun_freq.png", plot = p_freq_occur, device = 'png', path = file.path(dir.figs))
 
-# View the common names for rare Genuses, i.e., occuring in <0.25% of visits
+# View the common names for rare Genuses,
+# i.e., occuring in <0.25% of visits (6 or fewer visits)
 # These include 34 different taxa
 rare_genus = gen_freq_occur %>%
   filter(Perc_Occurrence < 0.25) %>%
@@ -232,6 +233,17 @@ gen_abun = catch_qc %>%
          Gen_ScientificName,
          Count) %>%
   group_by(VisitID, Gen_ScientificName) %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% round(2)) %>%
+  ungroup()
+
+## Species level
+
+sp_abun = catch_qc %>%
+  select(VisitID,
+         EventID,
+         Sp_ScientificName,
+         Count) %>%
+  group_by(VisitID, Sp_ScientificName) %>%
   summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% round(2)) %>%
   ungroup()
 
