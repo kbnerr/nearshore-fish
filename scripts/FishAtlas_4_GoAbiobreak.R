@@ -15,6 +15,7 @@ library(tidyverse)
 library(lubridate)
 library(cluster)
 library(magrittr)
+library(vegan)
 
 # Define workflow paths ---------------------------------------------------
 
@@ -45,9 +46,9 @@ gen_abun = catch_qc %>%
   ungroup()
 
 ## We'll take a look at catch distribution for each genera,
-# and choose a statistic to weight each abundance by,
+# and decide how to transformorm standardize the data,
 # the idea being that we want to remove effects of the largest catches
-# but still allow for large abundances to have an effect.
+# but still allow for abundances to have some effect.
 
 # First, set aside a temporary df to calculate different quantiles,
 tmp = gen_abun %>%
@@ -86,18 +87,18 @@ gen_abun_wt = gen_abun %>%
   mutate(wt_abun = Abundance/q.95_abun) %>%
   select(-Abundance, -q.95_abun)
 
-# Graph abundance after weighting abundance
+# Plot abundance after standardizing
 p_gen_abun_wt = gen_abun_wt %>%
   group_by(Gen_ScientificName) %>%
   summarise(wt_abun_sum = sum(wt_abun)) %>%
-  mutate(Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), desc(wt_abun_sum))) %>% 
+  mutate(Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), dplyr::desc(wt_abun_sum))) %>% 
   ggplot(aes(x = Gen_ScientificName, y = wt_abun_sum)) +
   geom_col() +
   geom_text(aes(label = round(wt_abun_sum, 0)), vjust = -0.5, size = 2) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-ggsave("nfa_gen_abun_wt.png", plot = p_gen_abun_wt, device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_gen_abun_wt.png", plot = p_gen_abun_wt, device = 'png', path = file.path(dir.figs))
 
-# Graph frequency of occurrence (should not be different than before weights)
+# Plot frequency of occurrence (should not be different than before weights)
 gen_abun_wt_freq = gen_abun_wt %>%
   group_by(VisitID, Gen_ScientificName) %>%
   summarise(Presence = n_distinct(Gen_ScientificName)) %>%
@@ -112,7 +113,7 @@ p_gen_abun_wt_freq = gen_abun_wt_freq %>%
   geom_col() +
   geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-#ggsave("nfa_gen_abun_wt_freq.png", plot = p_gen_abun_wt_freq, device = 'png', path = file.path(dir.figs))
+# ggsave("nfa_gen_abun_wt_freq.png", plot = p_gen_abun_wt_freq, device = 'png', path = file.path(dir.figs))
 
 # Pivot the weighted abundances into wide format (and save),
 gen_abun_wt_wide = pivot_wider(gen_abun_wt,
@@ -120,9 +121,15 @@ gen_abun_wt_wide = pivot_wider(gen_abun_wt,
             names_from = Gen_ScientificName, names_sort = TRUE,
             values_from = wt_abun, values_fill = 0)
 
+# For now we move forward without transformation - we can come back to change this,
 
+gen_dist_bray = vegdist(x = gen_abun_wt_wide[-1], method = "bray")
 
+gen_dist_jac = vegdist(x = gen_abun_wt_wide[-1], method = "jaccard")
 
+gen_dist_cao = vegdist(x = gen_abun_wt_wide[-1], method = "clark")
+
+gen_dist_raup = vegdist(x = gen_abun_wt_wide[-1], method = "raup")
 
 
 
