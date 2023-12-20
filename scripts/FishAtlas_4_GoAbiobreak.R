@@ -46,9 +46,21 @@ gen_abun = catch_qc %>%
   ungroup()
 
 ## We'll take a look at catch distribution for each genera,
-# and decide how to transformorm standardize the data,
+# and decide how to transform or standardize the data,
 # the idea being that we want to remove effects of the largest catches
 # but still allow for abundances to have some effect.
+
+## Current data process:
+# 1a. "Weight" abundances by the 0.95 quantile for each genera
+# 1b. Use raw abundances
+# 2. Hellinger transformation (sqrt of abundance/rowsum(abundance)) -- NOT IMPLEMENTED YET!
+# 3a. Calculate distance matris using Bray-Curtis (weighted abundances)
+# 3b. Calculate distance matrix using Robust Aitchison (raw abundances -> robust centered log ratio)
+## Current method:
+# 4a. Run agglomertative algorithm, hclust(method = ward.D2) -- distances squared before cluster updates
+# 4b. Run divisive algorithm, diana(k.stop.at = ?)
+## Current analysis:
+# 5. pvclust() -- 
 
 # First, set aside a temporary df to calculate different quantiles,
 tmp = gen_abun %>%
@@ -79,7 +91,9 @@ plot_abun = function(x) {
 # Run the function
 plot_abun(tmp)
 
-# I like where the q.95_abun sits, so we will weight abundances by the 95th quantile for each genus,
+# I like where the q.95_abun sits,
+# so we'll transform abundances by the 95th quantile for each genus,
+# I'll call this 'weighting' but this may not be accurate...
 gen_abun_wt = gen_abun %>%
   group_by(Gen_ScientificName) %>%
   mutate(q.95_abun = quantile(Abundance, 0.95, names = FALSE)) %>% 
@@ -87,7 +101,7 @@ gen_abun_wt = gen_abun %>%
   mutate(wt_abun = Abundance/q.95_abun) %>%
   select(-Abundance, -q.95_abun)
 
-# Plot abundance after standardizing
+# Plot abundance after transforming
 p_gen_abun_wt = gen_abun_wt %>%
   group_by(Gen_ScientificName) %>%
   summarise(wt_abun_sum = sum(wt_abun)) %>%
@@ -98,7 +112,7 @@ p_gen_abun_wt = gen_abun_wt %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # ggsave("nfa_gen_abun_wt.png", plot = p_gen_abun_wt, device = 'png', path = file.path(dir.figs))
 
-# Plot frequency of occurrence (should not be different than before weights)
+# Plot frequency of occurrence (should not be different than before transform)
 gen_abun_wt_freq = gen_abun_wt %>%
   group_by(VisitID, Gen_ScientificName) %>%
   summarise(Presence = n_distinct(Gen_ScientificName)) %>%
@@ -115,23 +129,40 @@ p_gen_abun_wt_freq = gen_abun_wt_freq %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # ggsave("nfa_gen_abun_wt_freq.png", plot = p_gen_abun_wt_freq, device = 'png', path = file.path(dir.figs))
 
-# Pivot the weighted abundances into wide format (and save),
+# Pivot our data into wide format (and save),
+# For transformed abundances
 gen_abun_wt_wide = pivot_wider(gen_abun_wt,
             id_cols = VisitID,
             names_from = Gen_ScientificName, names_sort = TRUE,
             values_from = wt_abun, values_fill = 0)
+# And un-transformed abundances
+gen_abun_wide = pivot_wider(gen_abun,
+                            id_cols = VisitID,
+                            names_from = Gen_ScientificName, names_sort = TRUE,
+                            values_from = Abundance, values_fill = 0)
 
-# For now we move forward without transformation - we can come back to change this,
+## Calculate community distances
 
-gen_dist_bray = vegdist(x = gen_abun_wt_wide[-1], method = "bray")
+# Presence/absence
+# Jaccard index (metric)
+gen_dist_jac = vegdist(x = gen_abun_wt_wide[-1], method = "jaccard", binary = TRUE)
+# Sorenson
+gen_dist_sor = vegdist(x = gen_abun_wt_wide[-1], method = "bray", binary = TRUE)
+# Chao
+gen_dist_chao = vegdist(x = gen_abun_wt_wide[-1], method = "chao", binary = TRUE)
 
-gen_dist_jac = vegdist(x = gen_abun_wt_wide[-1], method = "jaccard")
-
-gen_dist_cao = vegdist(x = gen_abun_wt_wide[-1], method = "clark")
-
+# Abundances
+# Bray-Curtis (semi-metric)
+gen_dist_bray = vegdist(x = gen_abun_wt_wide[-1], method = "bray", binary = FALSE)
+# Cao 
+gen_dist_cao = vegdist(x = gen_abun_wide[-1], method = "cao", binary = FALSE)
+# Raup-Grick
 gen_dist_raup = vegdist(x = gen_abun_wt_wide[-1], method = "raup")
+# Robust Aitchison (see Martino et al. 2019)
+gen_dist_rait = vegdist(x = gen_abun_wide[-1], method = "robust.aitchison", binary = FALSE)
 
+hc = hclust(d = gen_dist_bray, method = "ward.D2")
+dc = diana(x = gen_dist_bray, stop.at.k = 4)
 
-
-
+plot(dc)
 
