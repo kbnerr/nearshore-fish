@@ -74,22 +74,33 @@ tmp = gen_abun %>%
 
 # Write a function to store boxplots for each genera abundance,
 # marking optional distribution statistics to use,
-plot_abun = function(x) {
+plot_abun = function(x, var, xintercept = NULL) {
   names = str_which(names(x), "Name") %>% x[.] %>%
     unlist(use.names = FALSE) %>%
     unique() %>% sort()
-  tmp_list = list()
-  tmp_list = map(purrr::set_names(names), ~ {})
-  for (i in 1:length(names)) {
-    tmp_list[[i]] = ggplot(data = filter(x, Gen_ScientificName == i), aes(x = Abundance)) +
-      geom_boxplot() +
-      geom_vline(aes(xintercept = q.95_abun), color = "red") +
-      geom_vline(aes(xintercept = k_abun), color = "green") +
-      labs(title = i)
-  }
+  tmp_list = rep_len(list(), length.out = length(names))
+  names(tmp_list) = names
+  var = rlang::sym(var)
+  if (!is.null(xintercept)) {
+    xint = rlang::sym(xintercept)
+    for (i in names) {
+      tmp_list[[i]] = ggplot(data = filter(x, Gen_ScientificName == i),
+                             aes(x = !! var)) +
+        geom_boxplot() +
+        geom_vline(aes(xintercept = !! xint), color = "red") +
+        labs(title = i)
+    }
+  } else {
+      for (i in names) {
+        tmp_list[[i]] = ggplot(data = filter(x, Gen_ScientificName == i), aes(x = !! var)) +
+          geom_boxplot() +
+          labs(title = i)
+      }
+    }
+  tmp_list
 }
 # Run the function
-plot_abun(tmp)
+plot_abun(x = tmp, var = "Abundance", xintercept = "q.95_abun")
 
 # I like where the q.95_abun sits,
 # so we'll transform abundances by the 95th quantile for each genus,
@@ -112,22 +123,22 @@ p_gen_abun_wt = gen_abun_wt %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # ggsave("nfa_gen_abun_wt.png", plot = p_gen_abun_wt, device = 'png', path = file.path(dir.figs))
 
-# Plot frequency of occurrence (should not be different than before transform)
-gen_abun_wt_freq = gen_abun_wt %>%
-  group_by(VisitID, Gen_ScientificName) %>%
-  summarise(Presence = n_distinct(Gen_ScientificName)) %>%
-  ungroup() %>%
-  group_by(Gen_ScientificName) %>%
-  summarise(Occurrence = sum(Presence)) %>%
-  mutate(Perc_Occurrence = Occurrence / n_distinct(gen_abun_wt$VisitID) * 100,
-         Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), desc(Perc_Occurrence)))
+# I want to check whether abundances look normal if we use the rclr pre-processing,
+# for both raw and weighted abundances,
+gen_abun_wide[-1] %>%
+  decostand(method = "rclr") %>%
+  pivot_longer(cols = everything(),
+               names_to = "Gen_ScientificName",
+               values_to = "log_abun") %>%
+  filter(log_abun != 0) %>%
+  plot_abun(var = "log_abun")
 
-p_gen_abun_wt_freq = gen_abun_wt_freq %>%
-  ggplot(aes(x = Gen_ScientificName, y = Perc_Occurrence)) +
-  geom_col() +
-  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# ggsave("nfa_gen_abun_wt_freq.png", plot = p_gen_abun_wt_freq, device = 'png', path = file.path(dir.figs))
+gen_abun_wt %>%
+  pivot_longer(cols = 2:length(gen_abun_wide),
+               names_to = "Gen_ScientificName",
+               values_to = "log_abun") %>%
+  filter(log_abun != 0) %>%
+  plot_abun(var = "log_wt_abun")
 
 # Pivot our data into wide format (and save),
 # For transformed abundances
@@ -163,6 +174,8 @@ gen_dist_rait = vegdist(x = gen_abun_wide[-1], method = "robust.aitchison", bina
 
 hc = hclust(d = gen_dist_bray, method = "ward.D2")
 dc = diana(x = gen_dist_bray, stop.at.k = 4)
+?kmeans()
+
 
 plot(dc)
 
