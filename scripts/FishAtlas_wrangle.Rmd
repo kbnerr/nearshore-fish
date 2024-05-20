@@ -14,15 +14,15 @@ knitr::opts_chunk$set(size = "scriptsize")
 
 This document was built with R version `r getRversion()`.
 
-Here, I document the steps taken in wrangling the NOAA Nearshore Fish Atlas (NFA). This replaces the separate scripts (named "./FishAtlas\_#\_description.R") and combines them into a single, streamlined R markdown file. These R scripts will be archived in case I need to replicate older methods. Namely, I used to use package 'rgdal' for some steps in the wrangling process but that package stopped being supported ca. Oct 2023 in lieu of package 'sf'.
+Here, I document the steps taken in wrangling the NOAA Nearshore Fish Atlas (NFA). This replaces the separate scripts (named "./FishAtlas\_#\_description.R") and combines them into a single, streamlined R markdown file. These R scripts will be archived in case I need to replicate older methods. Namely, I used to use **rgdal** package for some steps in the wrangling process but that package stopped being supported ca. Oct 2023 in lieu of the **sf** package.
 
 Link to the NFA can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. The entire database can be downloaded as a .csv file, which is what I use here. However, I have additional data files that were either shared with me by NFA contect managers or modified from the NOAA NFA data directory for ease of uploading into R. I try to document these cases in the future.
 
 # Step 1. Wrangling events
 
-The idea with this initial step is to define the scale of our samples. Contributors to the NFA did not define their 'SiteID's and 'EventID's similar to each other, so we'll need to distinguish between SiteID vs EventID.
+The idea with this initial step is to define the scale of our samples. Contributors to the NFA did not define their 'SiteID's and 'EventID's similar to each other, so we'll need to distinguish between SiteID vs EventID and make sure it's consistent throuhgout the database.
 
-I define a SiteID as *a unique place in space*, i.e., all samples from the same 'beach' (beach TBD later on). An EventID is *a unique pull of the beach seine*. So there can be single or multiple EventID's associated with a SiteID. Additionally, I introduce a VisitID, which adds a temporal distinction amongst SiteIDs, i.e., *all events from the same beach on the same day*.
+I define a SiteID as *a unique place in space*, i.e., all samples from the same 'beach' (will be defined later on). An EventID is *a unique pull of the beach seine*. So there can be single or multiple EventID's associated with a SiteID. Additionally, I introduce a VisitID, which adds a temporal distinction amongst SiteIDs, i.e., *all events from the same beach on the same day*.
 
 ## Set up
 
@@ -33,6 +33,8 @@ Load required packages, define directory, set options, source scripts:
 library(tidyverse)
 library(lubridate)
 library(here)
+library(skimr)
+library(sf)
 
 # Directory
 wd = here()
@@ -52,8 +54,84 @@ for (i in seq_along(dirs)) {
 
 ## Read in data
 
-```{r plots, echo=FALSE}
-plot(pressure)
+```{r}
+data = read_csv(file.path(dir.data, "FishAtlas_BeachSeines_2022.07.12.csv"),
+               show_col_types = FALSE)
+GearLookup = read_csv(file.path(dir.data, "FishAtlasExpansion_040422_Lookup_Gear.csv"),
+                      show_col_types = FALSE)
+```
+
+## Subset site information and species information
+
+As in typical community data (site x species), we have info tied to site description and info tied to taxa.
+
+```{r}
+events.1 = data %>%
+  select(SiteID, EventID,
+         Date,
+         Lat, Lon = Long, Region, Location,
+         Habitat, TidalStage, Temp_C, Salinity,
+         GearSpecific, ProjectName, PointOfContact) %>%
+  mutate(Date = mdy(Date)) %>% # re-format date
+  distinct()
+
+catch.1 = data %>%
+  select(SiteID, EventID,
+         Sp_CommonName, Sp_ScientificName, Fam_CommonName, Fam_ScientificName,
+         Unmeasured, Length_mm, LengthType, LifeStage)
+```
+
+## The "Site-Event" problem
+
+The catch data is tied to unique EventIDs which are associated with spatially explicit SiteIDs (each SiteID has a unique lat/lon). Considering that the data has been contributed by multiple researchers/projects, we'll need to make sure we have consistent sites and events across the whole dataset. After that we can tackle the catch data (step 2). First, we take a look at all of the site data with **skimr::skim()**. In particular we want to get a sense of how EventIDs are associated with SiteIDs and other variables placing them in space and time.
+
+```{r}
+skim(events.1)
+
+events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
+  ggplot(data = ., aes(x = events)) +
+  geom_histogram(stat = 'count') +
+  labs(title = "Frequency of SiteID-Date pairs with # of events (seines)")
+
+events.1 %>% group_by(Date, Location) %>% summarise(events = n()) %>%
+  ggplot(data = ., aes(x = events)) +
+  geom_histogram(stat = 'count') +
+  labs(title = "Frequency of Date-Location pairs with # of events (seines)")
+```
+
+We see a lot of single-pull samples when events are grouped by SiteID and Date, i.e., a *visit*. However, we can't assume all of those 'visits' are comparable in spatial scope. Projects differed in structure and purpose, so what one researcher would consider a new site, another researcher might call a replicate within a cumulative sample. I call this the "Site-Event" problem.
+
+We see that the distribution of events becomes less severe when grouped by Date and Location, which tells me that some of those single-pull samples actually should be aggregated to be comparable to other data points. However, grouping by location may not be accurate because of the loose definition of 'Location' (the levels of Location also seem to vary in scale). Since location info is tied to SiteID, we can't just look at EventID's and lat/lon. Instead, we'll need to figure out a way to combine events at the SiteID level.
+
+Basically, we are trying to combine SiteIDs that are currently unique but should have the same identifier, i.e., samples of the same beach. From there, we can define VisitID(s) within a SiteID, i.e., samples of the same beach AND day, and within a VisitID we have our EventID(s), i.e., the unique seines pulled on the same beach on the same day, which is the level of our catch data.
+
+## Using **sf** to solve the "Site-Event" problem
+
+We'll use the **sf** package to turn our SiteID locations into geospatial data:
+
+```{r}
+# Convert data to sf object:
+ID.sf = events.1 %>%
+  select(SiteID, Lon, Lat) %>%
+  # unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE) %>% # unique Site/Event ID
+  # distinct() %>%
+  st_as_sf(., coords = c("Lon", "Lat"), crs = 4326) %>% # WGS84
+  distinct()
+
+# Set aside ID's for renaming rows/cols of distance matrix later:
+ID.names = ID.sf$SiteID
+
+# Create a matrix of distances among all points:
+ID.d.mat = st_distance(ID.sf[ ,-1]) # default is meters
+
+# Convert matrix to df and set column and row names:
+ID.d.df = data.frame(ID.d.mat) %>% units::drop_units()
+rownames(ID.d.df) = ID.names; colnames(ID.d.df) = ID.names
+
+ID.d.df %>% 
+  mutate(ID = rownames(.)) %>% 
+  pivot_longer(names_to = 'Closest_ID', values_to = 'Dist_m', -ID) %>% 
+  mutate(Dist_m = as.numeric(Dist_m))
 ```
 
 ## Including Plots
