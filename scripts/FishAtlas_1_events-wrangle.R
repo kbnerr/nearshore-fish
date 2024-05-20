@@ -16,6 +16,7 @@
 
 library(tidyverse)
 library(lubridate)
+library(here)
 library(sf)
 library(geosphere)
 library(sp)
@@ -23,11 +24,14 @@ library(rgdal)
 
 # Define workflow paths ---------------------------------------------------
 
-wd = getwd()
-dir.output = file.path(wd, "output")
-dir.figs = file.path(wd, "figs")
-dir.data = file.path(wd,"data")
-dir.scripts = file.path(wd,"scripts")
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(name, path, i)
+}
 
 # Read in data ------------------------------------------------------------
 

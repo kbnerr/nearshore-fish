@@ -1,0 +1,49 @@
+---
+title: "Nearshore Fish Atlas Data Wrangle"
+author: "Chris Guo"
+date: "2024-05-20"
+output: html_document
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(size = "scriptsize")
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+# Packages
+library(tidyverse)
+library(lubridate)
+library(here)
+
+# Directory
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(name, path, i)
+}
+
+# Options
+
+# Source
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r plots, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
