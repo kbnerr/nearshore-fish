@@ -10,11 +10,23 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(size = "scriptsize")
 ```
 
-## R Markdown
+# Intro
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This document was built with R version `r getRversion()`.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Here, I document the steps taken in wrangling the NOAA Nearshore Fish Atlas (NFA). This replaces the separate scripts (named "./FishAtlas\_#\_description.R") and combines them into a single, streamlined R markdown file. These R scripts will be archived in case I need to replicate older methods. Namely, I used to use package 'rgdal' for some steps in the wrangling process but that package stopped being supported ca. Oct 2023 in lieu of package 'sf'.
+
+Link to the NFA can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. The entire database can be downloaded as a .csv file, which is what I use here. However, I have additional data files that were either shared with me by NFA contect managers or modified from the NOAA NFA data directory for ease of uploading into R. I try to document these cases in the future.
+
+# Step 1. Wrangling events
+
+The idea with this initial step is to define the scale of our samples. Contributors to the NFA did not define their 'SiteID's and 'EventID's similar to each other, so we'll need to distinguish between SiteID vs EventID.
+
+I define a SiteID as *a unique place in space*, i.e., all samples from the same 'beach' (beach TBD later on). An EventID is *a unique pull of the beach seine*. So there can be single or multiple EventID's associated with a SiteID. Additionally, I introduce a VisitID, which adds a temporal distinction amongst SiteIDs, i.e., *all events from the same beach on the same day*.
+
+## Set up
+
+Load required packages, define directory, set options, source scripts:
 
 ```{r}
 # Packages
@@ -36,6 +48,12 @@ for (i in seq_along(dirs)) {
 
 # Source
 
+```
+
+## Read in data
+
+```{r plots, echo=FALSE}
+plot(pressure)
 ```
 
 ## Including Plots
