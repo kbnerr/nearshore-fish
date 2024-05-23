@@ -1,28 +1,37 @@
 ---
-title: "Nearshore Fish Atlas Data Wrangle"
+title: "NOAA Nearshore Fish Atlas, Data Wrangle"
 author: "Chris Guo"
-date: "2024-05-20"
-output: html_document
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+    toc_float:
+      collapsed: FALSE
+      print: FALSE
+    number_sections: TRUE
+    code_download: TRUE
 ---
 
 ```{r include = FALSE}
 knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(size = "scriptsize")
 ```
 
-# Intro
+Built with R version `r getRversion()`.
 
-This document was built with R version `r getRversion()`.
+# Intro
 
 Here, I document the steps taken in wrangling the NOAA Nearshore Fish Atlas (NFA). This replaces the separate scripts (named "./FishAtlas\_#\_description.R") and combines them into a single, streamlined R markdown file. These R scripts will be archived in case I need to replicate older methods. Namely, I used to use **rgdal** package for some steps in the wrangling process but that package stopped being supported ca. Oct 2023 in lieu of the **sf** package.
 
 Link to the NFA can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. The entire database can be downloaded as a .csv file, which is what I use here. However, I have additional data files that were either shared with me by NFA contect managers or modified from the NOAA NFA data directory for ease of uploading into R. I try to document these cases in the future.
 
-# Step 1. Wrangling events
+# Wrangle site data
 
-The idea with this initial step is to define the scale of our samples. Contributors to the NFA did not define their 'SiteID's and 'EventID's similar to each other, so we'll need to distinguish between SiteID vs EventID and make sure it's consistent throuhgout the database.
+The idea with this initial step is to define the scale of our samples. Contributors to the NFA did not define their SiteID's and EventID's similar to each other, so we'll need to distinguish between SiteID vs EventID and make sure it's consistent throughout the data.
 
-I define a SiteID as *a unique place in space*, i.e., all samples from the same 'beach' (will be defined later on). An EventID is *a unique pull of the beach seine*. So there can be single or multiple EventID's associated with a SiteID. Additionally, I introduce a VisitID, which adds a temporal distinction amongst SiteIDs, i.e., *all events from the same beach on the same day*.
+I define a SiteID as *a unique place in space*, i.e., all samples from the same 'beach' (will be defined later on). An EventID is *a unique pull of the beach seine*. So there can be single or multiple EventID's associated with a SiteID. Additionally, I introduce a VisitID, which adds a temporal distinction among SiteID's, i.e., *all events from the same beach on the same day*.
 
 ## Set up
 
@@ -61,9 +70,9 @@ GearLookup = read_csv(file.path(dir.data, "FishAtlasExpansion_040422_Lookup_Gear
                       show_col_types = FALSE)
 ```
 
-## Subset site information and species information
+## Separate site and species info
 
-As in typical community data (site x species), we have info tied to site description and info tied to taxa.
+As in typical community data (site x species), we have info tied to site description and info tied to taxa. Notice that EventID is the 'look-up' key used in both data sets.
 
 ```{r}
 events.1 = data %>%
@@ -76,70 +85,507 @@ events.1 = data %>%
   distinct()
 
 catch.1 = data %>%
-  select(SiteID, EventID,
+  select(EventID,
          Sp_CommonName, Sp_ScientificName, Fam_CommonName, Fam_ScientificName,
          Unmeasured, Length_mm, LengthType, LifeStage)
 ```
 
+## Considering gear type
+
+The NFA website makes it easy to filter for gear type, so I done prior to downloading the .csv file. However, we'll want to account for differences among the beach seines used- namely the net mesh size. This information is contained in the metadata for the NFA database and can be accessed by request from the database managers (file *FishAtlasExpansion_040422_Lookup_Gear.csv*). A few instances of missing mesh size information was provided by email request to the associated point of contact for that contributed data. Results from the below code are hidden but comments explain what decisions were made.
+
+```{r results = 'hide'}
+# Join the mesh size info from our gear data to the site information
+gear.1 = left_join(events.1, select(GearLookup, GearSpecific, MeshSize), by = "GearSpecific")
+
+# Subset for gear related info and take a look
+gear.2 = select(gear.1, EventID, MeshSize, GearSpecific, ProjectName, PointOfContact)
+glimpse(gear.2)
+# How many different mesh sizes are there?
+gear.2$MeshSize %>% unique()
+
+# Looks like we have an NA to take care of...
+filter(gear.2, is.na(MeshSize))
+# These are all from the GOAIERP project (PI Olav Ormseth). The report from that project reports 6 mm stretched mesh.
+# We'll just go ahead and fix it here instead of changing the GearLookup file,
+gear.3 = mutate(gear.2, MeshSize = ifelse(is.na(MeshSize), 6, MeshSize))
+
+# Check our mesh sizes again,
+gear.3$MeshSize %>% unique()
+# Great, no more NA's.
+
+# We can now join this information with our site data,
+events.2 = left_join(events.1, select(gear.3, EventID, MeshSize), by = "EventID")
+```
+
 ## The "Site-Event" problem
 
-The catch data is tied to unique EventIDs which are associated with spatially explicit SiteIDs (each SiteID has a unique lat/lon). Considering that the data has been contributed by multiple researchers/projects, we'll need to make sure we have consistent sites and events across the whole dataset. After that we can tackle the catch data (step 2). First, we take a look at all of the site data with **skimr::skim()**. In particular we want to get a sense of how EventIDs are associated with SiteIDs and other variables placing them in space and time.
+The catch data is tied to unique EventIDs which are associated with spatially explicit SiteIDs (each SiteID has a unique lat/lon). Considering that the data has been contributed by multiple researchers/projects, we'll need to make sure we have consistent sites and events across the whole dataset. After that we can tackle the catch data. First, we take a look at all of the site data with **skimr::skim()**.
 
 ```{r}
-skim(events.1)
-
-events.1 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
-  ggplot(data = ., aes(x = events)) +
-  geom_histogram(stat = 'count') +
-  labs(title = "Frequency of SiteID-Date pairs with # of events (seines)")
-
-events.1 %>% group_by(Date, Location) %>% summarise(events = n()) %>%
-  ggplot(data = ., aes(x = events)) +
-  geom_histogram(stat = 'count') +
-  labs(title = "Frequency of Date-Location pairs with # of events (seines)")
+skim(events.2)
 ```
 
-We see a lot of single-pull samples when events are grouped by SiteID and Date, i.e., a *visit*. However, we can't assume all of those 'visits' are comparable in spatial scope. Projects differed in structure and purpose, so what one researcher would consider a new site, another researcher might call a replicate within a cumulative sample. I call this the "Site-Event" problem.
+In particular we want to get a sense of how EventIDs are associated with SiteIDs and other variables placing them in space and time.
 
-We see that the distribution of events becomes less severe when grouped by Date and Location, which tells me that some of those single-pull samples actually should be aggregated to be comparable to other data points. However, grouping by location may not be accurate because of the loose definition of 'Location' (the levels of Location also seem to vary in scale). Since location info is tied to SiteID, we can't just look at EventID's and lat/lon. Instead, we'll need to figure out a way to combine events at the SiteID level.
+```{r echo = FALSE}
+events.2 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
+  ggplot(data = ., aes(x = events)) +
+  geom_bar(aes(y = after_stat(count))) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5) +
+  labs(title = "Frequency of SiteID-Date pairs by # of events (replicates)")
 
-Basically, we are trying to combine SiteIDs that are currently unique but should have the same identifier, i.e., samples of the same beach. From there, we can define VisitID(s) within a SiteID, i.e., samples of the same beach AND day, and within a VisitID we have our EventID(s), i.e., the unique seines pulled on the same beach on the same day, which is the level of our catch data.
+events.2 %>% group_by(Date, Location) %>% summarise(events = n_distinct(EventID)) %>%
+  ggplot(data = ., aes(x = events)) +
+  geom_bar(aes(y = after_stat(count))) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5) +
+  labs(title = "Frequency of Date-Location pairs with # of events (replicates)")
+```
 
-## Using **sf** to solve the "Site-Event" problem
+We see a lot of single-pull samples when events are grouped by SiteID and Date, i.e., a *visit*. However, we can't assume all of those 'visits' are comparable in scope. Projects differed in structure and purpose, so what one researcher would consider a new site, another researcher might call a replicate event to be combined with other events within a single sample. I call this the "Site-Event" problem.
 
-We'll use the **sf** package to turn our SiteID locations into geospatial data:
+We see that the distribution of events becomes less severe when grouped by Date and Location, which tells me that some of those single-pull samples actually should be aggregated to be comparable to other multi-pull samples. However, grouping by location may not be accurate because of the loose definition of 'Location' (the levels of Location also seem to vary in scale). Since location info is tied to SiteID, we can't just look at EventID's and lat/lon. Instead, we'll need to figure out a way to combine events at the SiteID level.
+
+Basically, we are trying to combine SiteID's that are currently unique but should have the same identifier, i.e., samples of the same beach. From there, we can define a VisitID as a sample of the same beach AND same day. Within a VisitID we have our EventID(s), i.e., single or multiple replicates of seines pulled on the same beach on the same day, which is the level of our catch data.
+
+## Solving the "Site-Event" problem
+
+Here is where we need to decide on how to define a 'beach'. In other words, what do we consider the spatial scale distinguishing one sample from another? From my personal seining, one of my larger-distanced sites was Anchor Point, where we've seined up to 800 m between first and last replicate. So in my opinion, 1 km would be reasonably conservative estimate to link replicate seines. Imagine seining by skiff- you could hop between replicates ~1 km down beach and still consider it the same site. In the below code, I define clusters of SiteID's by grouping points that are within 1000 m of at least one other SiteID.
 
 ```{r}
-# Convert data to sf object:
-ID.sf = events.1 %>%
-  select(SiteID, Lon, Lat) %>%
-  # unite(col = 'ID', SiteID, EventID, sep = '_', remove = TRUE) %>% # unique Site/Event ID
-  # distinct() %>%
+# Make a new tibble containing SiteID geometries:
+sites.sf = events.2 %>%
+  select(SiteID, Lat, Lon) %>%
+  # Create sf object from lat/lon:
   st_as_sf(., coords = c("Lon", "Lat"), crs = 4326) %>% # WGS84
+  # Project into Alaska Albers 3338
+  st_transform(crs = 3338) %>%
   distinct()
 
-# Set aside ID's for renaming rows/cols of distance matrix later:
-ID.names = ID.sf$SiteID
+# Define a buffer of 1km around each point
+sites.sf.buf = st_buffer(sites.sf, dist = 1000)
 
-# Create a matrix of distances among all points:
-ID.d.mat = st_distance(ID.sf[ ,-1]) # default is meters
+# Create a tibble with clusters of overlapping buffer areas 
+sites.sf.cl = sites.sf.buf %>%
+  st_union() %>% # unite buffer areas
+  st_cast(to = "POLYGON") %>% # turn them into polygon features
+  st_as_sf() %>% # return geometry set features to sfc
+  rownames_to_column(var = "Cluster") %>% # create col for cluster groups
+  mutate(Cluster = as.factor(Cluster)) # use factor class
 
-# Convert matrix to df and set column and row names:
-ID.d.df = data.frame(ID.d.mat) %>% units::drop_units()
-rownames(ID.d.df) = ID.names; colnames(ID.d.df) = ID.names
+# Assign SiteID points to buffer area clusters
+sites.sf.cl.join = st_join(sites.sf, sites.sf.cl, left = TRUE)
 
-ID.d.df %>% 
-  mutate(ID = rownames(.)) %>% 
-  pivot_longer(names_to = 'Closest_ID', values_to = 'Dist_m', -ID) %>% 
-  mutate(Dist_m = as.numeric(Dist_m))
+# Drop sf class from joined data
+sites.cl = st_drop_geometry(sites.sf.cl.join)
+
+# See what we got:
+glimpse(sites.cl)
 ```
 
-## Including Plots
+We now have a simple classification variable that can be joined back with the site information.
 
-You can also embed plots, for example:
-
-```{r plots, echo=FALSE}
-plot(pressure)
+```{r}
+events.3 = left_join(events.2, sites.cl, by = "SiteID")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+However, this only takes into account the spatial component of our larger goal of creating a unique VisitID identifier. Next, we'll account for the sample dates where SiteID's within a cluster match.
+
+```{r}
+# Create a date-cluster tibble containing location and event info to be combined,
+orig = select(events.3, Date, Cluster, SiteID, EventID, Lat, Lon)
+
+# Nest the df by Date and Cluster,
+orig.nest = orig %>%
+  group_by(Date, Cluster) %>%
+  nest(Sites = SiteID,
+       Events = EventID,
+       Lats = Lat,
+       Lons = Lon) %>%
+  ungroup()
+```
+
+We essentially created a our new sample identifier (visit) in nesting by date (day) and cluster (beach). To bring the data back to the EventID level, we need to deal with samples that now have multiple SiteID's and locations, as well as preserve the EventID's associated with the original SiteID. This means we will be overwriting data, which is why I called the above subset 'orig' and the below 'new'.
+
+```{r}
+new = orig.nest %>% 
+  rowwise() %>% # Operates a row-at-a-time (per sample)
+  mutate(SiteID.cl = min(Sites), 
+         Lat.mean = mean(Lats$Lat),
+         Lon.mean = mean(Lons$Lon)) %>%
+  select(-c(Sites, Lats, Lons)) %>% # Remove original info in nested variables
+  unite(col = VisitID, SiteID.cl, Date, sep = "_", remove = FALSE) %>% # create VisitID
+  select(-c(Date, SiteID.cl, Cluster)) %>% # Remove info now captured by VisitID
+  unnest_longer(Events) %>% # Unnest to the EventID level
+  unpack(cols = Events) # change tibble back to vector
+
+# Join our new identifier to the rest if the site data,
+visits = left_join(new, events.3, by = "EventID") %>%
+  mutate(Lat = Lat.mean, Lon = Lon.mean) %>% # Replace old lat/lon with new mean lat/lon
+  select(-c(Lat.mean, Lon.mean))
+
+# Check our our new data structure
+head(visits, 10)
+```
+
+We can see in first 10 rows how the data stuctured by VisitID compares to the original. To select a beach identifier for the new VisitID, I simply went with the lowest SiteID of the nest list (no wrong answers here). SiteID is not very useful anymore, but I left it in the data anyway. The locations to be combined are at most a handful kms apart, so I figure a simple mean would suffice. Notice we now have distinct locations at the VisitID level- this is because different visits to the same beach might have had a different number of replicates. For example, we see that VisitID 1_2001-07-24 involved the first five rows (EventID's 15-19), whereas, VisitID 1_2002-03-35 had an additional two events.
+
+As a last step, let's return to our frequency plots showing the number events per sample:
+
+```{r echo = FALSE}
+# Plot events per SiteID-Date same as before,
+events.3 %>% group_by(SiteID, Date) %>% summarise(events = n_distinct(EventID)) %>%
+  ggplot(data = ., aes(x = events)) +
+  geom_bar(aes(y = after_stat(count))) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5) +
+  labs(title = "Frequency of SiteID-Date pairs by # of events (replicates)")
+# ggsave("nfa_freq-Site&Date-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# And events per visit
+visits %>% group_by(VisitID) %>% summarise(events = n_distinct(EventID)) %>%
+  ggplot(data = ., aes(x = events)) +
+  geom_bar(aes(y = after_stat(count))) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5) +
+  labs(title = "Frequency of visits by # of events (replicates)")
+# ggsave("nfa_freq-visits-by-seines.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+```
+
+Wow. There are way less single-pull samples! Also, there are some interesting samples with replicates of 9, 10, and 12.
+
+```{r echo = FALSE}
+# Clean up our environment for the next step:
+rm(list = ls()[!ls() %in% c('visits', 'catch.1', 'data')])
+
+# Reset directory
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(path, i)
+}
+```
+
+# Wrangle catch data
+
+Similar to our wrangle of site information, we want to hone the breadth of the catch data we use. At this stage, we don't want to make any *interpretations* about the catch. Instead, the goal here is to weed out objectively unneeded and suspicious cases and ensure the consistency of the data (e.g., are all possible species named actual names?).
+
+## Set up
+
+If it were necessary we would load additional packages, define directories, set options, source scripts. But we do not have any additional set up to do at this point.
+
+```{r echo = FALSE}
+# Packages
+
+# Directory
+
+# Options
+
+# Source
+
+```
+
+## Read in data
+
+Nothing to do here.
+
+## Ediing taxonomy
+
+```{r}
+skim(catch.1)
+```
+
+One nice thing about **skim()** is that it quickly tells you where the information is missing and how much is missing. We see that there are nine cases of missing data at the family level. Something else that jumps out to me is that the number of unique species common names is not the same as the number of unique species scientific names.
+
+I'll also change the 'Unmeasured' variable to a count abundance, which may not be totally necessary but will make it easier for me to work with the data.
+
+Another thing to point out is that less than half of the data appears to have life stage information. Furthermore, the data with length information is a little over 50%, which is a shame because we could have inferred life stage from length. At this point, it doesn't seem worth while to toss out potentially half the data to include either of those variables. Although, I may return to this down the road.
+
+First, let's check out all the taxa we have in the data:
+
+### Taxa list - before edits {- .tabset .tabset-pills}
+
+#### Family {-}
+
+```{r echo = FALSE}
+catch.1 %>%
+  select(Fam_ScientificName, Fam_CommonName) %>%
+  rename(`Scientific Name` = Fam_ScientificName, `Common Name` = Fam_CommonName) %>%
+  distinct() %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+#### Species {-}
+
+```{r echo = FALSE}
+catch.1 %>%
+  select(Sp_ScientificName, Sp_CommonName) %>%
+  rename(`Scientific Name` = Sp_ScientificName, `Common Name` = Sp_CommonName) %>%
+  distinct() %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+The discrepancy between species common and scientific names has to do with the cases where fish were given unidentified or juvenile labels. Nothing to fix here but we'll just make sure to use scientific names in analyses.
+
+I also notice a couple of cases where species are called something 'or' something else:
+
+1.  Anisarchus medius or Lumpenus fabricii
+2.  Osmeridae or Clupidae (misspelled)
+
+Looking at the family table, we don't see 'Osmeridae or Clupeidae', so I think that replacing these 'or' cases with their associated family scientific name should suffice.
+
+Speaking of the family table, I see that those missing data show up as NA's. We'll take a look at it and make a judgment call on how to deal with the.
+
+Last, I'll also create a genus classification, which could end up being the level at which we do the analyses, depending on what that looks like.
+
+I do not show results of the below code, but I provided an edited taxa list and see also comments for steps taken.
+
+```{r results = "hide"}
+# Check out the cases where family is missing
+filter(catch.1, is.na(Fam_ScientificName))
+# Look up the visit info for these cases
+filter(visits, EventID %in% catch.1$EventID[which(is.na(catch.1$Fam_ScientificName))])
+# Check out everything else caught during these visits
+filter(catch.1, EventID %in% catch.1$EventID[which(is.na(catch.1$Fam_ScientificName))])
+# Since these nine NAs make up a small portion of their samples,
+# The simplest solve here is to just remove the data.
+
+# Create a new object after edits made to taxonomy
+catch.2 = catch.1 %>%
+  # Drop the nine instances of NA catch
+  drop_na(Fam_ScientificName) %>%
+  # Find the 'or' species and replace with Fam_ScientificName value
+  mutate(Sp_ScientificName = ifelse(str_detect(Sp_ScientificName, pattern = " or "),
+                                    Fam_ScientificName,
+                                    Sp_ScientificName),
+         # Create genus class by taking first word of Sp_ScientificName
+         Gen_ScientificName = word(Sp_ScientificName, 1))
+```
+
+### Taxa list - after edits {- .tabset .tabset-pills}
+
+#### Family {-}
+
+```{r echo = FALSE}
+catch.2 %>%
+  select(Fam_ScientificName, Fam_CommonName) %>%
+  rename(`Scientific Name` = Fam_ScientificName, `Common Name` = Fam_CommonName) %>%
+  distinct() %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+#### Genus {-}
+
+```{r echo = FALSE}
+catch.2 %>%
+  select(`Scientific Name` = Gen_ScientificName) %>%
+  distinct() %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+#### Species {-}
+
+```{r echo = FALSE}
+catch.2 %>%
+  select(Sp_ScientificName, Sp_CommonName) %>%
+  rename(`Scientific Name` = Sp_ScientificName, `Common Name` = Sp_CommonName) %>%
+  distinct() %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+## Abundance and occurence
+
+### 'Unmeasured' into 'Count'
+
+The below code changes the 'Unmeasured' parameter into 'Count' abundance:
+
+```{r results = "hide"}
+catch.3 = mutate(catch.2, Count = ifelse(Unmeasured == 0,
+                                         1,
+                                         Unmeasured)) %>%
+  select(-Unmeasured) # remove unused parameter
+```
+
+Now we can make graphs to see what kind of catch we have. For each taxa level, I'll make raw abundance and frequency of occurrence graphs.
+
+### Visualizing catch data {- .tabset .tabset-pills}
+
+#### Family {-}
+
+```{r echo = FALSE, fig.width = 12, fig.height = 8}
+# Family abundance
+fam.abun = catch.3 %>%
+  summarise(Abundance = sum(Count), .by = Fam_ScientificName) %>%
+  mutate(Fam_ScientificName = fct_reorder(as.factor(Fam_ScientificName), desc(Abundance)))
+# Plot
+ggplot(dat = fam.abun, aes(x = Fam_ScientificName, y = Abundance)) +
+  geom_col() +
+  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = 'Family abundance', x = 'Family')
+# ggsave("nfa_fam_abun_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Family frequency of occurrence
+fam.freq.occur = left_join(catch.3, select(visits, VisitID, EventID), by = "EventID") %>%
+  summarise(Presence = n_distinct(Fam_ScientificName), .by = c(VisitID, Fam_ScientificName)) %>%
+  summarise(Occurrence = sum(Presence), .by = Fam_ScientificName) %>%
+  mutate(Perc_Occurrence = round(Occurrence / n_distinct(visits$VisitID) * 100, 2),
+         Fam_ScientificName = fct_reorder(as.factor(Fam_ScientificName), desc(Perc_Occurrence)))
+# Plot
+ggplot(data = fam.freq.occur, aes(x = Fam_ScientificName, y = Perc_Occurrence)) +
+  geom_col() +
+  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title = 'Family frequency of occurrence', x = 'Family', y = 'Percent occurrence')
+# ggsave("nfa_fam_freq-occur.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Table of family abundance and occurrence
+full_join(fam.abun, fam.freq.occur, by = 'Fam_ScientificName') %>%
+  select(`Scientific Name` = Fam_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance) %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+#### Genus {-}
+
+```{r echo = FALSE, fig.width = 12, fig.height = 8}
+# Genus abundance
+gen.abun = catch.3 %>%
+  summarise(Abundance = sum(Count), .by = Gen_ScientificName) %>%
+  mutate(Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), desc(Abundance)))
+# Plot
+ggplot(data = gen.abun, aes(x = Gen_ScientificName, y = Abundance)) +
+  geom_col() +
+  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = 'Genus abundance', x = 'Genus')
+# ggsave("nfa_gen_abun_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Genus frequency of occurrence
+gen.freq.occur = left_join(catch.3, select(visits, VisitID, EventID), by = "EventID") %>%
+  summarise(Presence = n_distinct(Gen_ScientificName), .by = c(VisitID, Gen_ScientificName)) %>%
+  summarise(Occurrence = sum(Presence), .by = Gen_ScientificName) %>%
+  mutate(Perc_Occurrence = round(Occurrence / n_distinct(visits$VisitID) * 100, 2),
+         Gen_ScientificName = fct_reorder(as.factor(Gen_ScientificName), desc(Perc_Occurrence)))
+# Plot 
+ggplot(data = gen.freq.occur, aes(x = Gen_ScientificName, y = Perc_Occurrence)) +
+  geom_col() +
+  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title = 'Genus frequency of occurrence', x = 'Genus', y = 'Percent occurrence')
+# ggsave("nfa_gen_freq-occur.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+
+# Table of genus abundance and occurrence
+full_join(gen.abun, gen.freq.occur, by = 'Gen_ScientificName') %>%
+  select(`Scientific Name` = Gen_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance) %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+#### Species {-}
+
+```{r echo = FALSE, fig.width = 12, fig.height = 8}
+# Species abundance
+sp.abun = catch.3 %>%
+  summarise(Abundance = sum(Count), .by = Sp_ScientificName) %>%
+  mutate(Sp_ScientificName = fct_reorder(as.factor(Sp_ScientificName), desc(Abundance)))
+# Plot
+ggplot(data = sp.abun, aes(x = Sp_ScientificName, y = Abundance)) +
+  geom_col() +
+  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = 'Species abundance', x = 'Species')
+# ggsave("nfa_sp_abun_raw.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Species frequency of occurrence
+sp.freq.occur = left_join(catch.3, select(visits, VisitID, EventID), by = "EventID") %>%
+  summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
+  summarise(Occurrence = sum(Presence), .by = Sp_ScientificName) %>%
+  mutate(Perc_Occurrence = round(Occurrence / n_distinct(visits$VisitID) * 100, 2),
+         Sp_ScientificName = fct_reorder(as.factor(Sp_ScientificName), desc(Perc_Occurrence)))
+# Plot
+ggplot(data = sp.freq.occur, aes(x = Sp_ScientificName, y = Perc_Occurrence)) +
+  geom_col() +
+  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title = 'Species frequency of occurrence', x = 'Species', y = 'Percent occurrence')
+# ggsave("nfa_sp_freq-occur.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+
+# Table of species abundance and occurrence
+full_join(sp.abun, sp.freq.occur, by = 'Sp_ScientificName') %>%
+  select(`Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance) %>%
+  arrange(`Scientific Name`) %>%
+  DT::datatable(rownames = FALSE,
+                extensions = 'Scroller',
+                options = list(
+                  deferRender = TRUE,
+                  scrollY = 500,
+                  scroller = TRUE))
+```
+
+#  {.unlisted .unnumbered}
+
+## Defining rare taxa
+
+```{r}
+# View the common names for rare Genuses,
+# i.e., occuring in <0.25% of visits (6 or fewer visits)
+# These include 34 different taxa
+gen.freq.occur %>%
+  filter(Perc_Occurrence < 0.25) %>%
+  mutate(Gen_ScientificName = as.character(Gen_ScientificName)) %>%
+  select(Gen_ScientificName) %>%
+  arrange() %>%
+  knitr::kable()
+
+# There are 10 families that occur in less than 1% of visits.
+# We will consider these our extreme rare cases and remove them from the df,
+fam.freq.occur %>%
+  filter(Perc_Occurrence < 1) %>%
+  mutate(Fam_ScientificName = as.character(Fam_ScientificName)) %>%
+  select(Fam_ScientificName) %>%
+  arrange() %>%
+  knitr::kable()
+```
+
