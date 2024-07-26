@@ -24,7 +24,7 @@ Built with R version `r getRversion()`.
 
 # Introduction
 
-The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover most steps of the initial data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed at [Kachemak Bay National Estuarine Research Reserve's github repo.][https://github.com/kbnerr/nearshore-fish]
+The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover most steps of the initial data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's github [nearshore fish repository](https://github.com/kbnerr/nearshore-fish).
 
 In this document I show the steps taken in wrangling the NOAA Nearshore Fish Atlas (NFA) database. This replaces the separate scripts (named "./FishAtlas\_#\_description.R") and combines them into a single, streamlined R markdown file. These R scripts will be archived in case I need to replicate older methods. Namely, I used to use **rgdal** package for some steps in the wrangling process but that package stopped being supported ca. Oct 2023 in lieu of the **sf** package.
 
@@ -831,7 +831,7 @@ select(mult.mesh.events, VisitID, GearSpecific, MeshSize) %>%
   summarise(n_visits = n_distinct(VisitID), .by = c(GearSpecific, MeshSize))
 ```
 
-The good thing is that I recognize these data. The visits that contain different mesh size events come from the same project: EPSCoR Fire & Ice Lynn Canal group in Southeast AK. They reported that different mesh sizes had an effect on community composition using side-by-side comparison of gear types in their methods ([Lundstrom et al. 2022][https://doi.org/10.1007/s12237-022-01057-x]). This explains why the cluster and grouping steps combined the events.
+The good thing is that I recognize these data. The visits that contain different mesh size events come from the same project: EPSCoR Fire & Ice Lynn Canal group in Southeast AK. They reported that different mesh sizes had an effect on community composition using side-by-side comparison of gear types in their methods ([Lundstrom et al. 2022](https://doi.org/10.1007/s12237-022-01057-x)). This explains why the cluster and grouping steps combined the events.
 
 The bad news is that we'll need to re-do previous wrangling steps on which mesh size is depoendent. This will involve separating the affected VisitID's into separate samples based on mesh size, which will result in about 100 more unique VisitID's and different mean abundance associated catches.
 
