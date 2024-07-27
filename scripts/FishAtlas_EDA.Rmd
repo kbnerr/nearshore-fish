@@ -1,0 +1,57 @@
+---
+title: "NOAA Nearshore Fish Atlas, Exploratory Data Analyses"
+author: "Chris Guo"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+    toc_float:
+      collapsed: FALSE
+      print: FALSE
+    number_sections: TRUE
+    code_download: TRUE
+theme: "flatly"
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(size = "scriptsize")
+```
+
+Built with R version `r getRversion()`.
+
+# Introduction
+
+The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover steps of the data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's github [nearshore fish repository](https://github.com/kbnerr/nearshore-fish).
+
+In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database.The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data, including visualizing samples in space and time. Initial data wrangle steps can be viewed at [this Rpubs page](file:///Users/chguo/nearshore-fish/scripts/FishAtlas_wrangle.html), which is sourced below.
+
+## Set up
+
+Load required packages, define directory, set options, source scripts:
+
+```{r results = 'hide'}
+# Packages
+library(tidyverse)
+library(lubridate)
+library(here)
+library(sf)
+library(DT)
+
+# Directory
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(name, path, i)
+}
+
+# Options
+
+# Source
+source(file.path(dir.scripts, "FishAtlas_wrangle.R"), echo = FALSE)
+```
