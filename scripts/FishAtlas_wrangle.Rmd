@@ -1036,25 +1036,20 @@ Last, we save our fixed visits tibble as a new object with a cleaner name, and t
 visits = visits.4
 ```
 
-## Clean up
+## Save and clean up
 
 ```{r}
-# Clean up our environment for the next step:
+# Remove unwanted objects
 rm(list = ls()[!ls() %in% c('data', 'events', 'catch', 'visits',
                             'abun.fam', 'abun.gen', 'abun.sp',
                             'fam.tbl', 'gen.tbl', 'sp.tbl')])
 
-# Reset directory
-wd = here()
-dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
-for (i in seq_along(dirs)) {
-  name = str_replace_all(dirs[i], "^", "dir.")
-  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
-  assign(name, path)
-  rm(path, i)
-}
+# Check sizes of the data objects
+eapply(as.environment(-1), FUN = function(x) format(object.size(x), units = "Mb"))
+# The original 'data' import is quite large,
+# but also unneeded bc the info is held in other objects, so let's remove it:
+rm('data')
+
+# Save what's left,
+save(list = ls(), file = file.path(here(), "data", "NFA.rda"))
 ```
-
-
-
-
