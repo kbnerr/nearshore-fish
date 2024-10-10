@@ -24,21 +24,19 @@ Built with R version `r getRversion()`.
 
 # Introduction
 
-The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover steps of the data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's github [nearshore fish repository](https://github.com/kbnerr/nearshore-fish).
+The purpose of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover steps of the data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's github [nearshore fish repository](https://github.com/kbnerr/nearshore-fish).
 
-In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database.The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data, including visualizing samples in space and time. Initial data wrangle steps can be viewed at [this Rpubs page](file:///Users/chguo/nearshore-fish/scripts/FishAtlas_wrangle.html), which is sourced below.
+In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database.The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Initial wrangle steps can be viewed at this [Rpubs page](https://rpubs.com/chguo1/1188614) and its data objects are sourced below (file "NFA.rda").
 
 ## Set up
 
-Load required packages, define directory, set options, source scripts:
+Load required packages, define directory, set options, source files:
 
 ```{r results = 'hide'}
 # Packages
 library(tidyverse)
 library(lubridate)
 library(here)
-library(sf)
-library(DT)
 
 # Directory
 wd = here()
@@ -53,5 +51,12 @@ for (i in seq_along(dirs)) {
 # Options
 
 # Source
-source(file.path(dir.scripts, "FishAtlas_wrangle.R"), echo = FALSE)
+attach(file.path(dir.data, "NFA.rda")) # wrangled data
+```
+
+```{r}
+library(leaflet)
+leaflet() %>% 
+  addCircles(~longitude, ~latitude) %>%  
+  addTiles()
 ```
