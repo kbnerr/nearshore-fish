@@ -26,7 +26,7 @@ Built with R version `r getRversion()`.
 
 The purpose of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover steps of the data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's github [nearshore fish repository](https://github.com/kbnerr/nearshore-fish).
 
-In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database.The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Initial wrangle steps can be viewed at this [Rpubs page](https://rpubs.com/chguo1/1188614) and its data objects are sourced below (file "NFA.rda").
+In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database. The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Initial wrangle steps can be viewed at this [Rpubs page](https://rpubs.com/chguo1/1188614) and its data objects are sourced below (file "NFA.rda").
 
 ## Set up
 
@@ -37,6 +37,8 @@ Load required packages, define directory, set options, source files:
 library(tidyverse)
 library(lubridate)
 library(here)
+library(leaflet)
+library(RColorBrewer)
 
 # Directory
 wd = here()
@@ -54,9 +56,65 @@ for (i in seq_along(dirs)) {
 attach(file.path(dir.data, "NFA.rda")) # wrangled data
 ```
 
+## Background and objectives
+
+ data are Location (Lat/Lon), Date, Replicates, and MeshSize. Should use Lat/Lon first, then consider Cluster later.
+
+
+## Summary of visits
 ```{r}
-library(leaflet)
-leaflet() %>% 
-  addCircles(~longitude, ~latitude) %>%  
-  addTiles()
+glimpse(visits)
+```
+
+
+```{r}
+leaflet(visits) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   stroke = FALSE,
+                   popup = ~VisitID,
+                   clusterOptions = markerClusterOptions())
+```
+
+```{r}
+years = visits$Date %>% year()
+range(years %>% unique)
+```
+
+```{r}
+palette = colorFactor(palette = brewer.pal(n = visits$MeshSize %>% n_distinct(),
+                                           name = 'Spectral'),
+                      domain = factor(visits$MeshSize))
+
+leaflet(visits) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   radius = ~(sqrt(Replicates*15)),
+                   color = ~palette(MeshSize),
+                   fillColor = ~palette(MeshSize),
+                   stroke = FALSE) %>%
+  addLegend(position = "bottomright",
+            pal = palette, values = ~MeshSize,
+            title = "Mesh Size",
+            opacity = 0.75)
+```
+
+```{r}
+palette.bin = colorBin(palette = brewer.pal(n = 4, name = 'Spectral'),
+                       domain = visits$MeshSize %>% unique,
+                       bins =  c(0, 4, 7, 11, 13))
+
+leaflet(visits) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   radius = ~(sqrt(Replicates*15)),
+                   color = ~palette.bin(MeshSize),
+                   fillColor = ~palette.bin(MeshSize),
+                   stroke = FALSE) %>%
+  addLegend(position = "bottomright",
+            colors = c(palette.bin(3), palette.bin(6), palette.bin(9), palette.bin(12)),
+            values = ~MeshSize,
+            title = "Mesh Size",
+            opacity = 0.75,
+            labels = c("3 or 3.2", "6 or 6.4", "9.5 or 10", "12.7"))
 ```
