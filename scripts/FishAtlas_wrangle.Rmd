@@ -1036,7 +1036,7 @@ Last, we save our fixed visits tibble as a new object with a cleaner name, and t
 visits = visits.4
 ```
 
-## Save and clean up
+# Clean up and save work
 
 ```{r}
 # Remove unwanted objects
