@@ -1051,5 +1051,5 @@ eapply(as.environment(-1), FUN = function(x) format(object.size(x), units = "Mb"
 rm('data')
 
 # Save what's left,
-save(list = ls(), file = file.path(here(), "data", "NFA.rda"))
+save(list = ls(), file = file.path(here(), "data", "NFA_wrangled.rda"))
 ```

@@ -30,7 +30,7 @@ In this document I share exploratory data analyses conducted on the NOAA Nearsho
 
 ## Set up
 
-Load required packages, define directory, set options, source files:
+Load required packages, define directory, set options, source/load files:
 
 ```{r results = 'hide'}
 # Packages
@@ -52,8 +52,8 @@ for (i in seq_along(dirs)) {
 
 # Options
 
-# Source
-attach(file.path(dir.data, "NFA.rda")) # wrangled data
+# Source/Load
+load(file.path(dir.data, "NFA.rda")) # wrangled data
 ```
 
 ## Background and objectives
