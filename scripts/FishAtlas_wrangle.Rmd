@@ -68,7 +68,7 @@ for (i in seq_along(dirs)) {
 ## Read in data
 
 ```{r}
-data = read_csv(file.path(dir.data, "FishAtlas_BeachSeines_2022.07.12.csv"),
+data = read_csv(file.path(dir.data, "Raw Fish Atlas Sites 2024-10-16.csv"),
                show_col_types = FALSE)
 GearLookup = read_csv(file.path(dir.data, "FishAtlasExpansion_040422_Lookup_Gear.csv"),
                       show_col_types = FALSE)

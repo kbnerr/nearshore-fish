@@ -58,22 +58,75 @@ attach(file.path(dir.data, "NFA.rda")) # wrangled data
 
 ## Background and objectives
 
- data are Location (Lat/Lon), Date, Replicates, and MeshSize. Should use Lat/Lon first, then consider Cluster later.
+Based on my own research and related literature, I can broadly interpret these beach seine data in a spatiotemporal context. Depending on when (time of year) and where (location and habitat), I have a general structure in mind of the diversity of the community. Depending on who's there, I have a rough guess of the relative abundance of each community member (at least for the more commonly caught ones). My hope with working with the NFA data is that this broad understanding can be formally tested with inference and statistics, and that more informative research questions can be answered.
 
+Findings from other nearshore fish researchers largely agree that seasonality (or some related environmental condition) is a strong predictor of community or species presence. Interannual differences can exhibit wide variability and should be accounted for whenever possible. And at larger time-scales (e.g., decadal), communities exhibit changes which may relate to regime shifts occurring more broadly than the nearshore.
+
+Spatially, large-scale (regional) effects appear to be as or more important than sub-regional or local-scale effects. However, many studies also find significant relationships in community response at these smaller scales. Likely, the most appropriate spatial consideration depends on the question being asked. So maybe a more appropriate question to ask of the NFA data is if there any significant spatial scales discernible in the data, and also how should we address those scales in future research, such as studies on subsets of the taxa or habitat management considerations.
+
+I'll start by exploring the structure of our 'visits' dataframe, and then I'll move on to visualizing the information derived from out 'catch' dataframe.
+
+# Exploring visit data
 
 ## Summary of visits
+
+Remember that in the data wrangling stage, we created a new sample identifier based on site and date which we called VisitID. Let's take a look at the variables associated with each VisitID:
+
 ```{r}
 glimpse(visits)
 ```
 
+During the wrangling stage, I decided that Replicates and MeshSize should be the main covariates that needed consideration. Cluster, on the other hand, is a byproduct of clustering some sites together, so it may not be needed if we're using Lat/Lon as our primary explanatory variable. Still, it could be a useful grouping factor later on. Date will likely be mutated into multiple additional periods (day of year, month, year) to see if any of those factors are useful in explaining fish data. We can create those variables as they come up in our exploration.
+
+## Map of samples
 
 ```{r}
 leaflet(visits) %>% 
-  addTiles() %>%
+  addTiles(options = tileOptions(minZoom = 3.5,
+                                 zIndex = 0.5)) %>%
+  setView(lat = 65, lng = -152, zoom = 3.5) %>%
+  addSimpleGraticule(interval = 5) %>%  
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
                    stroke = FALSE,
                    popup = ~VisitID,
                    clusterOptions = markerClusterOptions())
+```
+
+In the map above we can view all of our samples from across Alaska. Leaflet options are nice because you can optionally group samples on the map and show a boundary polygon of the area they cover when you hover over their icon. At the minimum zoom level (3.5), we see the largest group spanning nearly all of Southeast Alaska (n = 848), followed by a group in Southcentral (n = 687) that covers Prince William Sound, Cook Inlet, and the northern half of Kodiak Island. The third largest group forms a much smaller polygon area around Utqiagvik (n = 192). From there, we see even smaller groups from the Eastern Beaufort Sea around Kaktovik (n = 11), the Bering Strait and Southern Chuckchi Sea near Kotzebue (n = 60), and Bristol Bay (n = 13). There are also two groups from the Alaska Peninsula and Aleutian Islands, one focused around Adak (n = 22) and another spanning from Sand Point to Unalaska (n = 34). We can see how subsets of the samples change by zooming in. When there are single samples in view, hovering over those will tell us its VisitID name.
+
+Obviously, this visualization of the data is not perfect and pretty rough- note that the groups are formed by the overlap of samples based on pixel radius (10). For example, the polygon of samples from Bristol Bay at the minimum zoom level actually crosses the Alaska Peninsula to include a sample from Aghiyuk Island. Although, the map is useful in gaining a general understanding of the existing clusters of samples within the NFA database.
+
+## Adding a Region variable
+
+We may want to define a spatial factor based on these rough groupings as a starting place to see if the smaller, more isolated groups should be lumped with other groups or not. Actually, the NFA already has a Region classifier per site, but the reason I do not want to use it is because they linked Region to SiteID. When we created our new VisitID, some samples now contained two Region labels- these were mostly cases from around Utqiagvik where some were labelled as Chuckchi and others as Beaufort but actually occurred on the same day and within a very short distance of each other.
+
+Instead of using the the given regional classes, let's make our own variable called 'Region' and add it to the our visits df:
+
+```{r}
+# Start with events so that we can make use of Location info for unique cases,
+regions = events %>%
+  select(EventID, VisitID, Lat, Lon, Location) %>%
+  mutate(Region = case_when(Lat > 69 & Lat < 80 & Lon > -150 & Lon < -140 ~ "Beafort East",
+                            Lat > 69 & Lat < 80 & Lon > -160 & Lon < -150 ~ "Chuckchi/Beaufort",
+                            Lat > 65 & Lat < 69 & Lon > -170 & Lon < -160 ~ "Chuckchi South",
+                            Lat > 57 & Lat < 60 & Lon > -165 & Lon < -155 ~ "Bristol Bay",
+                            Lat > 50 & Lat < 55 & Lon > -180 & Lon < -175 ~ "Aleutians Adak",
+                            Lat > 50 & Lat < 55 & Lon > -170 & Lon < -165 ~ "Aleutians Unalaska",
+                            Lat > 55 & Lat < 65 & Lon > -155 & Lon < -145 ~ "GOA Southcentral",
+                            Lat > 53 & Lat < 61 & Lon > -148 & Lon < -130 ~ "GOA Southeast"))
+
+# Check which samples we missed,
+filter(regions, is.na(Region))
+
+# Let's address those using Location,
+regions = mutate(regions,
+       Region = case_when(!is.na(Region) ~ Region,
+                          is.na(Region) & str_detect(Location, "Yunaska") ~ "Aleutians Yunaska",
+                          is.na(Region) & str_detect(Location, "Aghiyuk") ~ "Aleutians Aghiyuk",
+                          is.na(Region) & str_detect(Location, "Shumagin") ~ "Aleutians Shumagin"))
+
+# Check again,
+filter(regions, is.na(Region))
 ```
 
 ```{r}
@@ -117,4 +170,12 @@ leaflet(visits) %>%
             title = "Mesh Size",
             opacity = 0.75,
             labels = c("3 or 3.2", "6 or 6.4", "9.5 or 10", "12.7"))
+```
+
+# Kachemak Bay
+
+```{r}
+KB_events = str_which(events$Location, "Kachemak")
+KB.events = events[KB_events, ]
+KB.76 = filter(KB.events, year(Date) < 1980)
 ```
