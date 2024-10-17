@@ -53,7 +53,7 @@ for (i in seq_along(dirs)) {
 # Options
 
 # Source/Load
-load(file.path(dir.data, "NFA.rda")) # wrangled data
+load(file.path(dir.data, "NFA_wrangled.rda")) # wrangled data
 ```
 
 ## Background and objectives
@@ -125,49 +125,99 @@ regions = mutate(regions,
                           is.na(Region) & str_detect(Location, "Aghiyuk") ~ "Aleutians Aghiyuk",
                           is.na(Region) & str_detect(Location, "Shumagin") ~ "Aleutians Shumagin"))
 
-# Check again,
-filter(regions, is.na(Region))
+# Check again (should be 0),
+filter(regions, is.na(Region)) %>% nrow()
 ```
 
+Now let's add Region to our visits df, and show it on a map. Since we're manipulating our data objects again, let's also rename visits so that we can keep track of our changes. 
+
 ```{r}
-years = visits$Date %>% year()
+# Call our wrangled df version visits.0 and remove the non-version df from the env,
+assign("visits.0", visits); rm(visits)
+
+# Join Region by VisitID,
+visits.1 = regions %>%
+  select(VisitID, Region) %>%
+  distinct() %>%
+  left_join(visits.0, ., by = "VisitID")
+
+# Function for regional palette
+palette.region = colorFactor(palette = brewer.pal(n = visits.1$Region %>% n_distinct(),
+                                                  name = 'Spectral'),
+                             domain = factor(visits.1$Region))
+
+# Map
+leaflet(visits.1) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   color = ~palette.region(Region),
+                   fillColor = ~palette.region(Region),
+                   popup = ~VisitID,
+                   stroke = FALSE) %>%
+  addLegend(position = "topright",
+            pal = palette.region, values = ~Region,
+            title = "Region",
+            opacity = 0.75)
+```
+
+```{r echo = FALSE}
+# Number of samples per Region
+select(visits.1, VisitID, Region) %>%
+  count(Region) %>%
+  distinct() %>%
+  ggplot(., aes(x = Region, y = n, fill = Region)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5) +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(x = NULL, y = NULL, title = "No. samples per Region") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+
+
+```{r}
+years = visits.1$Date %>% year()
 range(years %>% unique)
 ```
 
 ```{r}
-palette = colorFactor(palette = brewer.pal(n = visits$MeshSize %>% n_distinct(),
-                                           name = 'Spectral'),
-                      domain = factor(visits$MeshSize))
+palette.mesh = colorFactor(palette = brewer.pal(n = visits.1$MeshSize %>% n_distinct(),
+                                                name = 'Spectral'),
+                           domain = factor(visits.1$MeshSize))
 
-leaflet(visits) %>% 
+leaflet(visits.1) %>% 
   addTiles() %>%
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
                    radius = ~(sqrt(Replicates*15)),
-                   color = ~palette(MeshSize),
-                   fillColor = ~palette(MeshSize),
+                   color = ~palette.mesh(MeshSize),
+                   fillColor = ~palette.mesh(MeshSize),
                    stroke = FALSE) %>%
   addLegend(position = "bottomright",
-            pal = palette, values = ~MeshSize,
-            title = "Mesh Size",
+            pal = palette.mesh, values = ~MeshSize,
+            title = "Mesh Size (mm)",
             opacity = 0.75)
 ```
 
 ```{r}
-palette.bin = colorBin(palette = brewer.pal(n = 4, name = 'Spectral'),
-                       domain = visits$MeshSize %>% unique,
-                       bins =  c(0, 4, 7, 11, 13))
+palette.mesh.bin = colorBin(palette = brewer.pal(n = 4, name = 'Spectral'),
+                            domain = visits.1$MeshSize %>% unique(),
+                            bins =  c(0, 4, 7, 11, 13))
 
-leaflet(visits) %>% 
+leaflet(visits.1) %>% 
   addTiles() %>%
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
                    radius = ~(sqrt(Replicates*15)),
-                   color = ~palette.bin(MeshSize),
-                   fillColor = ~palette.bin(MeshSize),
+                   color = ~palette.mesh.bin(MeshSize),
+                   fillColor = ~palette.mesh.bin(MeshSize),
                    stroke = FALSE) %>%
   addLegend(position = "bottomright",
-            colors = c(palette.bin(3), palette.bin(6), palette.bin(9), palette.bin(12)),
+            colors = c(palette.mesh.bin(3),
+                       palette.mesh.bin(6),
+                       palette.mesh.bin(9),
+                       palette.mesh.bin(12)),
             values = ~MeshSize,
-            title = "Mesh Size",
+            title = "Mesh Size (mm)",
             opacity = 0.75,
             labels = c("3 or 3.2", "6 or 6.4", "9.5 or 10", "12.7"))
 ```
