@@ -78,7 +78,7 @@ glimpse(visits)
 
 During the wrangling stage, I decided that Replicates and MeshSize should be the main covariates that needed consideration. Cluster, on the other hand, is a byproduct of clustering some sites together, so it may not be needed if we're using Lat/Lon as our primary explanatory variable. Still, it could be a useful grouping factor later on. Date will likely be mutated into multiple additional periods (day of year, month, year) to see if any of those factors are useful in explaining fish data. We can create those variables as they come up in our exploration.
 
-## Map of samples
+## Spatial distribution
 
 ```{r}
 leaflet(visits) %>% 
@@ -96,7 +96,7 @@ In the map above we can view all of our samples from across Alaska. Leaflet opti
 
 Obviously, this visualization of the data is not perfect and pretty rough- note that the groups are formed by the overlap of samples based on pixel radius (10). For example, the polygon of samples from Bristol Bay at the minimum zoom level actually crosses the Alaska Peninsula to include a sample from Aghiyuk Island. Although, the map is useful in gaining a general understanding of the existing clusters of samples within the NFA database.
 
-## Region
+## Regions
 
 We may want to define a spatial factor based on these rough groupings as a starting place to see if the smaller, more isolated groups should be lumped with other groups or not. Actually, the NFA already has a Region classifier per site, but the reason I do not want to use it is because they linked Region to SiteID. When we created our new VisitID, some samples now contained two Region labels- these were mostly cases from around Utqiagvik where some were labelled as Chuckchi and others as Beaufort but actually occurred on the same day and within a very short distance of each other.
 
@@ -180,7 +180,7 @@ Like we saw before, the majority of our samples are located in the Gulf of Alask
 
 Some of our first analyses should see if the more isolated samples are different from the other samples. If not, then we can aggregate. If yes, then we should report any significant tests.
 
-## Year
+## Temporal distribution
 
 Next we'll want to take a look at how our samples distribute throughout various time periods. This will give us a good idea of how well our samples may or may not overlap- particularly, we'll want to see overlaps in years and months for better comparisons of the catch data.
 
@@ -208,7 +208,7 @@ times %>%
   ggplot(., aes(x = Year, y = n)) +
   geom_col() +
   geom_text(aes(label = n), vjust = -0.5, color = "blue") +
-  labs(x = NULL, y = NULL, title = "No. samples per Year w/o 1976")
+  labs(x = NULL, y = NULL, title = "No. samples per Year without 1976")
 
 # Month
 times %>%
@@ -235,32 +235,56 @@ times %>%
   labs(x = NULL, y = NULL, title = "No. samples per Day of Year")
 ```
 
+By year, we see a large variability in number of samples, as well as a lone 1976 year which I recognize to be Blackburn's dataset from Lower Cook Inlet. That 1976 is an interesting dataset that could be useful for a look at catches over time in that specific area, but it'll need to be excluded from any other comparisons. The lowest number of samples occur in 2010, 2020, and 2021. We may want to pay close attention to these years in case they show up as outliers. It seems that 1996-2000 is a period of heavy sampling, followed by the mid 2010s and somewhat active year in 2006.
+
+By month, we see an obvious uptick during the summer which makes sense given winter conditions along most of Alaska's coast (light, ice, etc.). March and October are interesting months because of the potential for impacts on fishes during years with warmer shoulder seasons. November thru February will likely be removed for our purposes. Our key months look to be June, July and August, with possible inclusion of April, May, and September.
+
+It's interesting if we look at the by-week and by-day graphs, we see a dip in sampling around mid-June/early-July. Not sure why this is- maybe related to more targeting of juvenile salmonids in early June, or maybe so reduced effort around the 4th of July holiday.
+
+## Monthly and yearly sampling by region
+
+Let's now see how our samples overlap by Region and Year, and by Region and Month. For these purposes, let's combine the Aleutians into one group for now, and remove the 1976 data.
+
 ```{r}
-# Over all years,
-left_join(times, select(visits.1, VisitID, Region), by = "VisitID") %>%
+# Samples by Year and Region,
+left_join(filter(times, Year > 1980),
+          select(visits.1, VisitID, Region), by = "VisitID") %>%
   mutate(Region = case_when(str_detect(Region, "Aleutians") ~ "Aleutians",
                             !str_detect(Region, "Aleutians") ~ Region)) %>%
   ggplot(aes(x = Date, y = Region, color = Region)) +
   geom_boxplot() +
   geom_jitter(size = 0.5, alpha = 0.75) +
-  stat_summary(geom = "text", vjust = -2, color = "black",
+  stat_summary(geom = "text", vjust = -1.9, color = "black",
                fun.data = function(x) {
                  return(c(y = median(x), label = length(x)))
-               })+
-  scale_color_brewer(palette = "Spectral")
+               }) +
+  scale_color_brewer(palette = "Spectral") +
+  scale_x_date(date_labels = "%y",
+               date_breaks = "2 years") +
+  labs(x = "Year", y = "Region",
+       title = "Samples by Year and Region",
+       subtitle = "No. samples labelled over median") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-# By month with no. samples per month,
-left_join(times, select(visits.1, VisitID, Region), by = "VisitID") %>%
+# Samples by Month and Region,
+left_join(filter(times, Year > 1980),
+          select(visits.1, VisitID, Region), by = "VisitID") %>%
   mutate(Region = case_when(str_detect(Region, "Aleutians") ~ "Aleutians",
                             !str_detect(Region, "Aleutians") ~ Region)) %>%
   ggplot(aes(x = Month, y = Region, color = Region)) +
   geom_boxplot() +
   geom_jitter(size = 0.5, alpha = 0.75) +
-  stat_summary(geom = "text", vjust = -2, color = "black",
+  stat_summary(geom = "text", vjust = -1.9, color = "black",
                fun.data = function(x) {
                  return(c(y = median(x), label = length(x)))
                })+
-  scale_color_brewer(palette = "Spectral")
+  scale_color_brewer(palette = "Spectral") +
+  labs(x = "Month", y = "Region",
+       title = "Samples by Month and Region",
+       subtitle = "Excluding 1976, No. samples labelled by month") +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
 
