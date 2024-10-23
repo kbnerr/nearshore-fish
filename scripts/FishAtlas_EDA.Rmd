@@ -92,23 +92,23 @@ leaflet(visits) %>%
                    clusterOptions = markerClusterOptions())
 ```
 
-In the map above we can view all of our samples from across Alaska. Leaflet options are nice because you can optionally group samples on the map and show a boundary polygon of the area they cover when you hover over their icon. At the minimum zoom level (3.5), we see the largest group spanning nearly all of Southeast Alaska (n = 848), followed by a group in Southcentral (n = 687) that covers Prince William Sound, Cook Inlet, and the northern half of Kodiak Island. The third largest group forms a much smaller polygon area around Utqiagvik (n = 192). From there, we see even smaller groups from the Eastern Beaufort Sea around Kaktovik (n = 11), the Bering Strait and Southern Chuckchi Sea near Kotzebue (n = 60), and Bristol Bay (n = 13). There are also two groups from the Alaska Peninsula and Aleutian Islands, one focused around Adak (n = 22) and another spanning from Sand Point to Unalaska (n = 34). We can see how subsets of the samples change by zooming in. When there are single samples in view, hovering over those will tell us its VisitID name.
+In the map above we can view all of our samples from across Alaska. Leaflet options are nice because you can optionally group samples on the map and show a boundary polygon of the area they cover when you hover over their icon. At the minimum zoom level (3.5), we see the largest group spanning nearly all of Southeast Alaska, followed by a group in Southcentral that covers Prince William Sound, Cook Inlet, and the northern half of Kodiak Island. The third largest group forms a much smaller polygon area around Utqiagvik. From there, we see even smaller groups from the Eastern Beaufort Sea around Kaktovik, the Bering Strait and Southern Chukchi Sea near Kotzebue, and Bristol Bay. There are also two groups from the Alaska Peninsula and Aleutian Islands, one focused around Adak and another spanning from Sand Point to Unalaska. We can see how subsets of the samples change by zooming in. When there are single samples in view, hovering over those will tell us its VisitID name.
 
 Obviously, this visualization of the data is not perfect and pretty rough- note that the groups are formed by the overlap of samples based on pixel radius (10). For example, the polygon of samples from Bristol Bay at the minimum zoom level actually crosses the Alaska Peninsula to include a sample from Aghiyuk Island. Although, the map is useful in gaining a general understanding of the existing clusters of samples within the NFA database.
 
-## Adding a Region variable
+## Region
 
 We may want to define a spatial factor based on these rough groupings as a starting place to see if the smaller, more isolated groups should be lumped with other groups or not. Actually, the NFA already has a Region classifier per site, but the reason I do not want to use it is because they linked Region to SiteID. When we created our new VisitID, some samples now contained two Region labels- these were mostly cases from around Utqiagvik where some were labelled as Chuckchi and others as Beaufort but actually occurred on the same day and within a very short distance of each other.
 
-Instead of using the the given regional classes, let's make our own variable called 'Region' and add it to the our visits df:
+Instead of using the the given regional classes, let's just make our own variable called 'Region' and add it to the our visits df:
 
 ```{r}
 # Start with events so that we can make use of Location info for unique cases,
 regions = events %>%
   select(EventID, VisitID, Lat, Lon, Location) %>%
-  mutate(Region = case_when(Lat > 69 & Lat < 80 & Lon > -150 & Lon < -140 ~ "Beafort East",
-                            Lat > 69 & Lat < 80 & Lon > -160 & Lon < -150 ~ "Chuckchi/Beaufort",
-                            Lat > 65 & Lat < 69 & Lon > -170 & Lon < -160 ~ "Chuckchi South",
+  mutate(Region = case_when(Lat > 69 & Lat < 80 & Lon > -150 & Lon < -140 ~ "Beaufort East",
+                            Lat > 69 & Lat < 80 & Lon > -160 & Lon < -150 ~ "Chukchi/Beaufort",
+                            Lat > 65 & Lat < 69 & Lon > -170 & Lon < -160 ~ "Chukchi South",
                             Lat > 57 & Lat < 60 & Lon > -165 & Lon < -155 ~ "Bristol Bay",
                             Lat > 50 & Lat < 55 & Lon > -180 & Lon < -175 ~ "Aleutians Adak",
                             Lat > 50 & Lat < 55 & Lon > -170 & Lon < -165 ~ "Aleutians Unalaska",
@@ -129,16 +129,18 @@ regions = mutate(regions,
 filter(regions, is.na(Region)) %>% nrow()
 ```
 
-Now let's add Region to our visits df, and show it on a map. Since we're manipulating our data objects again, let's also rename visits so that we can keep track of our changes. 
+Now let's add Region as a factor to our visits df, and show it on a map. Since we're manipulating our data objects again, let's also rename visits so that we can keep track of our changes. 
 
 ```{r}
-# Call our wrangled df version visits.0 and remove the non-version df from the env,
-assign("visits.0", visits); rm(visits)
+# Call our wrangled df version visits.0 and remove the non-version 'visits' if it's there,
+if ("visits" %in% ls()) assign("visits.0", visits)
+if ("visits" %in% ls()) rm(visits)
 
-# Join Region by VisitID,
+# Make Region a factor and join by VisitID,
 visits.1 = regions %>%
   select(VisitID, Region) %>%
   distinct() %>%
+  mutate(Region = as.factor(Region)) %>%
   left_join(visits.0, ., by = "VisitID")
 
 # Function for regional palette
@@ -152,7 +154,7 @@ leaflet(visits.1) %>%
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
                    color = ~palette.region(Region),
                    fillColor = ~palette.region(Region),
-                   popup = ~VisitID,
+                   popup = ~paste(Region, VisitID),
                    stroke = FALSE) %>%
   addLegend(position = "topright",
             pal = palette.region, values = ~Region,
@@ -174,12 +176,94 @@ select(visits.1, VisitID, Region) %>%
         axis.ticks.x = element_blank())
 ```
 
+Like we saw before, the majority of our samples are located in the Gulf of Alaska (GOA), namely Southeast (SEAk) and Southcentral (SCAK). If we were to look at differences in catach in the GOA, it'd be cool if we could include the Aleutian samples too. Obviously, we'll want to address those few instances from Aghiyuk, Shumagin, and Yunaska, and ideally we aggregate them into one or two groups. We also see relatively small sample sizes from Bristol Bay and from East Beaufort, which may or may not be prohibitive in conducting meaningful tests. One other consideration is the couple of samples along the Bering Strait coast which are lumped together with a larger concentration of samples from South Chukchi.
 
+Some of our first analyses should see if the more isolated samples are different from the other samples. If not, then we can aggregate. If yes, then we should report any significant tests.
+
+## Year
+
+Next we'll want to take a look at how our samples distribute throughout various time periods. This will give us a good idea of how well our samples may or may not overlap- particularly, we'll want to see overlaps in years and months for better comparisons of the catch data.
 
 ```{r}
-years = visits.1$Date %>% year()
-range(years %>% unique)
+# First create a df specifically containing at time variables
+times = visits.1 %>%
+  select(VisitID, Date) %>%
+  mutate(Year = year(Date),
+         Month = month(Date, label = TRUE),
+         Week = week(Date),
+         Day = yday(Date))
+
+# Year
+times %>%
+  count(Year) %>%
+  ggplot(., aes(x = Year, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Year")
+
+# Year without 1976
+times %>%
+  filter(Year > 1980) %>%
+  count(Year) %>%
+  ggplot(., aes(x = Year, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Year w/o 1976")
+
+# Month
+times %>%
+  count(Month) %>%
+  ggplot(., aes(x = Month, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Month")
+
+# Week
+times %>%
+  count(Week) %>%
+  ggplot(., aes(x = Week, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), hjust = -0.15, angle = 90, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Week")
+
+# Day of Year
+times %>%
+  count(Day) %>%
+  distinct() %>%
+  ggplot(., aes(x = Day, y = n)) +
+  geom_col() +
+  labs(x = NULL, y = NULL, title = "No. samples per Day of Year")
 ```
+
+```{r}
+# Over all years,
+left_join(times, select(visits.1, VisitID, Region), by = "VisitID") %>%
+  mutate(Region = case_when(str_detect(Region, "Aleutians") ~ "Aleutians",
+                            !str_detect(Region, "Aleutians") ~ Region)) %>%
+  ggplot(aes(x = Date, y = Region, color = Region)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -2, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral")
+
+# By month with no. samples per month,
+left_join(times, select(visits.1, VisitID, Region), by = "VisitID") %>%
+  mutate(Region = case_when(str_detect(Region, "Aleutians") ~ "Aleutians",
+                            !str_detect(Region, "Aleutians") ~ Region)) %>%
+  ggplot(aes(x = Month, y = Region, color = Region)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -2, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral")
+```
+
+
 
 ```{r}
 palette.mesh = colorFactor(palette = brewer.pal(n = visits.1$MeshSize %>% n_distinct(),
@@ -192,6 +276,7 @@ leaflet(visits.1) %>%
                    radius = ~(sqrt(Replicates*15)),
                    color = ~palette.mesh(MeshSize),
                    fillColor = ~palette.mesh(MeshSize),
+                   popup = ~VisitID,
                    stroke = FALSE) %>%
   addLegend(position = "bottomright",
             pal = palette.mesh, values = ~MeshSize,
@@ -207,9 +292,9 @@ palette.mesh.bin = colorBin(palette = brewer.pal(n = 4, name = 'Spectral'),
 leaflet(visits.1) %>% 
   addTiles() %>%
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
-                   radius = ~(sqrt(Replicates*15)),
                    color = ~palette.mesh.bin(MeshSize),
                    fillColor = ~palette.mesh.bin(MeshSize),
+                   popup = ~VisitID,
                    stroke = FALSE) %>%
   addLegend(position = "bottomright",
             colors = c(palette.mesh.bin(3),
