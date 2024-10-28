@@ -685,63 +685,11 @@ anti_join(sp.freq.occur, rare.sp) %>%
 # ggsave("nfa_sp_freq-occur_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
 ```
 
-## Averaging abundance per visit
-
-Because our samples (visits) contain a variable number of replicates (events), we should use an averaging method to calculate abundance. Here, we'll use a simple mean (i.e., total count / number of replicates). This is our first instance of data standardization, which may be further standardized or transformed depending on next steps analyses. Also, at some point in the future it'd be neat to use the size variable to bin our taxa by length. But for now, we'll move forward simply using the abundance data (minus rare taxa).
-
-```{r}
-## Family abundance per visit
-# Save an object of all the rare families
-rare.families = unique(rare.fam$Fam_ScientificName) %>% as.character()
-# Create a tibble of family abundance excluding rare families
-catch.fam = left_join(select(events, VisitID, EventID), catch.3, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Fam_ScientificName,
-         Count) %>%
-  filter(!Fam_ScientificName %in% rare.families) %>% # remove rare taxa
-  summarise(Abundance = sum(Count) / n_distinct(EventID), .by = c(VisitID, Fam_ScientificName))
-  
-## Genus abundance per visit
-# Save an object of all the rare genus
-rare.genus = unique(rare.gen$Gen_ScientificName) %>% as.character()
-# Create a tibble of genus abundance excluding rare genus
-catch.gen = left_join(select(events, VisitID, EventID), catch.3, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Gen_ScientificName,
-         Count) %>%
-  filter(!Gen_ScientificName %in% rare.genus) %>% # remove rare taxa
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by=c(VisitID, Gen_ScientificName))
-
-## Species abundance per visit
-# Save an object of all the rare species
-rare.species = unique(rare.sp$Sp_ScientificName) %>% as.character()
-# Create a tibble of species abundance excluding rare species
-catch.sp = left_join(select(events, VisitID, EventID), catch.3, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Sp_ScientificName,
-         Count) %>%
-  filter(!Sp_ScientificName %in% rare.species) %>% # remove rare taxa
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Sp_ScientificName))
-```
-
-Just by looking at the number of observations (rows) in the data, I think we may end up conducting analyses at the genus level:
-
--   `r nrow(catch.fam)` observations at the family level
-
--   `r nrow(catch.gen)` observations at the genus level
-
--   `r nrow(catch.sp)` observations at the species level
-
 Last thing we'll do is rename our catch tibble and clean up our environment.
 
 ```{r}
 # Re-assign working version of catch to a cleaner name
-assign("catch", catch.3)
+catch = catch.3
 ```
 
 ## Clean up
@@ -958,42 +906,6 @@ sp.tbl %>%
               backgroundColor = styleEqual("Yes", "goldenrod"))
 ```
 
-## Re-calculating abundance per visit
-
-Similarly, we'll want to to redo our visit mean abundances (taxa total / # of events). The below code is pretty much the same as previously run, except that I change the object name to better distinguish this subset from other objects in our environment.
-
-``` {r}
-# Create a tibble of mean abundance per visit for each family excluding rare taxa
-abun.fam = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Fam_ScientificName,
-         Count) %>%
-  filter(!Fam_ScientificName %in% rare.families) %>%
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Fam_ScientificName))
-
-# Create a tibble of mean abundance per visit for each Genus excluding rare taxa
-abun.gen = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Gen_ScientificName,
-         Count) %>%
-  filter(!Gen_ScientificName %in% rare.genus) %>% # remove rare taxa
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Gen_ScientificName))
-
-# Create a tibble of mean abundance per visit for each Species excluding rare taxa
-abun.sp = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Sp_ScientificName,
-         Count) %>%
-  filter(!Sp_ScientificName %in% rare.species) %>% # remove rare taxa
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Sp_ScientificName))
-```
-
 Now we can re-run the VisitID wrangling code from earlier in this section:
 
 ```{r}
@@ -1008,13 +920,13 @@ visits.4 = select(events, VisitID, EventID) %>%
   distinct()
 ```
 
-We should now have `r visits.4$VisitID %>% n_distinct()` unique visits. Let's double check that there is only one row per VisitID:
+## Re-visiting sample frequency
+
+We now have `r visits.4$VisitID %>% n_distinct()` unique visits. Let's double check that there is only one row per VisitID:
 
 ```{r}
 n_distinct(visits.4$VisitID) == nrow(visits.4)
 ```
-
-## Re-visiting sample frequency
 
 Let's also review our events per visit frequency plot because that will have changed too.
 
@@ -1041,7 +953,6 @@ visits = visits.4
 ```{r}
 # Remove unwanted objects
 rm(list = ls()[!ls() %in% c('data', 'events', 'catch', 'visits',
-                            'abun.fam', 'abun.gen', 'abun.sp',
                             'fam.tbl', 'gen.tbl', 'sp.tbl')])
 
 # Check sizes of the data objects
