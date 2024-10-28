@@ -76,7 +76,7 @@ Remember that in the data wrangling stage, we created a new sample identifier ba
 glimpse(visits)
 ```
 
-During the wrangling stage, I decided that Replicates and MeshSize should be the main covariates that needed consideration. Cluster, on the other hand, is a byproduct of clustering some sites together, so it may not be needed if we're using Lat/Lon as our primary explanatory variable. Still, it could be a useful grouping factor later on. Date will likely be mutated into multiple additional periods (day of year, month, year) to see if any of those factors are useful in explaining fish data. We can create those variables as they come up in our exploration.
+During the wrangling stage, I decided that Replicates and MeshSize should be the main covariates that needed consideration. At this point they are classed as integers/numbers, but we will probably want them to be factors instead. Cluster is a byproduct of clustering some sites together, so it may not be needed if we're using Lat/Lon as our primary explanatory variable. Still, it could be a useful grouping factor later on. Date will likely be mutated into multiple additional periods (day of year, month, year) to see if any of those factors are useful in explaining fish data. We'll address edits to these variables as they come up in our exploration.
 
 ## Spatial distribution
 
@@ -129,7 +129,7 @@ regions = mutate(regions,
 filter(regions, is.na(Region)) %>% nrow()
 ```
 
-Now let's add Region as a factor to our visits df, and show it on a map. Since we're manipulating our data objects again, let's also rename visits so that we can keep track of our changes. 
+Now let's add Region as a factor to our visits df, and show it on a map. Since we're manipulating our data objects again, let's also rename visits so that we can keep track of our changes.
 
 ```{r}
 # Call our wrangled df version visits.0 and remove the non-version 'visits' if it's there,
@@ -241,7 +241,7 @@ By month, we see an obvious uptick during the summer which makes sense given win
 
 It's interesting if we look at the by-week and by-day graphs, we see a dip in sampling around mid-June/early-July. Not sure why this is- maybe related to more targeting of juvenile salmonids in early June, or maybe so reduced effort around the 4th of July holiday.
 
-## Monthly and yearly sampling by region
+## Year & month by region
 
 Let's now see how our samples overlap by Region and Year, and by Region and Month. For these purposes, let's combine the Aleutians into one group for now, and remove the 1976 data.
 
@@ -263,7 +263,7 @@ left_join(filter(times, Year > 1980),
                date_breaks = "2 years") +
   labs(x = "Year", y = "Region",
        title = "Samples by Year and Region",
-       subtitle = "No. samples labelled over median") +
+       subtitle = "No. samples centered over median") +
   theme_minimal() +
   theme(legend.position = "none")
 
@@ -282,18 +282,27 @@ left_join(filter(times, Year > 1980),
   scale_color_brewer(palette = "Spectral") +
   labs(x = "Month", y = "Region",
        title = "Samples by Month and Region",
-       subtitle = "Excluding 1976, No. samples labelled by month") +
+       subtitle = "Excluding 1976; no. samples labelled by month") +
   theme_minimal() +
   theme(legend.position = "none")
 ```
 
+Interesting that each region's samples center on a different year. At a glance, I see the most overlap in 2006 where the Aleutians and both GOA regions look to have similar sample densities, plus there is a smattering of Chukchi/Beaufort sampling too. In 2009, the Bristol Bay samples may be compared with both GoA regions and the Chukchi/Beaufort, although the samples look more sparse across the regions. And in 2013, the Chukchi/Beaufort has good overlap with both GOA regions again. I see nice periods of comparison between SEAK and SCAK, but there is also a concerning difference in yearly distribution of samples between the two regions. Depending on how important year effects appear- we may need to trim the data for better comparisons.
 
+By month, we see that August contains samples from all regions. June is the center for SEAK and the Aleutians, July for SCAK, and August for Chukchi/Beaufort. Best comparisons from this monthly view may be an August (or lumped July + August) comparison of all Regions. Also, a June (or lumped June thru August) comparison of GOA and the Aleutians would be good. And, we should be able to nicely compare SEAK and SCAK from May to September, potentially including April.
+
+For now, we'll hold off on excluding any of the data. It'll be better to revisit these considerations after deciding which research questions to tackle, so subsets of the data can be made specific to each one.
+
+## Mesh Size and Replicates
+
+Let's make similar visuals as before, but now focus on Mesh Size and Replicates in space and time. First, we can re-map the samples to color by Mesh Size and size of points relative Replicates (large dots = more replicates).
 
 ```{r}
+# Palette function to color markers
 palette.mesh = colorFactor(palette = brewer.pal(n = visits.1$MeshSize %>% n_distinct(),
                                                 name = 'Spectral'),
                            domain = factor(visits.1$MeshSize))
-
+# Map
 leaflet(visits.1) %>% 
   addTiles() %>%
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
@@ -308,14 +317,44 @@ leaflet(visits.1) %>%
             opacity = 0.75)
 ```
 
+I have an issue discerning among the seven different sizes since those warmer colors do not diverge well. Although there are some patterns to make note of: the largest mesh size of 12.7 only occurs in a small area of SEAK, the 10 mm samples similarly only occur with the 12.7 mm samples (likely the [Lundstrom et al. 2022](https://doi.org/10.1007/s12237-022-01057-x) gear comparison), and the smallest size at 3 mm only occurs in Cook Inlet. I don't see any obvious spatial patterns in Replicates, although this may not be the best view of it.
+
+Let's see the frequency of samples for both variables:
+
 ```{r}
+# Table view
+table(visits.1$MeshSize)
+table(visits.1$Replicates)
+```
+There are more 12.7 mm samples than I would have guessed which is a shame because if they are completely different then we lose a lot of samples. I am wondering if sizes are accurate- I would think that 3 mm and 3.2 mm are effectively similar in practice. I am also wondering if some projects report, say 3 mm instead of 3.2 mm, because of rounding. I would assume that the nets used were manufactured in the US, which would mean that specifications are given in standard not metric. Let's do a quick check on how typical mesh sizes convert from inches to millimeters.
+
+```{r}
+# Function based on inch to millimeter conversion
+in_to_mm = function (x) {
+  return(y = 25.4 * x)
+}
+
+# Typical mesh sizes in inches
+sizes = c((1/8), (1/4), (3/8), (1/2), (5/8), (3/4))
+
+# Convert to millimeters
+in_to_mm(sizes)
+```
+
+There is obviously some funny rounding happening in the data. I do not see an issue by lumping mesh sizes that are within one millimeter. Even if the nets were actually different by fractions of a millimeter, I don't think it would affect the selectivity of fishes all that much- especially considering that most of these researchers were capturing fish to be measured to the nearest millimeter.
+
+Let's see that map again with this in mind:
+
+```{r}
+# Palette function for binned sizes
 palette.mesh.bin = colorBin(palette = brewer.pal(n = 4, name = 'Spectral'),
                             domain = visits.1$MeshSize %>% unique(),
                             bins =  c(0, 4, 7, 11, 13))
-
+# Map
 leaflet(visits.1) %>% 
   addTiles() %>%
   addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   radius = ~(sqrt(Replicates*15)),
                    color = ~palette.mesh.bin(MeshSize),
                    fillColor = ~palette.mesh.bin(MeshSize),
                    popup = ~VisitID,
@@ -331,10 +370,190 @@ leaflet(visits.1) %>%
             labels = c("3 or 3.2", "6 or 6.4", "9.5 or 10", "12.7"))
 ```
 
-# Kachemak Bay
+Much easier to read! I see some concerning patterns we'll want to investigate further as we go. The majority of samples appear to be using the 3.2 mm size, including both Arctic groups that seem to use it exclusively. There is a large density of 6.4 mm samples in Northern SEAK and throughout the Aleutians. The same issues are visible concerning the two larger mesh sizes. We should do a comparison of 3.2 mm and 6.4 mm to see if there are any significant differences in catch.
+
+With the simpler color scheme, I am also noticing the difference in Replicates a little easier. Just looking at GOA and Aleutian samples, I see that many of the 6.4 mm samples are also low-Replicate samples. Although, many of our samples only contain one replicate so this may just be something I'm seeing and not actually a concern.
+
+Let's take a look at how these variables in graphical format. I'll go ahead and aggregate similar mesh sizes and re-classify the both variables as factors, and add in variables for year and month.
 
 ```{r}
-KB_events = str_which(events$Location, "Kachemak")
-KB.events = events[KB_events, ]
-KB.76 = filter(KB.events, year(Date) < 1980)
+visits.2 = mutate(visits.1,
+                  Replicates = as_factor(Replicates),
+                  # Combine similar mesh sizes to the tenth decimal
+                  MeshSize = case_when(MeshSize < 4 ~ 3.2,
+                                       MeshSize > 4 & MeshSize < 7 ~ 6.4,
+                                       MeshSize > 7 & MeshSize < 11 ~ 9.5,
+                                       MeshSize == 12.7 ~ 12.7) %>%
+                    as.factor()) %>%
+  # Add temporal variables
+  left_join(select(times, VisitID, Year, Month), by = "VisitID")
 ```
+
+```{r}
+# Samples by MeshSize and Year,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Date, y = MeshSize, color = MeshSize)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -3, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               }) +
+  scale_color_brewer(palette = "Spectral") +
+  scale_x_date(date_labels = "%y",
+               date_breaks = "2 years") +
+  labs(x = "Year", y = "Mesh Size (mm)",
+       title = "Samples by Year and Mesh Size",
+       subtitle = "Excluding 1976; no. samples centered over median") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Samples by Month and MeshSize,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Month, y = MeshSize, color = MeshSize)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -3, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral") +
+  labs(x = "Month", y = "Mesh Size (mm)",
+       title = "Samples by Month and Mesh Size",
+       subtitle = "Excluding 1976; no. samples labelled by month") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+```{r}
+# Samples by Replicates and Year,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Date, y = Replicates, color = Replicates)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -1, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               }) +
+  scale_color_brewer(palette = "Spectral") +
+  scale_x_date(date_labels = "%y",
+               date_breaks = "2 years") +
+  labs(x = "Year", y = "Replicates",
+       title = "Samples by Year and Replicates",
+       subtitle = "Excluding 1976; no. samples centered over median") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Samples by Replicates and Month,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Month, y = Replicates, color = Replicates)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -1, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral") +
+  labs(x = "Month", y = "Replicates",
+       title = "Samples by Month and Replicates",
+       subtitle = "Excluding 1976; no. samples labelled by month") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+# Exploring catch data
+
+## Averaging abundance per visit
+
+Because our samples (visits) contain a variable number of replicates (events), we should use an averaging method to calculate abundance. Here, we'll use a simple mean (i.e., total count / number of replicates). This is our first instance of data standardization, which may be further standardized or transformed depending on next steps analyses. Also, at some point in the future it'd be neat to use the size variable to bin our taxa by length. But for now, we'll move forward simply using the abundance data (minus rare taxa).
+
+```{r}
+## Family abundance per visit
+# Save an object of all the rare families
+rare.families = unique(rare.fam$Fam_ScientificName) %>% as.character()
+# Create a tibble of family abundance excluding rare families
+catch.fam = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
+  select(VisitID,
+         EventID,
+         Fam_ScientificName,
+         Count) %>%
+  filter(!Fam_ScientificName %in% rare.families) %>% # remove rare taxa
+  summarise(Abundance = sum(Count) / n_distinct(EventID), .by = c(VisitID, Fam_ScientificName))
+  
+## Genus abundance per visit
+# Save an object of all the rare genus
+rare.genus = unique(rare.gen$Gen_ScientificName) %>% as.character()
+# Create a tibble of genus abundance excluding rare genus
+catch.gen = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
+  select(VisitID,
+         EventID,
+         Gen_ScientificName,
+         Count) %>%
+  filter(!Gen_ScientificName %in% rare.genus) %>% # remove rare taxa
+  ungroup() %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by=c(VisitID, Gen_ScientificName))
+
+## Species abundance per visit
+# Save an object of all the rare species
+rare.species = unique(rare.sp$Sp_ScientificName) %>% as.character()
+# Create a tibble of species abundance excluding rare species
+catch.sp = left_join(select(events, VisitID, EventID), catch.3, by = "EventID") %>%
+  select(VisitID,
+         EventID,
+         Sp_ScientificName,
+         Count) %>%
+  filter(!Sp_ScientificName %in% rare.species) %>% # remove rare taxa
+  ungroup() %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Sp_ScientificName))
+```
+
+Just by looking at the number of observations (rows) in the data, I think we may end up conducting analyses at the genus level:
+
+-   `r nrow(catch.fam)` observations at the family level
+
+-   `r nrow(catch.gen)` observations at the genus level
+
+-   `r nrow(catch.sp)` observations at the species level
+
+## Re-calculating abundance per visit
+
+Similarly, we'll want to to redo our visit mean abundances (taxa total / # of events). The below code is pretty much the same as previously run, except that I change the object name to better distinguish this subset from other objects in our environment.
+
+``` {r}
+# Create a tibble of mean abundance per visit for each family excluding rare taxa
+abun.fam = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
+  select(VisitID,
+         EventID,
+         Fam_ScientificName,
+         Count) %>%
+  filter(!Fam_ScientificName %in% rare.families) %>%
+  ungroup() %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Fam_ScientificName))
+
+# Create a tibble of mean abundance per visit for each Genus excluding rare taxa
+abun.gen = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
+  select(VisitID,
+         EventID,
+         Gen_ScientificName,
+         Count) %>%
+  filter(!Gen_ScientificName %in% rare.genus) %>% # remove rare taxa
+  ungroup() %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Gen_ScientificName))
+
+# Create a tibble of mean abundance per visit for each Species excluding rare taxa
+abun.sp = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
+  select(VisitID,
+         EventID,
+         Sp_ScientificName,
+         Count) %>%
+  filter(!Sp_ScientificName %in% rare.species) %>% # remove rare taxa
+  ungroup() %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Sp_ScientificName))
+```
+
+
+
