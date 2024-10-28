@@ -241,7 +241,7 @@ By month, we see an obvious uptick during the summer which makes sense given win
 
 It's interesting if we look at the by-week and by-day graphs, we see a dip in sampling around mid-June/early-July. Not sure why this is- maybe related to more targeting of juvenile salmonids in early June, or maybe so reduced effort around the 4th of July holiday.
 
-## Year & month by region
+## Year & Month by Region
 
 Let's now see how our samples overlap by Region and Year, and by Region and Month. For these purposes, let's combine the Aleutians into one group for now, and remove the 1976 data.
 
@@ -293,7 +293,7 @@ By month, we see that August contains samples from all regions. June is the cent
 
 For now, we'll hold off on excluding any of the data. It'll be better to revisit these considerations after deciding which research questions to tackle, so subsets of the data can be made specific to each one.
 
-## Mesh Size and Replicates
+## Mesh Size & Replicates
 
 Let's make similar visuals as before, but now focus on Mesh Size and Replicates in space and time. First, we can re-map the samples to color by Mesh Size and size of points relative Replicates (large dots = more replicates).
 
@@ -326,6 +326,7 @@ Let's see the frequency of samples for both variables:
 table(visits.1$MeshSize)
 table(visits.1$Replicates)
 ```
+
 There are more 12.7 mm samples than I would have guessed which is a shame because if they are completely different then we lose a lot of samples. I am wondering if sizes are accurate- I would think that 3 mm and 3.2 mm are effectively similar in practice. I am also wondering if some projects report, say 3 mm instead of 3.2 mm, because of rounding. I would assume that the nets used were manufactured in the US, which would mean that specifications are given in standard not metric. Let's do a quick check on how typical mesh sizes convert from inches to millimeters.
 
 ```{r}
@@ -463,67 +464,31 @@ filter(visits.2, Year > 1989) %>%
   theme(legend.position = "none")
 ```
 
+Last, let's see a graph of Mesh Size vs Replicates:
+
+```{r}
+
+```
 
 
 # Exploring catch data
 
-## Averaging abundance per visit
+## Revisit rare taxa
 
-Because our samples (visits) contain a variable number of replicates (events), we should use an averaging method to calculate abundance. Here, we'll use a simple mean (i.e., total count / number of replicates). This is our first instance of data standardization, which may be further standardized or transformed depending on next steps analyses. Also, at some point in the future it'd be neat to use the size variable to bin our taxa by length. But for now, we'll move forward simply using the abundance data (minus rare taxa).
+## Average abundance per visit
+
+Because our samples (visits) contain a variable number of replicates (events), I decide to use an averaging method to calculate abundance. Here, we use a simple mean (i.e., total count / number of replicates) then I round to the next highest integer.
+
+Note that this rounding method gives more representation of rarer taxa. For example, say we have a sample with three replicates of catches of X species at 0, 0, and 1; this gives us an average abundance of 0.33, and after rounding up we get an average abundance of 1.
+
+This is our first instance of data standardization, which may be further standardized or transformed depending on next steps analyses.
 
 ```{r}
-## Family abundance per visit
-# Save an object of all the rare families
-rare.families = unique(rare.fam$Fam_ScientificName) %>% as.character()
-# Create a tibble of family abundance excluding rare families
-catch.fam = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Fam_ScientificName,
-         Count) %>%
-  filter(!Fam_ScientificName %in% rare.families) %>% # remove rare taxa
-  summarise(Abundance = sum(Count) / n_distinct(EventID), .by = c(VisitID, Fam_ScientificName))
-  
-## Genus abundance per visit
-# Save an object of all the rare genus
-rare.genus = unique(rare.gen$Gen_ScientificName) %>% as.character()
-# Create a tibble of genus abundance excluding rare genus
-catch.gen = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Gen_ScientificName,
-         Count) %>%
-  filter(!Gen_ScientificName %in% rare.genus) %>% # remove rare taxa
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by=c(VisitID, Gen_ScientificName))
+# Save an object for rare taxa at each of family, genus, and species
+rare.families = filter(fam.tbl, Rare == "Yes") %>% pull(Fam_ScientificName)
+rare.genus = filter(gen.tbl, Rare == "Yes") %>% pull(Gen_ScientificName)
+rare.species = filter(sp.tbl, Rare == "Yes") %>% pull(Sp_ScientificName)
 
-## Species abundance per visit
-# Save an object of all the rare species
-rare.species = unique(rare.sp$Sp_ScientificName) %>% as.character()
-# Create a tibble of species abundance excluding rare species
-catch.sp = left_join(select(events, VisitID, EventID), catch.3, by = "EventID") %>%
-  select(VisitID,
-         EventID,
-         Sp_ScientificName,
-         Count) %>%
-  filter(!Sp_ScientificName %in% rare.species) %>% # remove rare taxa
-  ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Sp_ScientificName))
-```
-
-Just by looking at the number of observations (rows) in the data, I think we may end up conducting analyses at the genus level:
-
--   `r nrow(catch.fam)` observations at the family level
-
--   `r nrow(catch.gen)` observations at the genus level
-
--   `r nrow(catch.sp)` observations at the species level
-
-## Re-calculating abundance per visit
-
-Similarly, we'll want to to redo our visit mean abundances (taxa total / # of events). The below code is pretty much the same as previously run, except that I change the object name to better distinguish this subset from other objects in our environment.
-
-``` {r}
 # Create a tibble of mean abundance per visit for each family excluding rare taxa
 abun.fam = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
   select(VisitID,
@@ -532,7 +497,8 @@ abun.fam = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>
          Count) %>%
   filter(!Fam_ScientificName %in% rare.families) %>%
   ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Fam_ScientificName))
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% ceiling(),
+            .by = c(VisitID, Fam_ScientificName))
 
 # Create a tibble of mean abundance per visit for each Genus excluding rare taxa
 abun.gen = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
@@ -540,9 +506,10 @@ abun.gen = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>
          EventID,
          Gen_ScientificName,
          Count) %>%
-  filter(!Gen_ScientificName %in% rare.genus) %>% # remove rare taxa
+  filter(!Gen_ScientificName %in% rare.genus) %>%
   ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Gen_ScientificName))
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% ceiling(),
+            .by = c(VisitID, Gen_ScientificName))
 
 # Create a tibble of mean abundance per visit for each Species excluding rare taxa
 abun.sp = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
@@ -550,10 +517,16 @@ abun.sp = left_join(select(events, VisitID, EventID), catch, by = "EventID") %>%
          EventID,
          Sp_ScientificName,
          Count) %>%
-  filter(!Sp_ScientificName %in% rare.species) %>% # remove rare taxa
+  filter(!Sp_ScientificName %in% rare.species) %>%
   ungroup() %>%
-  summarise(Abundance = (sum(Count) / n_distinct(EventID)), .by = c(VisitID, Sp_ScientificName))
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% ceiling(),
+            .by = c(VisitID, Sp_ScientificName))
 ```
 
+We have:
 
+-   `r nrow(fam.abun)` observations at the family level
 
+-   `r nrow(gen.abun)` observations at the genus level
+
+-   `r nrow(sp.abun)` observations at the species level
