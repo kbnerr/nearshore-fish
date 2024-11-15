@@ -330,41 +330,90 @@ catch.1 %>%
                            scroller = TRUE))
 ```
 
-## Editing taxonomy
+## Juveniles and unidentified fish {.tabset .tabset-pills}
 
-The discrepancy between species common and scientific names has to do with the cases where fish were given unidentified or juvenile labels. Nothing to fix here but we'll just make sure to use scientific names in analyses.
+### Juveniles {.unnumbered}
+```{r echo = FALSE}
+# Juvenile species table
+catch.1 %>%
+  filter(Sp_CommonName %>% str_detect("juvenile")) %>%
+  select(Sp_ScientificName, Sp_CommonName, Unmeasured, Length_mm, LifeStage) %>%
+  rename(`Scientific Name` = Sp_ScientificName,
+         `Common Name` = Sp_CommonName,
+         `N Unmeasured` = Unmeasured,
+         `Length (mm)` = Length_mm,
+         `Life Stage` = LifeStage) %>%
+  arrange(`Scientific Name`) %>%
+  datatable(rownames = FALSE,
+            extensions = 'Scroller',
+            options = list(deferRender = TRUE,
+                           scrollY = 500,
+                           scroller = TRUE))
+```
 
-I also notice a couple of cases where species are called something 'or' something else:
+### Unidentified {.unnumbered}
 
-1.  Anisarchus medius or Lumpenus fabricii
-2.  Osmeridae or Clupidae (misspelled)
+``` {r echo = FALSE}
+# Unidentified species table
+catch.1 %>%
+  filter(Sp_CommonName %>% str_detect("unidentified")) %>%
+  select(Sp_ScientificName, Sp_CommonName, Unmeasured, Length_mm, LifeStage) %>%
+  rename(`Scientific Name` = Sp_ScientificName,
+         `Common Name` = Sp_CommonName,
+         `N Unmeasured` = Unmeasured,
+         `Length (mm)` = Length_mm,
+         `Life Stage` = LifeStage) %>%
+  arrange(`Scientific Name`) %>%
+  datatable(rownames = FALSE,
+            extensions = 'Scroller',
+            options = list(deferRender = TRUE,
+                           scrollY = 500,
+                           scroller = TRUE))
+```
 
-Looking at the family table, we don't see 'Osmeridae or Clupeidae', so I think that replacing these 'or' cases with their associated family scientific name should suffice. Speaking of the family table, I see that those missing data show up as NA's. We'll take a look at it and make a judgment call on how to deal with them.
+### Both {.unnumbered}
 
-Last, I'll also create a genus classification, which could end up being the level at which we do the analyses, depending on what that looks like.
+```{r echo = FALSE}
+catch.1 %>%
+  filter(Sp_CommonName %>% str_detect("juvenile|unidentified")) %>%
+  select(Fam_ScientificName, Fam_CommonName, Sp_ScientificName, Sp_CommonName) %>%
+  distinct() %>%
+  arrange(Sp_CommonName) %>%
+  datatable(rownames = FALSE,
+            extensions = 'Scroller',
+            options = list(deferRender = TRUE,
+                           scrollY = 500,
+                           scroller = TRUE))
+```
+## Fixing naming conventions
 
-I do not show results of the below code, but I provided an edited taxa list and see also comments for steps taken.
+There is a frustrating mix of so called juveniles that are labelled YOY or Larval or YOY-Larval with inconsistent binning of lengths. For example, we have observations of juvenile sculpin at 9 mm with both YOY and larval labels in the data. The largest juvenile is a greenling at 460 mm. The next largest juvenile is a sculpin at 298 mm. Confusingly, there are also three cases of juvenile sculpin/salmonid that are labelled with adult life stage. Besides that, where fish are unmeasured and no life stage designated, we can probably trust that they are actually juveniles.
+
+When we look at the observations that were labelled 'unidentified', we find some more issues to address. Unidentified cases usually come about because fishes were either too small to distinguish in the field (e.g., YOY morphologies), were unfamiliar to the sampler (e.g., rare species), or were taxa that are generally difficult to distinguish based on morphology (e.g., salmonids or cisco). The smallest unidentified fish with an adult life stage label is a 275 mm cisco "Coregonus species". The largest unidentified fish labelled larval is a 51 mm "Osmeridae or Clupeidae". This brings up an in naming convention of the unidentified fishes. For example, we have a general 'unidentified fish' but also 'unidentified fish larvae' and 'unidentified larval forage fish'. Which brings up another issue that fish are unidentified to differing taxonomic levels- sometimes genus or family or sub-family.
+
+It doesn't make sense to me to have a juvenile distinction among species names nor have so many unique names among unidentified fish. The simplest fix in my opinion is just to be sure to use scientific names in analyses. We'll have to address the two cases using "or" in Sp_ScientificName first. I also think we should then remove all unidentified instances that are simply "Division Teleostei" because it is not informative for basic questions of taxonomy. After that, we may wish to aggregate certain groups to higher taxonomy based on how frequent or rarely they occur in the data. So we should create a genus class to preserve that information in case we decide to move to the family level later.
+
+I do want to retain the 'Division Teleostei" data as a subset because I think it could be useful when asking certain questions. I also think we could return to the idea of categorizing species based on life stage by inferring missing information. It would be interesting to examine whether we could predict what those fishes might be based on co-occurring species, time of year, location, etc.
+
+I do not show results of the below code, but I provide an edited taxa list in the next section. See comments for details of the steps taken.
 
 ```{r results = "hide"}
-# Check out the cases where family is missing
-filter(catch.1, is.na(Fam_ScientificName))
-# Look up the visit info for these cases
-filter(events, EventID %in% catch.1$EventID[which(is.na(catch.1$Fam_ScientificName))])
-# Check out everything else caught during these visits
-filter(catch.1, EventID %in% catch.1$EventID[which(is.na(catch.1$Fam_ScientificName))])
-# Since these nine NAs make up a small portion of their samples,
-# The simplest solve here is to just remove the data.
-
-# Create a new object after edits made to taxonomy
-catch.2 = catch.1 %>%
-  # Drop the nine instances of NA catch
-  drop_na(Fam_ScientificName) %>%
-  # Find the 'or' species and replace with Fam_ScientificName value
-  mutate(Sp_ScientificName = ifelse(str_detect(Sp_ScientificName, pattern = " or "),
-                                    Fam_ScientificName,
-                                    Sp_ScientificName),
+# Fix the "or" cases in Sp_ScientificName
+catch.1a = catch.1 %>%
+  # Find the 'Anisarchus or Lumpenus' species and replace with Fam_ScientificName
+  mutate(Sp_ScientificName = ifelse(str_detect(Sp_ScientificName, pattern = "Anisarchus medius or Lumpenus fabricii"), Fam_ScientificName, Sp_ScientificName),
+         # Replace the missing family info for "Osmeridae or Clupidae" with "Division Teloestei" and "bony fishes"
+         Fam_CommonName = ifelse(is.na(Fam_CommonName), "bony fishes", Fam_CommonName),
+         Fam_ScientificName = ifelse(is.na(Fam_ScientificName), "Division Teleostei", Fam_ScientificName),
          # Create genus class by taking first word of Sp_ScientificName
          Gen_ScientificName = word(Sp_ScientificName, 1))
+
+# Remove all instances of "Division Teleostei" and save the df
+catch.2 = filter(catch.1a, Fam_ScientificName != "Division Teleostei")
+
+# Store the removed fishes as .rds in our data folder
+filter(catch.1a, Fam_ScientificName == "Division Teleostei") %>%
+  saveRDS(., file = file.path(dir.data, "nfa_teleostei.rds"))
 ```
 
 ## Taxa list - after edits {.tabset .tabset-pills}
@@ -548,7 +597,7 @@ full_join(sp.abun, sp.freq.occur, by = 'Sp_ScientificName') %>%
 
 ## Defining rare taxa
 
-Removing rare species is common when dealing with community data because of the affect that the most rare species (outliers) would have in typical analyses to be conducted (e.g., analysis of variance). Depending on our research questions, we may not consider rare cases functional members of the community- in these cases it may make more sense to view the community as those taxa most well represented. But if I were more interested in richness, then I would want to conservatively retain rare taxa.
+Removing rare species is common when dealing with community data because of the affect that the most rare species would have in typical analyses to be conducted (e.g., analysis of variance). Depending on our research questions, we may not consider rare cases functional members of the community- in these cases it may make more sense to view the community as those taxa most well represented. But if I were more interested in richness, then I would want to conservatively retain rare taxa.
 
 I think we can convince ourselves that removing single count and even single occurence species would be reasonable, because we do not have any information to let us know whether those cases represent an actual community member or whether they represent some sort of sampling error (e.g., mistakenly labelling all the salmonids in a particular sample Atlantic Salmon rather than a Pacific). Our research questions broadly deal with spatial and temporal distributions of community structure, so I think a 'middle of the road' approach is how we'll want to proceed (at least for now).
 
@@ -880,7 +929,7 @@ gen.tbl %>%
 ``` {r echo = FALSE}
 ## Re-summarize catch
 # Abundance
-sp.abun = summarise(catch, Abundance = sum(Count), .by = Sp_ScientificName)
+sp.abun = summarise(catch, Abundance = sum(Count), .by = c(Sp_ScientificName, Sp_CommonName))
 # Frequency of occurrence
 sp.freq.occur = left_join(catch, select(events, VisitID, EventID), by = "EventID") %>%
   summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
@@ -893,7 +942,7 @@ sp.tbl = full_join(sp.abun, sp.freq.occur, by = 'Sp_ScientificName') %>%
 rare.species = filter(sp.tbl, Rare == "Yes") %>% pull(Sp_ScientificName)
 # Summary table
 sp.tbl %>%
-  select(`Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
+  select(`Scientific Name` = Sp_ScientificName, `Common Name` = Sp_CommonName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
   arrange(as.character(`Scientific Name`)) %>%
   datatable(rownames = FALSE,
             extensions = 'Scroller',
