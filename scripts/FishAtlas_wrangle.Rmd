@@ -298,7 +298,7 @@ Another thing to point out is that less than half of the data appears to have li
 
 First, let's check out all the taxa we have in the data.
 
-## Taxa list - before edits {.tabset .tabset-pills}
+## Taxa lists - before edits {.tabset .tabset-pills}
 
 ### Family {.unnumbered}
 
@@ -329,8 +329,6 @@ catch.1 %>%
                            scrollY = 500,
                            scroller = TRUE))
 ```
-
-## Juveniles and unidentified fish {.tabset .tabset-pills}
 
 ### Juveniles {.unnumbered}
 ```{r echo = FALSE}
@@ -371,7 +369,7 @@ catch.1 %>%
                            scroller = TRUE))
 ```
 
-### Both {.unnumbered}
+### Summary of Juvenile and Unidentified {.unnumbered}
 
 ```{r echo = FALSE}
 catch.1 %>%
@@ -389,13 +387,13 @@ catch.1 %>%
 
 There is a frustrating mix of so called juveniles that are labelled YOY or Larval or YOY-Larval with inconsistent binning of lengths. For example, we have observations of juvenile sculpin at 9 mm with both YOY and larval labels in the data. The largest juvenile is a greenling at 460 mm. The next largest juvenile is a sculpin at 298 mm. Confusingly, there are also three cases of juvenile sculpin/salmonid that are labelled with adult life stage. Besides that, where fish are unmeasured and no life stage designated, we can probably trust that they are actually juveniles.
 
-When we look at the observations that were labelled 'unidentified', we find some more issues to address. Unidentified cases usually come about because fishes were either too small to distinguish in the field (e.g., YOY morphologies), were unfamiliar to the sampler (e.g., rare species), or were taxa that are generally difficult to distinguish based on morphology (e.g., salmonids or cisco). The smallest unidentified fish with an adult life stage label is a 275 mm cisco "Coregonus species". The largest unidentified fish labelled larval is a 51 mm "Osmeridae or Clupeidae". This brings up an in naming convention of the unidentified fishes. For example, we have a general 'unidentified fish' but also 'unidentified fish larvae' and 'unidentified larval forage fish'. Which brings up another issue that fish are unidentified to differing taxonomic levels- sometimes genus or family or sub-family.
+When we look at the observations that were labelled 'unidentified', we find some more issues to address. Unidentified cases usually come about because fishes were either too small to distinguish in the field (e.g., YOY morphologies), were unfamiliar to the sampler (e.g., rare species), or were taxa that are generally difficult to distinguish based on morphology (e.g., salmonids or cisco). The smallest unidentified fish with an adult life stage label is a 275 mm cisco "Coregonus species". The largest unidentified fish labelled larval is a 51 mm "Osmeridae or Clupeidae". This brings up an in naming convention of the unidentified fishes. For example, we have a general 'unidentified fish' but also 'unidentified fish larvae' and 'unidentified larval forage fish'. Which brings up another issue that fish are unidentified to differing taxonomic levels- sometimes genus or family or sub-family. I notice that when identified to genus, the name has the format "*Genera species*". Since I may want to conduct analyses at the genus level, I'll need to remove cases where "species" is in the scientific name.
 
 It doesn't make sense to me to have a juvenile distinction among species names nor have so many unique names among unidentified fish. The simplest fix in my opinion is just to be sure to use scientific names in analyses. We'll have to address the two cases using "or" in Sp_ScientificName first. I also think we should then remove all unidentified instances that are simply "Division Teleostei" because it is not informative for basic questions of taxonomy. After that, we may wish to aggregate certain groups to higher taxonomy based on how frequent or rarely they occur in the data. So we should create a genus class to preserve that information in case we decide to move to the family level later.
 
 I do want to retain the 'Division Teleostei" data as a subset because I think it could be useful when asking certain questions. I also think we could return to the idea of categorizing species based on life stage by inferring missing information. It would be interesting to examine whether we could predict what those fishes might be based on co-occurring species, time of year, location, etc.
 
-I do not show results of the below code, but I provide an edited taxa list in the next section. See comments for details of the steps taken.
+I do not show results of the below code. See comments for details of the steps taken.
 
 ```{r results = "hide"}
 # Fix the "or" cases in Sp_ScientificName
@@ -406,7 +404,9 @@ catch.1a = catch.1 %>%
          Fam_CommonName = ifelse(is.na(Fam_CommonName), "bony fishes", Fam_CommonName),
          Fam_ScientificName = ifelse(is.na(Fam_ScientificName), "Division Teleostei", Fam_ScientificName),
          # Create genus class by taking first word of Sp_ScientificName
-         Gen_ScientificName = word(Sp_ScientificName, 1))
+         Gen_ScientificName = word(Sp_ScientificName, 1),
+         # For cases where "species" is in Sp_ScientificName- use the genus name only
+         Sp_ScientificName = ifelse(str_detect(Sp_ScientificName, pattern = "species"), Gen_ScientificName, Sp_ScientificName))
 
 # Remove all instances of "Division Teleostei" and save the df
 catch.2 = filter(catch.1a, Fam_ScientificName != "Division Teleostei")
@@ -414,52 +414,6 @@ catch.2 = filter(catch.1a, Fam_ScientificName != "Division Teleostei")
 # Store the removed fishes as .rds in our data folder
 filter(catch.1a, Fam_ScientificName == "Division Teleostei") %>%
   saveRDS(., file = file.path(dir.data, "nfa_teleostei.rds"))
-```
-
-## Taxa list - after edits {.tabset .tabset-pills}
-
-### Family {.unnumbered}
-
-```{r echo = FALSE}
-catch.2 %>%
-  select(Fam_ScientificName, Fam_CommonName) %>%
-  rename(`Scientific Name` = Fam_ScientificName, `Common Name` = Fam_CommonName) %>%
-  distinct() %>%
-  arrange(`Scientific Name`) %>%
-  datatable(rownames = FALSE,
-            extensions = 'Scroller',
-            options = list(deferRender = TRUE,
-                           scrollY = 500,
-                           scroller = TRUE))
-```
-
-### Genus {.unnumbered}
-
-```{r echo = FALSE}
-catch.2 %>%
-  select(`Scientific Name` = Gen_ScientificName) %>%
-  distinct() %>%
-  arrange(`Scientific Name`) %>%
-  datatable(rownames = FALSE,
-            extensions = 'Scroller',
-            options = list(deferRender = TRUE,
-                           scrollY = 500,
-                           scroller = TRUE))
-```
-
-### Species {.unnumbered}
-
-```{r echo = FALSE}
-catch.2 %>%
-  select(Sp_ScientificName, Sp_CommonName) %>%
-  rename(`Scientific Name` = Sp_ScientificName, `Common Name` = Sp_CommonName) %>%
-  distinct() %>%
-  arrange(`Scientific Name`) %>%
-  datatable(rownames = FALSE,
-            extensions = 'Scroller',
-            options = list(deferRender = TRUE,
-                           scrollY = 500,
-                           scroller = TRUE))
 ```
 
 ## Replacing 'Unmeasured' with 'Count'
@@ -597,19 +551,17 @@ full_join(sp.abun, sp.freq.occur, by = 'Sp_ScientificName') %>%
 
 ## Defining rare taxa
 
-Removing rare species is common when dealing with community data because of the affect that the most rare species would have in typical analyses to be conducted (e.g., analysis of variance). Depending on our research questions, we may not consider rare cases functional members of the community- in these cases it may make more sense to view the community as those taxa most well represented. But if I were more interested in richness, then I would want to conservatively retain rare taxa.
+Dealing with rare species is common in community data analysis because of the outlier effect they have when describing the community as a whole. Depending on our research questions, we may not consider rare cases functional members of the community- in these cases it may make more sense to view the community as those taxa most well represented. But if I were more interested in richness, then I would want to conservatively retain rare taxa.
 
-I think we can convince ourselves that removing single count and even single occurence species would be reasonable, because we do not have any information to let us know whether those cases represent an actual community member or whether they represent some sort of sampling error (e.g., mistakenly labelling all the salmonids in a particular sample Atlantic Salmon rather than a Pacific). Our research questions broadly deal with spatial and temporal distributions of community structure, so I think a 'middle of the road' approach is how we'll want to proceed (at least for now).
+We'll want to be objective in how we define rare taxa. It makes sense to me that occurrence holds more weight than abundance; although, I think we can convince ourselves that removing single count and even single occurrence species would be reasonable. Since we do not have any information to let us know whether those cases represent an actual community member or whether they represent some sort of sampling effect (e.g., imagine a project had an ID'er that was an expert in juvenile salmon). Our decision should balance the information lost vs retained, acknowledging that this differs at different taxa levels. To begin analyses, we'll want to try using the lowest taxonomy possible (species), but it'll be good practice to define "rare"  ap priori so we're not too biased after conducting EDA. For now let's say that taxa with <0.25% occurrence are rare (<`r ceiling(n_distinct(events$VisitID) * 0.0025)` samples), which causes:
 
-We'll want to be objective in how we define rare taxa. To me, it makes sense to consider occurrence rather than abundance. Our decision should balance the information lost vs retained, and consider how it affects each level of taxonomy. However, I do not know what taxa level makes most sense for future analyses at this point so we'll want to keep our options open. For now, let's consider it "rare" when taxa appear in less than 5 total visits (less than 0.25% percent occurrence). With that, removing rare taxa causes:
+- `r round(n_distinct(filter(fam.freq.occur, Perc_Occurrence < 0.25)) / nrow(fam.freq.occur) * 100, 1)`% reduction in richness at the Family level
 
-- 17.6% reduction in richness at the Family level (6 of 34)
+- `r round(n_distinct(filter(gen.freq.occur, Perc_Occurrence < 0.25)) / nrow(gen.freq.occur) * 100, 1)`% reduction in richness at the Genus level
 
-- 25.6% reduction in richness at the Genus level (30 of 117)
+- `r round(n_distinct(filter(sp.freq.occur, Perc_Occurrence < 0.25)) / nrow(sp.freq.occur) * 100, 1)`% reduction in richness at the Species Level
 
-- 31.4% reduction in richness at the Species Level (59 of 188)
-
-Note that this fixed cut-off affects species diversity more so than family diversity. Some of this can be explained by the fact that the species list contains many identifications at the genus and family level, which makes sense since identification often includes cases where researchers aggregate 'iffy' ID's into a higher class. I expect this issue to be especially apparent in a collaborative dataset like the NFA.
+Note that this fixed cut-off affects species diversity more so than family diversity. Some of this can be explained by the fact that the species list contains many identifications at the genus and family level, which makes sense since identification often includes cases where researchers aggregate 'iffy' ID's into a higher class. I expect this issue to be especially apparent in a collective dataset like the NFA.
 
 ## Lists of rare taxa {.tabset .tabset-pills}
 
@@ -654,7 +606,7 @@ rename(rare.gen, `Scientific Name` = Gen_ScientificName, `Percent Occurrence` = 
 rare.sp = full_join(sp.abun, sp.freq.occur, by = 'Sp_ScientificName') %>%
   filter(Perc_Occurrence < 0.25) %>%
   select(Sp_ScientificName, Perc_Occurrence, Abundance)
-# Table of rare genus abundance and occurrence
+# Table of rare species abundance and occurrence
 rename(rare.sp, `Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence) %>%
   arrange(as.character(`Scientific Name`)) %>%
   datatable(rownames = FALSE,
@@ -664,88 +616,116 @@ rename(rare.sp, `Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Pe
                            scroller = TRUE))
 ```
 
-Cool- now let's re-visit our abundance and occurrence graphs to see how they look:
+## Aggregating rare species to genus and family {.tabset .tabset-pills}
 
-## Catch after removing rare taxa {.tabset .tabset-pills}
+Looking at the rare species list, I see a some rare taxa that could be aggregated into higher taxonomies. There are Liparis and Sebastes species that only occur in one sample, but their genus is not rare. These two types of fish are notoriously difficult to identify and could have resulted from certain projects benefiting from species expertise that others did not have. Xiphister species also has this characteristic. Another case I want to point out- there are rare occurrences of Bathymaster identified to species and also those identified to the family, Bathymasteridae). In addition to Bathymasteridae, I see rare species names that are already at the genus level (e.g., Citharchthys) or family level (Zoarcidae). Similarly, Pholis fasciata is a rare species but if we look at the full list of species names, we see that there is a non-rare occurrence of data classified as Pholidae. It is likely we'll need to remove rare taxa somehow, but we also want avoid losing information that can be captured by using the genus or family name especially in cases where it is already occurring (e.g., Pholidae).
 
-### Family {.unnumbered}
+So we have a two step aggregation process. For species considered rare (occurring in <`r ceiling(n_distinct(events$VisitID) * 0.0025)` samples), I want to replace their name with genus name. Those that are already listed as a family name would stay at the family level. After that if taxa are still rare, then we aggregate again and replace with family name. Those taxa still rare after this second round of aggregation have much less information to contribute and are good candidates for removing from the data.
 
-```{r echo = FALSE, fig.width = 12, fig.height = 8}
-# Plot abundance
-anti_join(fam.abun, rare.fam, by = "Fam_ScientificName") %>%
-  ggplot(aes(x = Fam_ScientificName, y = Abundance)) +
-  geom_col() +
-  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = 'Family abundance excluding rare taxa', x = 'Family')
-# ggsave("nfa_fam_abun_raw_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+### Rare species after aggregating to genera {.unnumbered}
 
-# Plot frequency of occurrence
-anti_join(fam.freq.occur, rare.fam, by = "Fam_ScientificName") %>%
-  ggplot(aes(x = Fam_ScientificName, y = Perc_Occurrence)) +
-  geom_col() +
-  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    labs(title = 'Family frequency of occurrence excluding rare taxa', x = 'Family', y = 'Percent occurrence')
-# ggsave("nfa_fam_freq-occur_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+```{r echo = FALSE}
+# Create an vector of all of our rare species as originally labelled
+rare.species.1 = rare.sp$Sp_ScientificName %>% as.vector()
+
+# Replace rare species with genera names
+catch.3a = mutate(catch.3, Sp_ScientificName = ifelse(Sp_ScientificName %in% rare.species.1, Gen_ScientificName, Sp_ScientificName))
+
+# Recalculate species abundance, first aggregation
+sp.abun.1 = catch.3a %>%
+  summarise(Abundance = sum(Count), .by = Sp_ScientificName) %>%
+  mutate(Sp_ScientificName = fct_reorder(as.factor(Sp_ScientificName), desc(Abundance)))
+# Recalculate species frequency of occurrence, first aggregation
+sp.freq.occur.1 = left_join(catch.3a, select(events, VisitID, EventID), by = "EventID") %>%
+  summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
+  summarise(Occurrence = sum(Presence), .by = Sp_ScientificName) %>%
+  mutate(Perc_Occurrence = round(Occurrence / n_distinct(events$VisitID) * 100, 2),
+         Sp_ScientificName = fct_reorder(as.factor(Sp_ScientificName), desc(Perc_Occurrence)))
+# Subset rare species, first aggregation
+rare.sp.gen = full_join(sp.abun.1, sp.freq.occur.1, by = 'Sp_ScientificName') %>%
+  filter(Perc_Occurrence < 0.25) %>%
+  select(Sp_ScientificName, Perc_Occurrence, Abundance)
+
+# Create a table of rare species abundance and occurrence, first aggregation
+rename(rare.sp.gen, `Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence) %>%
+  arrange(as.character(`Scientific Name`)) %>%
+  datatable(rownames = FALSE,
+            extensions = 'Scroller',
+            options = list(deferRender = TRUE,
+                           scrollY = 250,
+                           scroller = TRUE))
+```
+### Rare species after aggregating to to family {.unnumbered}
+
+```{r echo = FALSE}
+# Create another vector of all of our rare species after first aggregation
+rare.species.2 = rare.sp.gen$Sp_ScientificName %>% as.vector()
+
+# Replace rare species with family names
+catch.3b = mutate(catch.3a, Sp_ScientificName = ifelse(Sp_ScientificName %in% rare.species.2, Fam_ScientificName, Sp_ScientificName))
+
+# Recalculate species abundance, second aggregation
+sp.abun.2 = catch.3b %>%
+  summarise(Abundance = sum(Count), .by = Sp_ScientificName) %>%
+  mutate(Sp_ScientificName = fct_reorder(as.factor(Sp_ScientificName), desc(Abundance)))
+# Recalculate species frequency of occurrence, second aggregation
+sp.freq.occur.2 = left_join(catch.3b, select(events, VisitID, EventID), by = "EventID") %>%
+  summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
+  summarise(Occurrence = sum(Presence), .by = Sp_ScientificName) %>%
+  mutate(Perc_Occurrence = round(Occurrence / n_distinct(events$VisitID) * 100, 2),
+         Sp_ScientificName = fct_reorder(as.factor(Sp_ScientificName), desc(Perc_Occurrence)))
+# Subset rare species, second aggregation
+rare.sp.2 = full_join(sp.abun.2, sp.freq.occur.2, by = 'Sp_ScientificName') %>%
+  filter(Perc_Occurrence < 0.25) %>%
+  select(Sp_ScientificName, Perc_Occurrence, Abundance)
+
+# Create a table of rare species abundance and occurrence, first aggregation
+rename(rare.sp.2, `Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence) %>%
+  arrange(as.character(`Scientific Name`)) %>%
+  datatable(rownames = FALSE,
+            extensions = 'Scroller',
+            options = list(deferRender = TRUE,
+                           scrollY = 250,
+                           scroller = TRUE))
 ```
 
-### Genus {.unnumbered}
-
-```{r echo = FALSE, fig.width = 12, fig.height = 8}
-# Plot abundance
-anti_join(gen.abun, rare.gen) %>%
-  ggplot(aes(x = Gen_ScientificName, y = Abundance)) +
-  geom_col() +
-  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = 'Genus abundance excluding rare taxa', x = 'Genus')
-# ggsave("nfa_gen_abun_raw_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
-
-# Plot frequency of occurrence
-anti_join(gen.freq.occur, rare.gen) %>%
-  ggplot(aes(x = Gen_ScientificName, y = Perc_Occurrence)) +
-  geom_col() +
-  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    labs(title = 'Genus frequency of occurrence excluding rare taxa', x = 'Genus', y = 'Percent occurrence')
-# ggsave("nfa_gen_freq-occur_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
-```
+## Species list - after all edits {.tabset .tabset-pills}
 
 ### Species {.unnumbered}
 
-```{r echo = FALSE, fig.width = 12, fig.height = 8}
-# Plot abundance
-anti_join(sp.abun, rare.sp) %>%
-  ggplot(aes(x = Sp_ScientificName, y = Abundance)) +
-  geom_col() +
-  geom_text(aes(label = Abundance), vjust = -0.5, size = 2) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = 'Species abundance excluding rare taxa', x = 'Species')
-# ggsave("nfa_sp_abun_raw_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
-
-# Plot frequency of occurrence
-anti_join(sp.freq.occur, rare.sp) %>%
-  ggplot(aes(x = Sp_ScientificName, y = Perc_Occurrence)) +
-  geom_col() +
-  geom_text(aes(label = round(Perc_Occurrence, 1)), size = 2, vjust = -0.5) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    labs(title = 'Species frequency of occurrence excluding rare taxa', x = 'Species', y = 'Percent occurrence')
-# ggsave("nfa_sp_freq-occur_ex-rare.png", plot = last_plot(), device = 'png', path = file.path(dir.figs))
+```{r echo = FALSE}
+# Create species table using edited catch data
+sp.tbl = full_join(sp.abun.2, sp.freq.occur.2, by = 'Sp_ScientificName') %>%
+  mutate(Rare = ifelse(Occurrence < 5, "Yes", "No"))
+# Summary table
+sp.tbl %>%
+  select(`Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
+  arrange(as.character(`Scientific Name`)) %>%
+  datatable(rownames = FALSE,
+            extensions = 'Scroller',
+            options = list(deferRender = TRUE,
+                           scrollY = 500,
+                           scroller = TRUE,
+                           columnDefs = list(list(targets = 'Rare', visible = FALSE)))) %>% 
+  formatStyle(columns = "Rare",
+              target = "row",
+              backgroundColor = styleEqual("Yes", "goldenrod"))
 ```
+We use to have `r nrow(sp.abun)` taxa at the species level, and now we have `r nrow(sp.tbl)`. We ended up with 13 rare cases after aggregating species to genus then aggregating again to family. Our most abundant rare case is Gasterosteidae (sticklebacks) with 204 individuals caught among 3 samples, which is surprising since I wouldn't think sticklebacks as difficult to ID in Alaska. The other rare cases are much less abundant and do not provide much information since they were only caught in a few samples and could only be identified to the family level. Our new object *sp.tbl* contains a variable classifying whether taxa are rare or not. This will make it easy for us to subset the data down the road if required.
 
-Last thing we'll do is rename our catch tibble and clean up our environment.
-
-```{r}
-# Re-assign working version of catch to a cleaner name
-catch = catch.3
-```
+Since we lost some information at lower taxonomic levels, I'll retain an object that contains the original taxonomic data (species level) in case we want to take a look at it later.
 
 ## Clean up
 
 ```{r}
+# Save rare species info as .rds in our data folder
+saveRDS(rare.sp, file = file.path(dir.data, "nfa_rarespecies.rds"))
+
+# Re-assign working version of catch to a cleaner name
+catch = catch.3b
+
 # Clean up our environment for the next step:
-rm(list = ls()[!ls() %in% c('data', 'events', 'catch', 'catch.fam', 'catch.gen', 'catch.sp', 'rare.families', 'rare.genus', 'rare.species')])
+rm(list = ls()[!ls() %in% c('data', 'events', 'catch', 'sp.tbl')])
 
 # Reset directory
 wd = here()
@@ -858,78 +838,16 @@ events = left_join(select(events, EventID, VisitID), mult.mesh.fix, by = "EventI
 
 Next, we need to re-run the catch and visits steps that are based on the events data.
 
-## Re-creating catch summaries {.tabset .tabset-pills}
+## Re-creating catch summary {.tabset .tabset-pills}
 
-We'll need to redo the abundance and occurrence calculations because the number of visits has changed. Rare taxa will still be defined as those occurring in less than 5 visits (still equivalent to <0.25%). The frequency and abundance plots are not all that different, but I show updated catch summary tables below for each taxa level. Note that I highlight rare taxa in orange.
-
-### Family {.unnumbered}
-
-```{r echo = FALSE}
-## Re-summarize catch
-# Abundance
-fam.abun = summarise(catch, Abundance = sum(Count), .by = Fam_ScientificName)
-# Frequency of occurrence
-fam.freq.occur = left_join(catch, select(events, VisitID, EventID), by = "EventID") %>%
-  summarise(Presence = n_distinct(Fam_ScientificName), .by = c(VisitID, Fam_ScientificName)) %>%
-  summarise(Occurrence = sum(Presence), .by = Fam_ScientificName) %>%
-  mutate(Perc_Occurrence = round(Occurrence / n_distinct(events$VisitID) * 100, 2))
-# Combine calculated variables and define rare taxa
-fam.tbl = full_join(fam.abun, fam.freq.occur, by = 'Fam_ScientificName') %>%
-  mutate(Rare = ifelse(Occurrence < 5, "Yes", "No"))
-# Save rare taxa as vector
-rare.families = filter(fam.tbl, Rare == "Yes") %>% pull(Fam_ScientificName)
-# Summary table
-fam.tbl %>%
-  select(`Scientific Name` = Fam_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
-  arrange(as.character(`Scientific Name`)) %>%
-  datatable(rownames = FALSE,
-            extensions = 'Scroller',
-            options = list(deferRender = TRUE,
-                           scrollY = 500,
-                           scroller = TRUE,
-                           columnDefs = list(list(targets = 'Rare', visible = FALSE)))) %>% 
-  formatStyle(columns = "Rare",
-              target = "row",
-              backgroundColor = styleEqual("Yes", "goldenrod"))
-```
-
-### Genus {.unnumbered}
-
-``` {r echo = FALSE}
-## Re-summarize catch
-# Abundance
-gen.abun = summarise(catch, Abundance = sum(Count), .by = Gen_ScientificName)
-# Frequency of occurrence
-gen.freq.occur = left_join(catch, select(events, VisitID, EventID), by = "EventID") %>%
-  summarise(Presence = n_distinct(Gen_ScientificName), .by = c(VisitID, Gen_ScientificName)) %>%
-  summarise(Occurrence = sum(Presence), .by = Gen_ScientificName) %>%
-  mutate(Perc_Occurrence = round(Occurrence / n_distinct(events$VisitID) * 100, 2))
-# Combine calculated variables and define rare taxa
-gen.tbl = full_join(gen.abun, gen.freq.occur, by = 'Gen_ScientificName') %>%
-  mutate(Rare = ifelse(Occurrence < 5, "Yes", "No"))
-# Save rare taxa as vector
-rare.genus = filter(gen.tbl, Rare == "Yes") %>% pull(Gen_ScientificName)
-# Summary table
-gen.tbl %>%
-  select(`Scientific Name` = Gen_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
-  arrange(as.character(`Scientific Name`)) %>%
-  datatable(rownames = FALSE,
-            extensions = 'Scroller',
-            options = list(deferRender = TRUE,
-                           scrollY = 500,
-                           scroller = TRUE,
-                           columnDefs = list(list(targets = 'Rare', visible = FALSE)))) %>% 
-  formatStyle(columns = "Rare",
-              target = "row",
-              backgroundColor = styleEqual("Yes", "goldenrod"))
-```
+We'll need to redo the abundance and occurrence calculations because the number of visits has changed. Rare taxa will still be equivalent to <0.25% occurrence. The frequency and abundance plots are not all that different. I show an updated species table below, note that I highlight rare taxa in orange.
 
 ### Species {.unnumbered}
 
 ``` {r echo = FALSE}
 ## Re-summarize catch
 # Abundance
-sp.abun = summarise(catch, Abundance = sum(Count), .by = c(Sp_ScientificName, Sp_CommonName))
+sp.abun = summarise(catch, Abundance = sum(Count), .by = c(Sp_ScientificName))
 # Frequency of occurrence
 sp.freq.occur = left_join(catch, select(events, VisitID, EventID), by = "EventID") %>%
   summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
@@ -938,11 +856,9 @@ sp.freq.occur = left_join(catch, select(events, VisitID, EventID), by = "EventID
 # Combine calculated variables and define rare taxa
 sp.tbl = full_join(sp.abun, sp.freq.occur, by = 'Sp_ScientificName') %>%
   mutate(Rare = ifelse(Occurrence < 5, "Yes", "No"))
-# Save rare taxa as vector
-rare.species = filter(sp.tbl, Rare == "Yes") %>% pull(Sp_ScientificName)
 # Summary table
 sp.tbl %>%
-  select(`Scientific Name` = Sp_ScientificName, `Common Name` = Sp_CommonName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
+  select(`Scientific Name` = Sp_ScientificName, `Percent Occurrence` = Perc_Occurrence, Abundance, Rare) %>%
   arrange(as.character(`Scientific Name`)) %>%
   datatable(rownames = FALSE,
             extensions = 'Scroller',
@@ -1001,8 +917,7 @@ visits = visits.4
 
 ```{r}
 # Remove unwanted objects
-rm(list = ls()[!ls() %in% c('data', 'events', 'catch', 'visits',
-                            'fam.tbl', 'gen.tbl', 'sp.tbl')])
+rm(list = ls()[!ls() %in% c('data', 'events', 'catch', 'visits', 'sp.tbl')])
 
 # Check sizes of the data objects
 eapply(as.environment(-1), FUN = function(x) format(object.size(x), units = "Mb"))
