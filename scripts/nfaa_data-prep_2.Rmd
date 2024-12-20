@@ -1,0 +1,1240 @@
+---
+title: "NOAA Nearshore Fish Atlas of Alaska"
+subtitle: "Data Wrangle and Exploratory Analyses, Part I"
+author: "Chris Guo"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+    toc_float:
+      collapsed: FALSE
+      print: FALSE
+    number_sections: TRUE
+    code_download: TRUE
+theme: "flatly"
+bibliography: "`r file.path(here::here(), 'doc.ignore', 'nfaa_references.bib')`"
+csl: "`r file.path(here::here(), 'doc.ignore', 'ecology.csl')`"
+link-citations: TRUE
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(size = "scriptsize")
+```
+
+Built with R version `r getRversion()`.
+
+# Introduction
+
+The purpose of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover steps of the data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's github [nearshore fish repository](https://github.com/kbnerr/nearshore-fish).
+
+In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database. The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Initial wrangle steps can be viewed at this [Rpubs page](https://rpubs.com/chguo1/1188614) and its data objects are sourced below (file "NFA.rda").
+
+## Set up
+
+Load required packages, define directory, set options, source/load files:
+
+```{r results = 'hide'}
+# Packages
+library(tidyverse)
+library(lubridate)
+library(here)
+library(leaflet)
+library(RColorBrewer)
+library(vegan)
+library(ggsignif)
+library(ggpubr)
+library(progressr)
+
+# Directory
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(name, path, i)
+}
+
+# Options
+
+# Source/Load
+load(file.path(dir.data, "nfaa_1.rda")) # wrangled data
+```
+
+## Background and objectives
+
+Based on my own research and related literature, I can broadly interpret these beach seine data in a spatiotemporal context. Depending on when (time of year) and where (location and habitat), I have a general structure in mind of the diversity of the community. Depending on who's there, I have a rough guess of the relative abundance of each community member (at least for the more commonly caught ones). My hope with working with the NFA data is that this broad understanding can be formally tested with inference and statistics, and that more informative research questions can be answered.
+
+Findings from other nearshore fish researchers largely agree that seasonality (or some related environmental condition) is a strong predictor of community or species presence. Interannual differences can exhibit wide variability and should be accounted for whenever possible. And at larger time-scales (e.g., decadal), communities exhibit changes which may relate to regime shifts occurring more broadly than the nearshore.
+
+Spatially, large-scale (regional) effects appear to be as or more important than sub-regional or local-scale effects. However, many studies also find significant relationships in community response at these smaller scales. Likely, the most appropriate spatial consideration depends on the question being asked. So maybe a more appropriate question to ask of the NFA data is if there any significant spatial scales discernible in the data, and also how should we address those scales in future research, such as studies on subsets of the taxa or habitat management considerations.
+
+I'll start by exploring the structure of our 'visits' dataframe, and then I'll move on to visualizing the information derived from out 'catch' dataframe.
+
+# Exploring visit data
+
+## Summary of visits
+
+Remember that in the data wrangling stage, we created a new sample identifier based on site and date which we called VisitID. Let's take a look at the variables associated with each VisitID:
+
+```{r}
+glimpse(visits)
+```
+
+During the wrangling stage, I decided that Replicates and MeshSize should be the main covariates that needed consideration. At this point they are classed as integers/numbers, but we will probably want them to be factors instead. Cluster is a byproduct of clustering some sites together, so it may not be needed if we're using Lat/Lon as our primary explanatory variable. Still, it could be a useful grouping factor later on. Date will likely be mutated into multiple additional periods (day of year, month, year) to see if any of those factors are useful in explaining fish data. We'll address edits to these variables as they come up in our exploration.
+
+## Spatial distribution
+
+```{r}
+leaflet(visits) %>% 
+  addTiles(options = tileOptions(minZoom = 3.5,
+                                 zIndex = 0.5)) %>%
+  setView(lat = 65, lng = -152, zoom = 3.5) %>%
+  addSimpleGraticule(interval = 5) %>%  
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   stroke = FALSE,
+                   popup = ~VisitID,
+                   clusterOptions = markerClusterOptions())
+```
+
+In the map above we can view all of our samples from across Alaska. Leaflet options are nice because you can optionally group samples on the map and show a boundary polygon of the area they cover when you hover over their icon. At the minimum zoom level (3.5), we see the largest group spanning nearly all of Southeast Alaska, followed by a group in Southcentral that covers Prince William Sound, Cook Inlet, and the northern half of Kodiak Island. The third largest group forms a much smaller polygon area around Utqiagvik. From there, we see even smaller groups from the Eastern Beaufort Sea around Kaktovik, the Bering Strait and Southern Chukchi Sea near Kotzebue, and Bristol Bay. There are also two groups from the Alaska Peninsula and Aleutian Islands, one focused around Adak and another spanning from Sand Point to Unalaska. We can see how subsets of the samples change by zooming in. When there are single samples in view, hovering over those will tell us its VisitID name.
+
+Obviously, this visualization of the data is not perfect and pretty rough- note that the groups are formed by the overlap of samples based on pixel radius (10). For example, the polygon of samples from Bristol Bay at the minimum zoom level actually crosses the Alaska Peninsula to include a sample from Aghiyuk Island. Although, the map is useful in gaining a general understanding of the existing clusters of samples within the NFA database.
+
+## Regions
+
+We may want to define a spatial factor based on these rough groupings as a starting place to see if the smaller, more isolated groups should be lumped with other groups or not. Actually, the NFA already has a Region classifier per site, but the reason I do not want to use it is because they linked Region to SiteID. When we created our new VisitID, some samples now contained two Region labels- these were mostly cases from around Utqiagvik where some were labelled as Chuckchi and others as Beaufort but actually occurred on the same day and within a very short distance of each other.
+
+Instead of using the the given regional classes, let's just make our own variable called 'Region' and add it to the our visits df:
+
+```{r}
+# Start with events so that we can make use of Location info for unique cases,
+regions = events %>%
+  select(EventID, VisitID, Lat, Lon, Location) %>%
+  mutate(Region = case_when(Lat > 69 & Lat < 80 & Lon > -150 & Lon < -140 ~ "Beaufort East",
+                            Lat > 69 & Lat < 80 & Lon > -160 & Lon < -150 ~ "Chukchi/Beaufort",
+                            Lat > 65 & Lat < 69 & Lon > -170 & Lon < -160 ~ "Chukchi South",
+                            Lat > 57 & Lat < 60 & Lon > -165 & Lon < -155 ~ "Bristol Bay",
+                            Lat > 50 & Lat < 55 & Lon > -180 & Lon < -175 ~ "Aleutians Adak",
+                            Lat > 50 & Lat < 55 & Lon > -170 & Lon < -165 ~ "Aleutians Unalaska",
+                            Lat > 55 & Lat < 65 & Lon > -155 & Lon < -145 ~ "GOA Southcentral",
+                            Lat > 53 & Lat < 61 & Lon > -148 & Lon < -130 ~ "GOA Southeast"))
+
+# Check which samples we missed,
+filter(regions, is.na(Region))
+
+# Let's address those using Location,
+regions = mutate(regions,
+       Region = case_when(!is.na(Region) ~ Region,
+                          is.na(Region) & str_detect(Location, "Yunaska") ~ "Aleutians Yunaska",
+                          is.na(Region) & str_detect(Location, "Aghiyuk") ~ "Aleutians Aghiyuk",
+                          is.na(Region) & str_detect(Location, "Shumagin") ~ "Aleutians Shumagin"))
+
+# Check again (should be 0),
+filter(regions, is.na(Region)) %>% nrow()
+```
+
+Now let's add Region as a factor to our visits df, and show it on a map. Since we're manipulating our data objects again, let's also rename visits so that we can keep track of our changes.
+
+```{r}
+# Call our wrangled df version visits.0 and remove the non-version 'visits' if it's there,
+if ("visits" %in% ls()) assign("visits.0", visits)
+if ("visits" %in% ls()) rm(visits)
+
+# Make Region a factor and join by VisitID,
+visits.1 = regions %>%
+  select(VisitID, Region) %>%
+  distinct() %>%
+  mutate(Region = as.factor(Region)) %>%
+  left_join(visits.0, ., by = "VisitID")
+
+# Function for regional palette
+palette.region = colorFactor(palette = brewer.pal(n = visits.1$Region %>% n_distinct(),
+                                                  name = 'Spectral'),
+                             domain = factor(visits.1$Region))
+
+# Map
+leaflet(visits.1) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   color = ~palette.region(Region),
+                   fillColor = ~palette.region(Region),
+                   popup = ~paste(Region, VisitID),
+                   stroke = FALSE) %>%
+  addLegend(position = "topright",
+            pal = palette.region, values = ~Region,
+            title = "Region",
+            opacity = 0.75)
+```
+
+```{r echo = FALSE}
+# Number of samples per Region
+select(visits.1, VisitID, Region) %>%
+  count(Region) %>%
+  distinct() %>%
+  ggplot(., aes(x = Region, y = n, fill = Region)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5) +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(x = NULL, y = NULL, title = "No. samples per Region") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+Like we saw before, the majority of our samples are located in the Gulf of Alaska (GOA), namely Southeast (SEAk) and Southcentral (SCAK). If we were to look at differences in catach in the GOA, it'd be cool if we could include the Aleutian samples too. Obviously, we'll want to address those few instances from Aghiyuk, Shumagin, and Yunaska, and ideally we aggregate them into one or two groups. We also see relatively small sample sizes from Bristol Bay and from East Beaufort, which may or may not be prohibitive in conducting meaningful tests. One other consideration is the couple of samples along the Bering Strait coast which are lumped together with a larger concentration of samples from South Chukchi.
+
+Some of our first analyses should see if the more isolated samples are different from the other samples. If not, then we can aggregate. If yes, then we should report any significant tests.
+
+## Temporal distribution
+
+Next we'll want to take a look at how our samples distribute throughout various time periods. This will give us a good idea of how well our samples may or may not overlap- particularly, we'll want to see overlaps in years and months for better comparisons of the catch data.
+
+```{r}
+# First create a df specifically containing at time variables
+times = visits.1 %>%
+  select(VisitID, Date) %>%
+  mutate(Year = year(Date),
+         Month = month(Date, label = TRUE),
+         Week = week(Date),
+         Day = yday(Date))
+
+# Year
+times %>%
+  count(Year) %>%
+  ggplot(., aes(x = Year, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Year")
+
+# Year without 1976
+times %>%
+  filter(Year > 1980) %>%
+  count(Year) %>%
+  ggplot(., aes(x = Year, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Year without 1976")
+
+# Month
+times %>%
+  count(Month) %>%
+  ggplot(., aes(x = Month, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.5, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Month")
+
+# Week
+times %>%
+  count(Week) %>%
+  ggplot(., aes(x = Week, y = n)) +
+  geom_col() +
+  geom_text(aes(label = n), hjust = -0.15, angle = 90, color = "blue") +
+  labs(x = NULL, y = NULL, title = "No. samples per Week")
+
+# Day of Year
+times %>%
+  count(Day) %>%
+  distinct() %>%
+  ggplot(., aes(x = Day, y = n)) +
+  geom_col() +
+  labs(x = NULL, y = NULL, title = "No. samples per Day of Year")
+```
+
+By year, we see a large variability in number of samples, as well as a lone 1976 year which I recognize to be Blackburn's dataset from Lower Cook Inlet. That 1976 is an interesting dataset that could be useful for a look at catches over time in that specific area, but it'll need to be excluded from any other comparisons. The lowest number of samples occur in 2010, 2020, and 2021. We may want to pay close attention to these years in case they show up as outliers. It seems that 1996-2000 is a period of heavy sampling, followed by the mid 2010s and somewhat active year in 2006.
+
+By month, we see an obvious uptick during the summer which makes sense given winter conditions along most of Alaska's coast (light, ice, etc.). March and October are interesting months because of the potential for impacts on fishes during years with warmer shoulder seasons. November thru February will likely be removed for our purposes. Our key months look to be June, July and August, with possible inclusion of April, May, and September.
+
+It's interesting if we look at the by-week and by-day graphs, we see a dip in sampling around mid-June/early-July. Not sure why this is- maybe related to more targeting of juvenile salmonids in early June, or maybe so reduced effort around the 4th of July holiday.
+
+## Year & Month by Region
+
+Let's now see how our samples overlap by Region and Year, and by Region and Month. For these purposes, let's combine the Aleutians into one group for now, and remove the 1976 data.
+
+```{r}
+# Samples by Year and Region,
+left_join(filter(times, Year > 1980),
+          select(visits.1, VisitID, Region), by = "VisitID") %>%
+  mutate(Region = case_when(str_detect(Region, "Aleutians") ~ "Aleutians",
+                            !str_detect(Region, "Aleutians") ~ Region)) %>%
+  ggplot(aes(x = Date, y = Region, color = Region)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -1.9, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               }) +
+  scale_color_brewer(palette = "Spectral") +
+  scale_x_date(date_labels = "%y",
+               date_breaks = "2 years") +
+  labs(x = "Year", y = "Region",
+       title = "Samples by Year and Region",
+       subtitle = "No. samples centered over median") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Samples by Month and Region,
+left_join(filter(times, Year > 1980),
+          select(visits.1, VisitID, Region), by = "VisitID") %>%
+  mutate(Region = case_when(str_detect(Region, "Aleutians") ~ "Aleutians",
+                            !str_detect(Region, "Aleutians") ~ Region)) %>%
+  ggplot(aes(x = Month, y = Region, color = Region)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -1.9, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral") +
+  labs(x = "Month", y = "Region",
+       title = "Samples by Month and Region",
+       subtitle = "Excluding 1976; no. samples labelled by month") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Interesting that each region's samples center on a different year. At a glance, I see the most overlap in 2006 where the Aleutians and both GOA regions look to have similar sample densities, plus there is a smattering of Chukchi/Beaufort sampling too. In 2009, the Bristol Bay samples may be compared with both GoA regions and the Chukchi/Beaufort, although the samples look more sparse across the regions. And in 2013, the Chukchi/Beaufort has good overlap with both GOA regions again. I see nice periods of comparison between SEAK and SCAK, but there is also a concerning difference in yearly distribution of samples between the two regions. Depending on how important year effects appear- we may need to trim the data for better comparisons.
+
+By month, we see that August contains samples from all regions. June is the center for SEAK and the Aleutians, July for SCAK, and August for Chukchi/Beaufort. Best comparisons from this monthly view may be an August (or lumped July + August) comparison of all Regions. Also, a June (or lumped June thru August) comparison of GOA and the Aleutians would be good. And, we should be able to nicely compare SEAK and SCAK from May to September, potentially including April.
+
+For now, we'll hold off on excluding any of the data. It'll be better to revisit these considerations after deciding which research questions to tackle, so subsets of the data can be made specific to each one.
+
+## Mesh Size & Replicates
+
+Let's make similar visuals as before, but now focus on Mesh Size and Replicates in space and time. First, we can re-map the samples to color by Mesh Size and size of points relative Replicates (large dots = more replicates).
+
+```{r}
+# Palette function to color markers
+palette.mesh = colorFactor(palette = brewer.pal(n = visits.1$MeshSize %>% n_distinct(),
+                                                name = 'Spectral'),
+                           domain = factor(visits.1$MeshSize))
+# Map
+leaflet(visits.1) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   radius = ~(sqrt(Replicates*15)),
+                   color = ~palette.mesh(MeshSize),
+                   fillColor = ~palette.mesh(MeshSize),
+                   popup = ~VisitID,
+                   stroke = FALSE) %>%
+  addLegend(position = "bottomright",
+            pal = palette.mesh, values = ~MeshSize,
+            title = "Mesh Size (mm)",
+            opacity = 0.75)
+```
+
+I have an issue discerning among the seven different sizes since those warmer colors do not diverge well. Although there are some patterns to make note of: the largest mesh size of 12.7 only occurs in a small area of SEAK, the 10 mm samples similarly only occur with the 12.7 mm samples (likely the [Lundstrom et al. 2022](https://doi.org/10.1007/s12237-022-01057-x) gear comparison), and the smallest size at 3 mm only occurs in Cook Inlet. I don't see any obvious spatial patterns in Replicates, although this may not be the best view of it.
+
+Let's see the frequency of samples for both variables:
+
+```{r}
+# Table view
+table(visits.1$MeshSize)
+table(visits.1$Replicates)
+```
+
+There are more 12.7 mm samples than I would have guessed which is a shame because if they are completely different then we lose a lot of samples. I am wondering if sizes are accurate- I would think that 3 mm and 3.2 mm are effectively similar in practice. I am also wondering if some projects report, say 3 mm instead of 3.2 mm, because of rounding. I would assume that the nets used were manufactured in the US, which would mean that specifications are given in standard not metric. Let's do a quick check on how typical mesh sizes convert from inches to millimeters.
+
+```{r}
+# Function based on inch to millimeter conversion
+in_to_mm = function (x) {
+  return(y = 25.4 * x)
+}
+
+# Typical mesh sizes in inches
+sizes = c((1/8), (1/4), (3/8), (1/2), (5/8), (3/4))
+
+# Convert to millimeters
+in_to_mm(sizes)
+```
+
+There is obviously some funny rounding happening in the data. I do not see an issue by lumping mesh sizes that are within one millimeter. Even if the nets were actually different by fractions of a millimeter, I don't think it would affect the selectivity of fishes all that much- especially considering that most of these researchers were capturing fish to be measured to the nearest millimeter.
+
+Let's see that map again with this in mind:
+
+```{r}
+# Palette function for binned sizes
+palette.mesh.bin = colorBin(palette = brewer.pal(n = 4, name = 'Spectral'),
+                            domain = visits.1$MeshSize %>% unique(),
+                            bins =  c(0, 4, 7, 11, 13))
+# Map
+leaflet(visits.1) %>% 
+  addTiles() %>%
+  addCircleMarkers(lng = ~Lon, lat = ~Lat,
+                   radius = ~(sqrt(Replicates*15)),
+                   color = ~palette.mesh.bin(MeshSize),
+                   fillColor = ~palette.mesh.bin(MeshSize),
+                   popup = ~VisitID,
+                   stroke = FALSE) %>%
+  addLegend(position = "bottomright",
+            colors = c(palette.mesh.bin(3),
+                       palette.mesh.bin(6),
+                       palette.mesh.bin(9),
+                       palette.mesh.bin(12)),
+            values = ~MeshSize,
+            title = "Mesh Size (mm)",
+            opacity = 0.75,
+            labels = c("3 or 3.2", "6 or 6.4", "9.5 or 10", "12.7"))
+```
+
+Much easier to read! I see some concerning patterns we'll want to investigate further as we go. The majority of samples appear to be using the 3.2 mm size, including both Arctic groups that seem to use it exclusively. There is a large density of 6.4 mm samples in Northern SEAK and throughout the Aleutians. The same issues are visible concerning the two larger mesh sizes. We should do a comparison of 3.2 mm and 6.4 mm to see if there are any significant differences in catch.
+
+With the simpler color scheme, I am also noticing the difference in Replicates a little easier. Just looking at GOA and Aleutian samples, I see that many of the 6.4 mm samples are also low-Replicate samples. Although, many of our samples only contain one replicate so this may just be something I'm seeing and not actually a concern.
+
+Let's take a look at how these variables in graphical format. I'll go ahead and aggregate similar mesh sizes and re-classify the both variables as factors, and add in variables for year and month.
+
+```{r}
+visits.2 = mutate(visits.1,
+                  # Replicates as an ordered factor
+                  Replicates = as.ordered(Replicates),
+                  # Combine similar mesh sizes to the tenth decimal
+                  MeshSize = case_when(MeshSize < 4 ~ 3.2,
+                                       MeshSize > 4 & MeshSize < 7 ~ 6.4,
+                                       MeshSize > 7 & MeshSize < 11 ~ 9.5,
+                                       MeshSize == 12.7 ~ 12.7) %>%
+                    as.ordered()) %>%
+  # Add temporal variables
+  left_join(select(times, VisitID, Year, Month, Week, Day), by = "VisitID") %>%
+  # Week as an ordered factor (month is already an ordered factor)
+  mutate(Week = as.ordered(Week))
+```
+
+```{r}
+# Samples by MeshSize and Year,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Date, y = MeshSize, color = MeshSize)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -3, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               }) +
+  scale_color_brewer(palette = "Spectral") +
+  scale_x_date(date_labels = "%y",
+               date_breaks = "2 years") +
+  labs(x = "Year", y = "Mesh Size (mm)",
+       title = "Samples by Year and Mesh Size",
+       subtitle = "Excluding 1976; no. samples centered over median") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Samples by Month and MeshSize,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Month, y = MeshSize, color = MeshSize)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -3, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral") +
+  labs(x = "Month", y = "Mesh Size (mm)",
+       title = "Samples by Month and Mesh Size",
+       subtitle = "Excluding 1976; no. samples labelled by month") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Our samples are dominated by 3.2 mm mesh size. It looks to have somewhat even distribution among years, but seems to mimic the density of sampling in SEAK and SCAK in the late 90's, mid 00's, and mid 10's. The 6.4 mm size is much more sporadic with many years missing samples. We also see that larger mesh sizes 9.5 mm and 12.7 mm only occur in a handful of years starting 2013. By month, we see similar distributions among the mesh sizes, with most samples occurring in the summer (Jun - Aug) and shoulder months (Apr, May, Sep).
+
+```{r}
+# Samples by Replicates and Year,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Date, y = Replicates, color = Replicates)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -1, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               }) +
+  scale_color_brewer(palette = "Spectral") +
+  scale_x_date(date_labels = "%y",
+               date_breaks = "2 years") +
+  labs(x = "Year", y = "Replicates",
+       title = "Samples by Year and Replicates",
+       subtitle = "Excluding 1976; no. samples centered over median") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Samples by Replicates and Month,
+filter(visits.2, Year > 1989) %>%
+  ggplot(aes(x = Month, y = Replicates, color = Replicates)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.75) +
+  stat_summary(geom = "text", vjust = -1, color = "black",
+               fun.data = function(x) {
+                 return(c(y = median(x), label = length(x)))
+               })+
+  scale_color_brewer(palette = "Spectral") +
+  labs(x = "Month", y = "Replicates",
+       title = "Samples by Month and Replicates",
+       subtitle = "Excluding 1976; no. samples labelled by month") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+I do not see the yearly distribution of samples differing all that much among replicates. Except that the 6 - 8 replicates tend to occur later in the dataset. I also do not see a difference in how replicates distirbute among months- similar to what we've seen that most samples occur in summer and shoulder months.
+
+Last, let's see a graph of Mesh Size vs Replicates:
+
+```{r}
+ggplot(data = visits.2, aes(x = Replicates, y = MeshSize)) +
+  geom_jitter()
+```
+
+Nothing new here really.
+
+## Preparing data for next steps
+
+### Spatial aspects
+
+Spatial effects are probably the most unknown to me and could use deeper investigation. We have obvious regional grouping of samples, with a large majority occurring in SEAK and SCAK. There are interesting pockets of data from the Arctic, Bering Sea, and the Aleutians, but how comparable these "regions" are may be complicated by low sample sizes and confounding factors (Mesh Size or Replicates). I think tackling the GoA is the most useful thing to do at the moment since the other areas are much more isolated and densely sampled.
+
+Questions:
+
+- Basically: how should we treat samples from SEAK, SCAK, and Aleutians?
+- Are there regional effects in the GoA?
+- Do these effects align with current region labels, or is there a more appropriate break point?
+- Can the Aleutian samples be grouped with the GoA, or is it much too different?
+- Are the various Aleutian samples appropriate to aggregate?
+- Similarly, are there appropriate sub-regional groups that can be defined within SEAK and SCAK?
+- What sub-regional groupings make sense? Which, if any, are informative?
+
+After these questions are answered, we can recommend how to treat spatial aspects in the data.
+
+### Temporal aspects
+
+Unless we want to do some direct comparisons between 1976 and other years of Kachemak Bay, it just seems too far isolated from the rest of the data to include it in analyses. I will try to address seasonal effects using Day of Year, but move to weeks then months if necessary. We should also keep in mind that April/May and September represent "shoulder" months that are much less sampled compared to June - August period. Some regions may not have samples from shoulder seasons, so reducing the dataset may be required depending on where the comparisons are being made.
+
+Questions:
+
+- Which of Day, Week, Month is most informative as seasonality?
+
+Recommendations:
+
+- Remove 1976 data
+- Remove months outside of April - September
+- Year as random effect
+- Seasonality as fixed effect
+
+### Mesh Size
+
+Our 3.2 mm samples are the most represented mesh size occurring in all years of data. The 6.4 mm samples are the next most frequent but occur sporadically from 1999-2003, 2006-2008, 2011-2013, and 2017. The other two sizes are the least frequent and occur in later years of the dataset starting in 2013. By month, we see a similar trend as other variables where most samples occur in Jun - Aug no matter the mesh size.
+
+Questions:
+
+- Is there a significant gear effect among mesh sizes? In particular looking at 3.2 mm vs 6.4 mm
+
+Recommendations
+
+- Drop 9.5 mm and 10.7 mm sizes (likely confounded by isolated regional effects)
+- Mesh size as fixed effect
+
+### Replicates
+
+Something that's been obvious is the high density of samples with 1 or 2 replicates. I would expect a larger variability in catch response between one/two replicate samples vs three or more replicate samples. There doesn't seem to be much of a difference in yearly spread of replicates, except when looking at sample with five or more replicates. Similarly by month, we find most of our samples to occur in Jun - Aug no matter the number of replicates.
+
+Questions
+
+- Can we estimate the number of replicates that results in an informative sample? IOW, is there an ideal number of replicates (e.g., 3) beyond which we do not gain any more meaningful information?
+
+Recommendations
+
+- Number of replicates as fixed effect
+- Standardize samples by number of replicates, i.e., average catch per visit
+- Standardize samples by another estimate, e.g., sample completeness or species accumulation (if needed)
+- Weight samples by how much information on average each level of Replicates provides (if needed)
+
+## Fixing data objects and clean up
+
+Last thing we'll is fix our visits data based on our recommendations after EDA. We'll save an original version of the data in case we want it for future analyses.
+
+```{r}
+# Create a new visits object containing a subset of the full data
+visits = visits.2 %>%
+  # Filter temporal info: remove year 1976 and months outside of April - September
+  filter(Year > 1980) %>%
+  filter(Month > "Mar" & Month < "Oct") %>%
+  # Filter mesh size: remove 9.5 mm and 10.7 mm
+  filter(MeshSize < '9.5') %>%
+  # Re-order filtered factors to match reduced levels
+  mutate(Month = month(Date) %>% as_factor(),
+         Week = week(Date) %>% as.ordered(),
+         MeshSize = MeshSize %>% as.character() %>% as.ordered())
+
+# Keep a full visits data object as another object
+visits.all = visits.2
+
+# Remove unwanted objects in environment
+rm(list = ls()[!ls() %in% c('events', 'catch', 'visits', 'visits.all')])
+
+# Reset directory
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(path, i)
+}
+```
+
+
+# Exploring catch data
+
+## Summary of catch
+
+Since we've reduced our samples based on earlier EDA, we need to update our catch samples to reflect this. This also requires subsetting the events-level data object.
+
+```{r include=FALSE}
+# Keep a full version of the events data
+events.all = events
+# Create a vector containing the reduced list of visits
+visits.vec = visits$VisitID %>% unique()
+# Subset the events object
+events = filter(events.all, VisitID %in% visits.vec)
+```
+
+Similar to our visits object, we'll create a working version of our catch data but keep the version that contains all info.
+
+```{r include=FALSE}
+# # Keep a full version of the catch data, and remove 'catch' if it's in the environment,
+if ("catch" %in% ls()) assign("catch.all", catch)
+if ("catch" %in% ls()) rm(catch)
+
+# Create a vector containing the reduced list of events
+events.vec = events$EventID %>% unique()
+# Subset the catch data, and start a working version of catch
+catch.0 = filter(catch.all, EventID %in% events.vec)
+
+```
+
+Now we have a subsetted catch data, let's take a look at what's there:
+
+```{r}
+skimr::skim(catch.0)
+```
+
+Looking at our character data, we should go ahead and remove common names simply to reduce clutter. LengthType is not very useful and is missing quite a few observations- we'll drop this too. We knew LifeStage was an issue when we did our wrangling steps. We can keep it for now, but likely won't use it til way later. Hopefully, we can infer LifeStage down the road by using the length information.
+
+Let's add our VisitID variable so we analyse our catch at the sample level (instead of replicate).
+
+```{r}
+catch.1 = catch.0 %>%
+  # Add VisitIDs
+  left_join(select(events, VisitID, EventID), by = "EventID") %>%
+  # Remove unwanted parameters
+  select(-c(Sp_CommonName, Fam_CommonName, LengthType)) %>%
+  # Tidy parameters
+  select(VisitID, EventID,
+         Fam_ScientificName, Gen_ScientificName, Sp_ScientificName,
+         Count, Length = Length_mm, LifeStage)
+```
+
+## Calculate metrics of catch
+
+### Occurrence and rare taxa
+
+Previously in the wrangle step, we defined rare as occurring in less than 0.25% of samples. However, we may start with a more conservative approach to see if removing more rare species is necessary. It makes sense to me to remove species with only 1 or 2 occurrences for now. This is equivalent to removing species occurring in less than 0.15% of samples.
+
+```{r}
+# Create a tibble for species occurrences
+sp.occur = catch.1 %>% 
+  # For each species within each visit, Presence = 1
+  summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
+  # For each species, total the number of presences
+  summarise(Occurrence = sum(Presence), .by = Sp_ScientificName) %>%
+  # Calculate occurrence as a percentage
+  mutate(Perc_Occurrence = round(Occurrence / n_distinct(events$VisitID) * 100, 2)) %>%
+  # Add rare category (subject to change)
+  mutate(Rare = ifelse(Occurrence < 3, "Yes", "No"))
+
+# Create a tibble for total presences per sample
+n.occur = catch.1 %>% 
+  # For each species within each visit, Presence = 1
+  summarise(Presence = n_distinct(Sp_ScientificName), .by = c(VisitID, Sp_ScientificName)) %>%
+  # For each visit, total the number of presences
+  summarise(n_sp = sum(Presence), .by = VisitID)
+
+# Create a vector of the rare species
+rare.species = filter(sp.occur, Rare == "Yes") %>% pull(Sp_ScientificName)
+```
+
+```{r}
+# Remove rare taxa and update the catch tibble
+catch.2 = filter(catch.1, !Sp_ScientificName %in% rare.species)
+```
+
+### Average abundance per visit
+
+Because our samples (visits) contain a variable number of replicates (events), I decide to use an averaging method to calculate abundance. Here, we use a simple mean (i.e., total count / number of replicates) then I round to the nearest upper integer. Note that this rounding method gives more representation of rarer taxa. For example, say we have a sample with three replicates and caught species X at 0, 0, and 1 frequency. We get an average of 0.33 which results in an abundance of 1 after rounding up. In another scenario let's say we catch species Y in the same sample at 20, 22, and 400 frequency. We have an average of 147.3 resulting in an abundance of 148 after rounding up. This is our first instance of data standardization, but we may want to further standardize and/or transform abundance data depending on EDA.
+
+```{r}
+# Create a tibble for avg sp abundance per visit
+abun = catch.2 %>%
+  select(VisitID, EventID, Sp_ScientificName, Count) %>%
+  summarise(Abundance = (sum(Count) / n_distinct(EventID)) %>% ceiling(), .by = c(VisitID, Sp_ScientificName))
+```
+
+```{r}
+skimr::skim(select(abun, Abundance))
+```
+
+### Size information
+
+```{r}
+# Create a tibble for containing length data per species and visit
+size = select(catch.2, VisitID, EventID, Sp_ScientificName, Length)
+```
+
+## Diversity indices
+
+```{r}
+# Create a tibble 
+diversity = abun %>%
+  group_by(VisitID) %>%
+  summarise(S = specnumber(Sp_ScientificName), # Richness
+            H = diversity(Abundance, index = "shannon"), # Shannon
+            # q1 = exp(H), # exp(Shannon)
+            D = diversity(Abundance, index = "simpson"), # Simpson
+            # q2 = diversity(Abundance, index = "invsimpson"), # Inverse-Simpson
+            J = diversity(Abundance, index = "shannon") / log(q0)) # Pielou's evenness
+```
+
+### Replicates
+
+```{r}
+# S (richness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Replicates, y = S) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# H (Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Replicates, y = H) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# D (Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Replicates, y = D) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# J (Pielou's evenness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Replicates, y = J) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+```
+
+
+
+### Mesh Size
+
+```{r}
+# q0 (richness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = MeshSize, y = q0) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# H (Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = MeshSize, y = H) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# q1 (exp of Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = MeshSize, y = q1) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# D (Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = MeshSize, y = D) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# q2 (inv Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = MeshSize, y = q2) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# J (Pielou's evenness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = MeshSize, y = J) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+```
+
+### Longitude in GOA
+
+```{r}
+regions.all = visits$Region %>% as.character() %>% unique()
+regions.goa = str_subset(regions.all, "GOA|Aleutians")
+
+# q0 (richness)
+left_join(visits, diversity, by = "VisitID") %>%
+  filter(Region %in% regions.goa) %>%
+  ggplot() +
+  aes(x = Lon, y = q0) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# H (Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  filter(Region %in% regions.goa) %>%
+  ggplot() +
+  aes(x = Lon, y = H) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# q1 (exp of Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  filter(Region %in% regions.goa) %>%
+  ggplot() +
+  aes(x = Lon, y = q1) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# D (Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  filter(Region %in% regions.goa) %>%
+  ggplot() +
+  aes(x = Lon, y = D) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# q2 (inv Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  filter(Region %in% regions.goa) %>%
+  ggplot() +
+  aes(x = Lon, y = q2) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# J (Pielou's evenness)
+left_join(visits, diversity, by = "VisitID") %>%
+  filter(Region %in% regions.goa) %>%
+  ggplot() +
+  aes(x = Lon, y = J) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+### Year
+
+```{r}
+# q0 (richness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Year, y = q0) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# H (Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Year, y = H) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# q1 (exp of Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Year, y = q1) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# D (Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Year, y = D) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# q2 (inv Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Year, y = q2) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# J (Pielou's evenness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Year, y = J) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+### Month
+
+```{r}
+# q0 (richness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Month, y = q0) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# H (Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Month, y = H) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# q1 (exp of Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Month, y = q1) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# D (Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Month, y = D) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# q2 (inv Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Month, y = q2) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+
+# J (Pielou's evenness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Month, y = J) +
+  geom_boxplot(outlier.shape =  NA, color = "blue") +
+  geom_jitter(alpha = 0.5)
+```
+
+### Day of Year
+
+```{r}
+# q0 (richness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Day, y = q0) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# H (Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Day, y = H) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# q1 (exp of Shannon)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Day, y = q1) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# D (Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Day, y = D) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# q2 (inv Simpson)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Day, y = q2) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# J (Pielou's evenness)
+left_join(visits, diversity, by = "VisitID") %>%
+  ggplot() +
+  aes(x = Day, y = J) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+### Differences in richness
+
+```{r}
+# Visualize richness by replicates
+left_join(visits, diversity, by = "VisitID") %>%
+  boxplot(q0 ~ Replicates, data = .)
+
+# remove replicates = 9, 10, 12 bc of single obs
+data = left_join(visits, diversity, by = "VisitID") %>%
+  mutate(Replicates = as.numeric(Replicates)) %>%
+  filter(Replicates < 9)
+
+# analysis of variance
+aov.q0.reps = aov(q0 ~ as.factor(Replicates), data = data)
+summary(aov.q0.reps)
+# pairwise test
+TukeyHSD(aov.q0.reps)
+# residuals
+residuals = residuals(aov.q0.reps)
+plot(residuals)
+plot(aov.q0.reps)
+# check for homogeneity
+shapiro.test(residuals)
+# result: violation of homogeneity
+
+
+# kruskal-wallis test
+kruskal.test(q0 ~ Replicates, data = data)
+
+# one way t-test not assuming equal variances
+oneway.test(q0 ~ Replicates, data = data)
+# pairwise test
+results = pairwise.t.test(data$q0, data$Replicates,
+                          p.adjust.method = "BH",
+                          pool.sd = FALSE)
+results
+
+# plot t.test results
+ggplot(data) +
+  aes(x = Replicates, y = q0, group = Replicates) +
+  geom_boxplot() +
+  geom_signif(test = "t.test",
+              comparisons = list(c(1, 2),
+                                 c(2, 3),
+                                 c(2, 4),
+                                 c(3, 4),
+                                 c(3, 5)),
+              y_position = c(33, 36, 39, 43, 46),
+              map_signif_level = TRUE)
+
+```
+
+
+## Species EDA plots {.tabset .tabset-pills}
+
+```{r eval = FALSE, warning = FALSE, include = FALSE}
+# Function to create eda plots for species
+species_plots = function (abun, size, visits) {
+  # Create a vector contaiing all the species names
+  species = abun$Sp_ScientificName %>% unique() %>% sort()
+  # Create a list object to hold the plots for each species
+  plot_list = list()
+  # Set progress function
+  pb = progressor(along = species)
+  # Loop through all species
+  for (i in 1:length(species)) {
+    # Plot 1: frequency of abundance histogram (scaled to density) and density line
+    p1 = filter(abun, Sp_ScientificName == species[i]) %>%
+      ggplot() +
+      aes(x = Abundance) +
+      geom_histogram(aes(y = after_stat(density)), bins = 50) +
+      geom_density(col = "blue") +
+      theme(plot.margin = margin(0.5, 0.1, 0.1, 0.1, unit = "in"))
+    # Plot 2: frequency of abundance histogram, log transformed + 1
+    p2 = filter(abun, Sp_ScientificName == species[i]) %>%
+      ggplot() +
+      aes(x = log(Abundance + 1)) +
+      geom_histogram(aes(y = after_stat(density)), bins = 50) +
+      geom_density(col = "blue") +
+      theme(plot.margin = margin(0.5, 0.1, 0.1, 0.1, unit = "in"))
+    # Plot 3: log(Abundance + 1) by Longitude
+    p3 = left_join(abun, select(visits, VisitID, Lon), by = "VisitID") %>%
+      filter(Sp_ScientificName == species[i]) %>%
+      ggplot() +
+      aes(x = Lon, y = log(Abundance + 1)) +
+      geom_point() +
+      scale_x_continuous(limits = range(visits$Lon)) +
+      theme(plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "in"))
+    # Plot 4: log(Abundance + 1) by Latitude
+    p4 = left_join(abun, select(visits, VisitID, Lat), by = "VisitID") %>%
+      filter(Sp_ScientificName == species[i]) %>%
+      ggplot() +
+      aes(x = log(Abundance + 1), y = Lat) +
+      geom_point() +
+      scale_y_continuous(limits = range(visits$Lat)) +
+      theme(plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "in"))
+    # Plot 5: Size frequency histogram (scaled to density) and density line
+    p5 = filter(size, Sp_ScientificName == species[i]) %>%
+      ggplot() +
+      aes(x = Length) +
+      geom_histogram(aes(y = after_stat(density)), bins = 50) +
+      geom_density(col = "red") +
+      theme(plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "in"))
+    # Plot 6: Size by Day of Year
+    p6 = left_join(size, select(visits, VisitID, Day), by = "VisitID") %>%
+    filter(Sp_ScientificName == species[i]) %>%
+      ggplot() +
+      aes(x = Day, y = Length) +
+      geom_point() +
+      scale_x_continuous(limits = range(visits$Day)) +
+      theme(plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "in"))
+    # Find the number of samples and total abundance for each species
+    n = filter(abun, Sp_ScientificName == species[i]) %>% n_distinct()
+    count = filter(abun, Sp_ScientificName == species[i]) %>% summarise(n = sum(Abundance)) %>% pluck(1)
+    # Arrange the plots and label with species name and number of samples
+    out = ggarrange(p1, p2,
+                    p3, p4,
+                    p5, p6,
+                    ncol = 2, nrow = 3) %>%
+        annotate_figure(fig.lab = str_c(species[i], ", samples = ", n, ", abundance = ", count, sep = ""),
+                        fig.lab.size = 14)
+    # Save the arranged plots as a named list item
+    pluck(plot_list, species[i]) = out
+    # Signal progress
+    pb(message = paste("Plotting ", species[i]))
+  }
+  # Output
+  return(plot_list)
+}
+
+# If plot list does not exist in the environment, run the plotting function
+if (!any(ls() %in% "plot_list")) {
+  # Progress bar settings
+  handlers("cli")
+  # Save plots to a list, with progress bar enabled
+  with_progress(plot_list <- species_plots(abun, size, visits))
+}
+
+# Function to save each species plot as a png in a subfolder in the directory
+save_plot_list = function (ls) {
+  # Create a vector contaiing all the species names
+  species = abun$Sp_ScientificName %>% unique() %>% sort()
+  # For each species, save a file in a figs subfolder
+  iwalk(species, ~ ggsave(filename = file.path(dir.figs, "species eda", str_c(.x, ".png", sep = "")),
+                          plot = pluck(ls, .x), device = "png", create.dir = TRUE,
+                          height = 15, width = 10, units = "in"),
+        .progress = "Saving species plots:")
+}
+
+# If there are no species plots saved, then run the save plot function
+if (list.files(file.path(dir.figs, "species eda")) %>% length() == 0) {
+  save_plot_list(plot_list)
+}
+```
+
+### Walleye Pollock {.unnumbered}
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(file.path(dir.figs, "species eda", "Gadus chalcogrammus.png"))
+```
+
+### Starry Flounder {.unnumbered}
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(file.path(dir.figs, "species eda", "Platichthys stellatus.png"))
+```
+
+### Great Sculpin {.unnumbered}
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(file.path(dir.figs, "species eda", "Myoxocephalus polyacanthocephalus.png"))
+```
+
+### Pacific Herring {.unnumbered}
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(file.path(dir.figs, "species eda", "Clupea pallasii.png"))
+```
+
+### Coho Salmon {.unnumbered}
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(file.path(dir.figs, "species eda", "Oncorhynchus kisutch.png"))
+```
+
+### Dolly Varden {.unnumbered}
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(file.path(dir.figs, "species eda", "Salvelinus malma.png"))
+```
+
+
+
+
+## MV Ordinations
+
+### Create catch matrix based on average abundances
+```{r}
+# Create a data.frame in sample x species format (e.g., vegan)
+abun.mat = abun %>%
+  pivot_wider(names_from = Sp_ScientificName,
+              values_from = Abundance,
+              values_fill = 0) %>%
+  column_to_rownames(var = "VisitID")
+```
+
+### Standardize catch
+
+```{r}
+# presence/absence
+pa = decostand(abun.mat, method = "pa")
+
+# 4th root
+rt4 = mutate(abun.mat, across(everything(), ~ .x^(1/4)))
+
+# robust CLR
+rclr = decostand(abun.mat, method = "rclr")
+```
+
+### Calculate distances
+
+```{r}
+# Jaccard distances on P/A data
+jac = vegdist(as.matrix(pa), method = "jaccard")
+
+# Bray-Curtis distance on 4th rt transformed data
+bc = vegdist(as.matrix(rt4), method = "bray")
+
+# Euclidean distance on RCLR transformed data, i.e., robust aitchison distance
+rait = vegdist(as.matrix(rclr), method = "euclidean")
+```
+
+```{r}
+nmds.jac = metaMDS(jac)
+
+plot(nmds.jac, type = "t")
+
+nmds.bc = metaMDS(bc)
+
+plot(nmds.bc, type = "t")
+
+pca.rclr = rda(as.matrix(rclr))
+
+biplot(pca.rclr,
+       display = c("sites", 
+                   "species"),
+       type = c("text",
+                "points"))
+
+mds.rclr = metaMDS(rait)
+
+plot(mds.rclr, type = "t")
+```
+
+```{r}
+filter(visits, VisitID == "846_2015-08-15") %>%
+  left_join(catch.2, by = "VisitID")
+```
+
+
+
+
