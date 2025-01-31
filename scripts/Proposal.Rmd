@@ -1,0 +1,148 @@
+---
+title: "Distributions of nearshore fishes of Alaska"
+subtitle: "Proposal for PhD dissertation in marine biology"
+author: "Chris Guo"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+theme: "flatly"
+bibliography: "`r file.path(here::here(), 'doc.ignore', 'nfaa_references.bib')`"
+csl: "`r file.path(here::here(), 'doc.ignore', 'ecology.csl')`"
+link-citations: TRUE
+output: html_notebook
+---
+
+```{r include = FALSE}
+# Set knitr options
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(size = "scriptsize")
+
+# Packages
+library(tidyverse)
+library(lubridate)
+library(here)
+
+# Directory
+wd = here()
+dirs = wd %>% list.files() %>% str_subset(pattern = "^README|^LICENSE|.md$|.Rproj$", negate = TRUE)
+for (i in seq_along(dirs)) {
+  name = str_replace_all(dirs[i], "^", "dir.")
+  path = str_replace_all(dirs[i], "^", str_c(wd, "/"))
+  assign(name, path)
+  rm(name, path, i)
+}
+
+# Options
+
+# Source/Load
+load(file.path(dir.data, "nfaa_1.rda")) # wrangled data
+```
+
+Built with R version `r getRversion()`.
+
+# Instructions
+
+Please follow the following guidelines when submitting the research proposal with your GSP:
+- A research proposal should typically be less than 10 pages.
+- Students are expected to include the following elements into the proposal:
+  - Introduction
+      - The introduction should give some background information on your research topic and your system (region and habitat)
+      - The introduction should address
+        1. Why are you doing this?
+        2. Why should we care about this?
+        3. What is known about this topic?
+        4. What are you contributing to the existing knowledge?
+      - The introduction should demonstrate that you have researched this topic area
+        - You need some references in your introduction to demonstrate that you have researched your topic.
+  - Research question
+    - Clearly state your hypothesis or questions and research objectives. It is okay to just have one hypothesis or question.
+      - Good resources to refer too:
+        - ESA guide: Scientific Writing Made Easy: A Step‐by‐Step Guide to undergraduate Writing in the Biological Sciences.
+        - Purdue guide: Writing is a Conversation - Purdue OWL
+    - Methods
+      - A methods section that shows you have thought about how you are going to address your question/hypothesis from sampling/experimental design to statistical analysis tools.
+    - Timeline
+      - Add a preliminary timeline on what is happening where and when (could be a table or Gantt diagram).
+    - References
+      - A reference section. Please ensure that the references are cited correctly. Please choose the style of an appropriate journal for your topic. We strongly recommend using a reference manager, such as Mendeley, to make this task easier and less prone to errors.
+
+# Background
+
+## Introduction
+
+### What are nearshore fishes? What is their importance to marine ecology?
+
+### What is known about nearshore fishes at the community level?
+
+### Community structure is driven by...
+
+### What is known about nearshore fishes in Alaska?
+
+### What is known about community structure in Alaska?
+
+### What areas can be built upon or explored further?
+
+### The research goal of my dissertation is...
+
+## Approach
+
+### How are nearshore fishes studied, generally?
+
+### What data exists for Alaska? What gaps?
+
+### Working with the NFAA: challenges and opportunities
+
+## Expectations
+
+### If each chapter is successfully tackled...
+
+#### What would be the expected outcome?
+
+#### What about next steps?
+
+#### How does this research fit into the current state of knowledge?
+
+
+# Chapter 1: 
+
+## Introduction
+
+## Research Question
+
+## Methods
+
+## Timeline
+
+## References
+
+
+# Chapter 2: 
+
+## Introduction
+
+## Research Question
+
+## Methods
+
+## Timeline
+
+## References
+
+
+# Chapter 3: 
+
+## Introduction
+
+## Research Question
+
+## Methods
+
+## Timeline
+
+## References
+
+
+
+
+
+
+
