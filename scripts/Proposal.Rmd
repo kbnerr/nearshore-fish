@@ -77,6 +77,47 @@ Please follow the following guidelines when submitting the research proposal wit
 
 ### What is known about nearshore fishes in Alaska?
 
+#### Growth and rearing
+- Growth and feeding juv salmon, Cook Inlet [@Moulton.1997]
+- Composition and energy of PSL, Kachemak Bay [Robards.etal.1999]
+- Spawning by PSL, Kachemak Bay [@Robards.etal.1999b]
+- Energetic models of 0-1 age walleye, Bering Sea [@Siddon.etal.2013]
+- Winter condition, SI signatures, over years for herring [@Gorman.etal.2018]
+
+#### Oceanographic conditions
+- Growth and abundance by PSL [@Robards.etal.2002]
+- Forage fishes structured by T/Sal [@Abookire.Piatt.2005]
+
+#### Habitat resources
+- Habitat use by juvenile groundfish, Kachemak Bay [@Abookire.etal.2001]
+- Habitat association and diet of YOY Pcod, Kodiak [@Abookire.etal.2006]
+- Habitat association comparison in gadids, Kodiak [@Laurel.etal.2007]
+- Lagoons in the Arctic, trophic ecology [@Tibbles.Robards.2018]
+- Terrestrial OM contribution, SI signatures, SEAK [@Whitney.etal.2018]
+- Temporal-spatial variability (Depth?) of YOY rock sole [@Hurst.Abookire.2006]
+
+#### Community structuring
+- Migration and habitat use, whole community Arctic [@Craig.1984]
+- Spatial-temporal variatibility, Cook Inlet [@Robards.etal.1999a]
+- Physical oceanography vs interannual driver, Kachemak Bay [@Speckman.etal.2005]
+- Substrate and kelp habitat [@Hamilton.Konar.2007]
+- Habitat, year, season [@Johnson.etal.2010]
+- Year*conditions, and seine/trawl comparison [@Thedinga.etal.2013]
+- Landscape scale variables using RFM [@Miller.etal.2014]
+- Arctic sea similarities, northward sp migration [@Logerwell.etal.2015]
+- Local vs regional, seasonality, GOA [@Ormseth.etal.2017]
+- Interannual, seasonal variability, SEAK [@Beaudreau.etal.2022]
+- Seasonal, sub-regional variability, Kachemak [@Guo.etal.2022]
+- Regional > watershed-scale variability [@Lundstrom.etal.2022]
+- Interannual and 'location' variability, Arctic [@Priest.etal.2022]
+
+#### Modelling nearshore fish
+- RFM as an efficient species occurrence model [@Miller.etal.2015]
+- GAMs and ShoreZone for Pcod and walleye in PWS and SEAK [@Gruss.etal.2021]
+
+#### Recruitment into the nearshore
+- GOA, Aluetian, Bering connectivity for egg-to-0-age walleye [@Parada.etal.2016]
+
 ### What is known about community structure in Alaska?
 
 ### What areas can be built upon or explored further?
