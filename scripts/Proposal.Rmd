@@ -1,25 +1,33 @@
 ---
-title: "Distributions of nearshore fishes of Alaska"
-subtitle: "Proposal for PhD dissertation in marine biology"
+title: "Nearshore fishes of Alaska"
+subtitle: "Thesis proposal for PhD in marine biology"
 author: "Chris Guo"
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_notebook: 
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+      print: false
 theme: "flatly"
 bibliography: "`r file.path(here::here(), 'doc.ignore', 'nfaa_references.bib')`"
 csl: "`r file.path(here::here(), 'doc.ignore', 'ecology.csl')`"
-link-citations: TRUE
-output: html_notebook
+link-citations: true
 ---
 
 ```{r include = FALSE}
 # Set knitr options
-knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
-knitr::opts_chunk$set(size = "scriptsize")
+library(knitr)
+opts_chunk$set(message = FALSE)
+opts_chunk$set(warning = FALSE)
+opts_chunk$set(size = "scriptsize")
 
 # Packages
 library(tidyverse)
 library(lubridate)
 library(here)
+library(rbbt)
 
 # Directory
 wd = here()
@@ -34,156 +42,370 @@ for (i in seq_along(dirs)) {
 # Options
 
 # Source/Load
-load(file.path(dir.data, "nfaa_1.rda")) # wrangled data
+# load(file.path(dir.data, "nfaa_1.rda")) # wrangled data
 ```
 
 Built with R version `r getRversion()`.
 
-# Instructions
+# Proposal instructions
 
-Please follow the following guidelines when submitting the research proposal with your GSP:
-- A research proposal should typically be less than 10 pages.
-- Students are expected to include the following elements into the proposal:
-  - Introduction
-      - The introduction should give some background information on your research topic and your system (region and habitat)
-      - The introduction should address
-        1. Why are you doing this?
-        2. Why should we care about this?
-        3. What is known about this topic?
-        4. What are you contributing to the existing knowledge?
-      - The introduction should demonstrate that you have researched this topic area
-        - You need some references in your introduction to demonstrate that you have researched your topic.
-  - Research question
-    - Clearly state your hypothesis or questions and research objectives. It is okay to just have one hypothesis or question.
-      - Good resources to refer too:
-        - ESA guide: Scientific Writing Made Easy: A Step‐by‐Step Guide to undergraduate Writing in the Biological Sciences.
-        - Purdue guide: Writing is a Conversation - Purdue OWL
-    - Methods
-      - A methods section that shows you have thought about how you are going to address your question/hypothesis from sampling/experimental design to statistical analysis tools.
-    - Timeline
-      - Add a preliminary timeline on what is happening where and when (could be a table or Gantt diagram).
-    - References
-      - A reference section. Please ensure that the references are cited correctly. Please choose the style of an appropriate journal for your topic. We strongly recommend using a reference manager, such as Mendeley, to make this task easier and less prone to errors.
+Please follow the following guidelines when submitting the research proposal with your GSP: - A research proposal should typically be less than 10 pages. - Students are expected to include the following elements into the proposal: - Introduction - The introduction should give some background information on your research topic and your system (region and habitat) - The introduction should address 1. Why are you doing this? 2. Why should we care about this? 3. What is known about this topic? 4. What are you contributing to the existing knowledge? - The introduction should demonstrate that you have researched this topic area - You need some references in your introduction to demonstrate that you have researched your topic. - Research question - Clearly state your hypothesis or questions and research objectives. It is okay to just have one hypothesis or question. - Good resources to refer too: - ESA guide: Scientific Writing Made Easy: A Step‐by‐Step Guide to undergraduate Writing in the Biological Sciences. - Purdue guide: Writing is a Conversation - Purdue OWL - Methods - A methods section that shows you have thought about how you are going to address your question/hypothesis from sampling/experimental design to statistical analysis tools. - Timeline - Add a preliminary timeline on what is happening where and when (could be a table or Gantt diagram). - References - A reference section. Please ensure that the references are cited correctly. Please choose the style of an appropriate journal for your topic. We strongly recommend using a reference manager, such as Mendeley, to make this task easier and less prone to errors.
 
 # Background
 
-## Introduction
+## What is the nearshore?
 
-### What are nearshore fishes? What is their importance to marine ecology?
+The nearshore is a unique zone of the ocean that generally encompasses the narrow band of marine waters along any coast. The nearshore is viewed as a highly productive environment that provides beneficial ecosystem services to many fish species [review in @Beck.etal.2001]. Nearshore production is inherently exported to other marine ecosystems by the downstream flow of matter. Although, productivity is also transported by fishes residing in the nearshore then migrating to other environments carrying nutrient-rich biomass that is of higher trophic quality [@Deegan.1993]. Maybe the most referenced function of the nearshore is that it provides nursery habitat for many fishes and other biota due to its relatively shallow, productive waters that provide protection from predators. These beneficial aspects were reviewed by @Beck.etal.2001 and formed the initial nursery role hypothesis, whereby nurseries in comparison to other habitats "must support greater contributions to adult recruitment from any combination of four factors: (1) density, (2) growth, (3) survival of juveniles, and (4) movement to adult habitats."
 
-### What is known about nearshore fishes at the community level?
+In another early review, @Gillanders.etal.2003 found that most nearshore fish studies at the time focused on a difference in abundance and size classes among habitats, and so emphasized the need to provide evidence that juveniles were migrating to adult habitats or else the nursery role would not efectively exist. @Dahlgren.etal.2006 then built on the nursery role hypothesis by defining an 'Effective Juvenile Habitat' framework to assess nursery function based on an overall contribution to adult recruitment from all such habitats instead of which specific habitats contain the highest density of juveniles. @Sheaves.etal.2006 commented on the EJH framework, questioning the lack of consideration of the effects that scale, complexity, and connectivity have on habitats benefiting juveniles. Instead, they suggested broadening the concept of juvenile and nursery habitat to recognize that the processes supporting juveniles cannot be truly quantified with unit-area metrics and recruitment numbers alone, and that exclusively evaluating certain habitat types would underestimate (and maybe misidentify) the effects that the nearshore as a whole ecosystem has on the success of future generations.
+
+The criticisms by @Sheaves.etal.2006 are disputed, however, this alternative view was easier said than done [@Layman.etal.2006]. @Sheaves.2009 expounded on the complexity of benefits that the nearshore provides emphasizing the function of connectivity; he cites various migration patterns that can result from species ontogenetic stages and behavior shifts, which also involve linkages to habitat components and other species as in trophic dynamics and predator-prey interactions. From here, the literature on nearshore importance begins to incorporate aspects of landscape ecology acknowledging the mosiac effect of diverse habitats viewed as a 'seascape nursery' [@Nagelkerken.etal.2015], while focusing on the functional processes that lead species to use nursery grounds rather than the ranking of different habitat types [@Sheaves.etal.2015; @Litvin.etal.2018].
+
+Climate stuff - Concentration of human activity, fast rates of change relative to climate, linked to coastal processes involving freshwater input [@Cloern.etal.2016] - [@Ziegler.etal.2023]
+
+-   [@Swadling.etal.2024] Re-enforcement of seascape importance over singular habitat usage.
+
+### Estuaries
+
+-   From @Whitfield.Pattrick.2015: "For a habitat to serve as a nursery area for fish it must: (a) Be physiologically suitable in terms of chemical and physical features; (b) Have connectivity to enable colonisation by larvae and/or early juveniles; (c) Provide abundant and suitable food; (d) Afford a degree of protection from predators." Finds differential community structure among marine and estuarine habitat types, implying that certain species do exhibit selectivity among available habitat type.
+-   @Whitfield.2020 follows this with a study that in particular highlights the protection from predation that littoral estuarine habitats provide via shelter from wave-action, turbid conditions, and connectivity to vegetated patches.
+-   [@Whitfield.etal.2023] Importance of connectivity among estuarine zones, particularly channel blockage and barriers to shallow, sheltered areas.
+
+
+
 
 ### Community structure is driven by...
 
-### What is known about nearshore fishes in Alaska?
+-   In @Lefcheck.etal.2019, the authors conducted a meta-analysis of nearshore studies (1986-2016) finding that "structured" nearshore habitats (e.g., submerged aquatic vegetation [SAV], coral reefs, marshes) almost always enhanced nursery function compared to unstructured habitat (i.e., bare substrate). They noted that studies quantify juvenile density more so than growth or survival, but also that recruitment to adult populations could not be assessed due to a lack of studies.
 
-#### Growth and rearing
-- Growth and feeding juv salmon, Cook Inlet [@Moulton.1997]
-- Composition and energy of PSL, Kachemak Bay [Robards.etal.1999]
-- Spawning by PSL, Kachemak Bay [@Robards.etal.1999b]
-- Energetic models of 0-1 age walleye, Bering Sea [@Siddon.etal.2013]
-- Winter condition, SI signatures, over years for herring [@Gorman.etal.2018]
+## Nearshore fishes in Alaska
 
-#### Oceanographic conditions
-- Growth and abundance by PSL [@Robards.etal.2002]
-- Forage fishes structured by T/Sal [@Abookire.Piatt.2005]
+### Adult-harvested species
 
-#### Habitat resources
-- Habitat use by juvenile groundfish, Kachemak Bay [@Abookire.etal.2001]
-- Habitat association and diet of YOY Pcod, Kodiak [@Abookire.etal.2006]
-- Habitat association comparison in gadids, Kodiak [@Laurel.etal.2007]
-- Lagoons in the Arctic, trophic ecology [@Tibbles.Robards.2018]
-- Terrestrial OM contribution, SI signatures, SEAK [@Whitney.etal.2018]
-- Temporal-spatial variability (Depth?) of YOY rock sole [@Hurst.Abookire.2006]
+#### Pacific salmon
 
-#### Community structuring
-- Migration and habitat use, whole community Arctic [@Craig.1984]
-- Spatial-temporal variatibility, Cook Inlet [@Robards.etal.1999a]
-- Physical oceanography vs interannual driver, Kachemak Bay [@Speckman.etal.2005]
-- Substrate and kelp habitat [@Hamilton.Konar.2007]
-- Habitat, year, season [@Johnson.etal.2010]
-- Year*conditions, and seine/trawl comparison [@Thedinga.etal.2013]
-- Landscape scale variables using RFM [@Miller.etal.2014]
-- Arctic sea similarities, northward sp migration [@Logerwell.etal.2015]
-- Local vs regional, seasonality, GOA [@Ormseth.etal.2017]
-- Interannual, seasonal variability, SEAK [@Beaudreau.etal.2022]
-- Seasonal, sub-regional variability, Kachemak [@Guo.etal.2022]
-- Regional > watershed-scale variability [@Lundstrom.etal.2022]
-- Interannual and 'location' variability, Arctic [@Priest.etal.2022]
+Reports
 
-#### Modelling nearshore fish
-- RFM as an efficient species occurrence model [@Miller.etal.2015]
-- GAMs and ShoreZone for Pcod and walleye in PWS and SEAK [@Gruss.etal.2021]
+-   Jaenicke et al. 1985
+-   Growth and feeding juv salmon, Cook Inlet [@Moulton.1997]
+-   Coho and sockeye in estuaries, Powers et al. 2006
+-   Ruggerone and Irvine 2015
 
-#### Recruitment into the nearshore
-- GOA, Aluetian, Bering connectivity for egg-to-0-age walleye [@Parada.etal.2016]
+Primary literature
 
-### What is known about community structure in Alaska?
+- Murphy et al. 1988
+- Hare et al. 1999
+- Cooney et al. 2001
+- Linley 2001
+- Orsi et al. 1987; 2000; 2004
+- Fry abundnance as best predictor of marine survival (Malick et al. 2009)
+- Koski et al. 2009
+- Ruggerone et al. 2010 (?)
+- Olsen et al. 2003 coho genetics
+- Hoem-neher et al. 2013
+- Pierce 2017 MS thesis
 
-### What areas can be built upon or explored further?
+#### Rockfish and Lingcod
 
-### The research goal of my dissertation is...
+-   differential habitat use and behavior of Sebastes spp, SEAK [@Johnson.etal.2003]
+-   Juvenile Copper Rockfish and Lingcod (Reynolds et al. 2008)
+
+#### Walleye pollock and gadids
+
+Recruitment into the nearshore
+
+-   Regional connectivity for egg-to-0-age walleye, GOA, Aluetian, Bering [@Parada.etal.2016]
+-   Timing of larval walleye (\<10mm) and nauplii, Resurrection Bay [@Clayton.etal.1997]
+
+Energetics/condition
+
+-   Energetic models of 0-1 age walleye, Bering Sea [@Siddon.etal.2013]
+-   Next year recruitment and fall condition of age-0 walleye, Bering Sea [@Heintz.etal.2013]
+
+Habitat usage
+
+-   Habitat association and diet of YOY Pcod, Kodiak [@Abookire.etal.2006]
+-   Habitat association comparison in gadids, Kodiak [@Laurel.etal.2007]
+-   GAMs and ShoreZone for Pcod and walleye in PWS and SEAK [@Gruss.etal.2021]
+
+#### Other groundfish
+
+-   Bouwens et al. 1999a; 1999b
+-   Grwoth of juvenile arrowtooth Paul et al. 2000
+-   Habitat use by juvenile groundfish, Kachemak Bay [@Abookire.etal.2001]
+-   Halibut spawning and skipped spawning (Loher and Seitz 2008)
+-   Temporal-spatial variability (Depth?) of YOY rock sole, Kodiak [@Hurst.Abookire.2006]
+- 
+
+### Forage species
+
+-   Forage fish importance, review [@Springer.Speckman.1997]
+-   Lipid content and energy densoity of forage fishes, NGOA [@Anthony.etal.2000]
+-   Juv herring and other forage fish in bays, PWS and Outer KP [@Brown.etal.2002]
+-   Forage fishes structured by T/Sal, Kachemak Bay [@Abookire.Piatt.2005]
+
+#### Pacific sand lance
+
+-   Composition and energy of PSL, Kachemak Bay [@Robards.etal.1999]
+-   Spawning by PSL, Kachemak Bay [@Robards.etal.1999b]
+-   Growth and abundance of PSL, lower Cook Inlet [@Robards.etal.2002]
+-   Orr et al. 2015 
+-   Spawning readiness, Neff 2021
+
+#### Pacific herring
+
+-   Rounsefell 1930
+-   Paul and Brown 1998; Paul and Paul 1998
+-   Pearson et al. 1999
+-   Cooney et al. 2001
+-   Winter survival and body condition of YOY herring, PWS [@Norcross.etal.2001]
+-   Juv herring and other forage fish in bays, PWS and Outer KP [@Brown.etal.2002]
+-   Pearson et al. 2012
+-   Winter condition, SI signatures, over years for herring, PWS [@Gorman.etal.2018]
+-   Envir params and geospatial factors, YOY herring, PWS [@Lewandoski.Bishop.2018]
+
+### Regionally isolated studies
+
+Sablefish and perch recruitment in the GOA
+
+-   Coffin and Mueter 2016
+
+Perch in the Aleutians
+
+-   Habitat, temperature, coral/sponge assoc with perch, Aleutians [@Rooper.Boldt.2005]
+
+Arctic lagoon habitats
+
+-   Marine/FW/Coastal guilds based on SI and FA, Beaufort Sea [@Brewster.etal.2016]
+-   Fish diet SI signatures in lagoon habitats, Chukchi [@Tibbles.Robards.2018]
+-   Energy condition of lagoon fishes, Arctic [@Fraley.etal.2021]
+
+Trophic dynamics in SEAK
+
+-   Diets differing staghorns rel to hydrology, SEAK [@Whitney.etal.2017]
+-   SI terrestrial OM contribution in common species, SEAK [@Whitney.etal.2018]
+
+### Community structuring
+
+Arctic: Beaufort, Chukchi, Bering
+
+-   Migration and habitat use, whole community Arctic [@Craig.1984]
+-   Priest et al. 2010
+-   Year\*conditions, and seine/trawl comparison, Chukchi [@Thedinga.etal.2013]
+-   Sea body similarities, northward sp migration, Arctic [@Logerwell.etal.2015]
+-   Variability due to salinity, temperature, Arctic [@Barton.etal.2020]
+-   FW input and ocean connectivity, Arctic [@Fraley.etal.2021a]
+-   Interannual and 'location' variability, Arctic [@Priest.etal.2022]
+-   Borealization of community assemblages, Arctic [@vonBiela.etal.2023]
+-   Local T, sal, wind structure lagoons, Arctic [@Laske.etal.2024]
+
+NGOA: Cook Inlet, Kodiak, PWS
+
+Reports
+
+-   see Blackburn et al. 1980
+-   Local vs regional, seasonality, kodiak-barrens-KP-SEAK [@Ormseth.etal.2017]
+
+Cook Inlet, Kachemak Bay
+
+-   Spatial-temporal variability, lower Cook Inlet [@Robards.etal.1999a]
+-   Physical oceanography vs interannual driver, Kachemak Bay [@Speckman.etal.2005]
+-   Substrate and kelp habitat, Kachemak Bay [@Hamilton.Konar.2007]
+-   Forage fishes structured by T/Sal, Kachemak Bay [@Abookire.Piatt.2005]
+-   Seasonal, sub-regional variability, Kachemak [@Guo.etal.2022]
+-   Regional \> watershed-scale variability, Kachemak and SEAK [@Lundstrom.etal.2022]
+-   taxomic vs functional stucture over years, Kachemak and SEAK [@Sutton.etal.2025]
+
+Prince William Sound
+
+-   Kelp and eelgrass communities, PWS [@Dean.etal.2000]
+-   Habitat, year, season, PWS [@Johnson.etal.2010]
+
+SEAK
+
+-   Eelgrass and adjacent habitat comm structure, SEAK [@Murphy.etal.2000]
+-   Landscape scale variables using RFM, SEAK [@Miller.etal.2014]
+-   RFM as an efficient species occurrence model, SEAK [@Miller.etal.2015]
+-   Interannual, seasonal variability, SEAK [@Beaudreau.etal.2022]
+-   Regional \> watershed-scale variability, Kachemak and SEAK [@Lundstrom.etal.2022]
+-   taxonomic vs functional stucture over years, Kachemak and SEAK [@Sutton.etal.2025]
+
+
+### Modelling nearshore fishes
+
+Species level
+
+-   GAMs and ShoreZone for Pcod and walleye in PWS and SEAK [@Gruss.etal.2021]
+
+Community level
+
+-   RFM as an efficient species occurrence model, SEAK [@Miller.etal.2015]
+-   Regional \> watershed-scale variability, Kachemak and SEAK [@Lundstrom.etal.2022]
+-   taxomic vs functional stucture over years, Kachemak and SEAK [@Sutton.etal.2025]
+
 
 ## Approach
 
-### How are nearshore fishes studied, generally?
+How are nearshore fishes studied, generally?
 
-### What data exists for Alaska? What gaps?
+What data exists for Alaska? What gaps?
 
-### Working with the NFAA: challenges and opportunities
-
-## Expectations
-
-### If each chapter is successfully tackled...
-
-#### What would be the expected outcome?
-
-#### What about next steps?
-
-#### How does this research fit into the current state of knowledge?
+Working with the NFAA: challenges and opportunities
 
 
-# Chapter 1: 
+## Outcomes
 
-## Introduction
+How does this research fit into the current fisheries research?
 
-## Research Question
-
-## Methods
-
-## Timeline
-
-## References
+What are implications for fisheries research in Alaska?
 
 
-# Chapter 2: 
+
+# Chapter 1:
+
+See [@Guo.etal.2022]
+
+
+# Chapter 1.5:
 
 ## Introduction
 
-## Research Question
+- Variation in Capture Efficiency of a Beach Seine for Small Fishes (Parsley et al. 1989)
+- Estimating Densities of Small Fishes and Decapod Crustaceans in Shallow Estuarine Habitats- A Review of Sampling Design with Focus on Gear Selection (Rozas and Minello 1997)
+
+## Research goal
+
+### Guiding question:
+
+- What is an appropriate framework to synthesize multiple datasets of fish community collected by beach seine?
+
+### Objectives:
+
+- Data ingestion and clean up
+- Conduct exploratory data analysis and suggest additional objectives (the following)
+- Account for variability in accuracy of community samples
+- Select appropriate metrics
+- Select appropriate data treatment steps
 
 ## Methods
 
-## Timeline
+Weight samples by number of replicates
 
-## References
+-   GLM richness \~ ordered(replicates) to find data subsets
+-   GLM frequency \~ richness per subset
+-   MLE +/- error / MLE of max ( ordered( replicates)))
+
+Metrics and indices
+
+-   community dissimilarities
+-   diversity indices: richness, shannon, inv simpson, pielou's evenness
+-   joint log-likelihood
+
+Data transformation and distance calculations
+
+-   P/A + jaccard or sorenson(?)
+-   4th rt (non-compositional) + bray-curtis
+-   robust CLR (compositional) + euclidean
 
 
-# Chapter 3: 
+# Chapter 2:
 
 ## Introduction
 
-## Research Question
+- Atwood et al. 2010
+
+## Research goal
+
+### Guiding question:
+
+- How does nearshore fish community structure vary at different spatial scales across the northeastern Pacific?
+
+### Specific questions:
+
+- Is there an east-west GOA biobreak? (see Waite and Mueter 2013, 2016)
+- Do apriori regions based on geography (Aleutians, Southcentral, Southeast) result in significant differences in community structure?
+- Are there significant spatial groupings at the sub-regional scale (10s-100s km)?
+- How does community structure relate to local (1-10 km) physical habitat features?
+- What spatial scales are important for structuring communities (hierarchical landscape perspective)? Or, how does community structure variability partition among regional, sub-regional, and local scales? [see @Valesini.etal.2014]
+- Maybe add to each question, "does community structure vary interannually or among distinct climate periods?"
 
 ## Methods
 
-## Timeline
+Multiscale ordination and variograms
 
-## References
+-   Nugget: account for microscale error (variance of data from same location or bin)
+-   How to incorporate shoreline distance rather than A-B distance?
+    - try sf::st_simplify()
+-   Multivariate regression from direct gradient, e.g., RDA (see Flanagan et al. 2018)
+-   Also see Dray et al. 2012; Bacaro and Ricotta 2007; Reuda and Defeo 2003; Wagner 2004; Schlup and Wagner 2008
+-   Use of Moran's Eigenvectors Maps (MEM)
+-   adespatial::variogmultiv(); vegan::mso()
+
+Bio-geo breakpoints
+
+-   Break-point analysis (see Muggeo papers and Rpackage)
+-   MRT with longitude
+
+Regional and sub-regional groups
+
+-   Cluster analysis (see Jackson et al. 2010; Kreft and Jetz 2010; Kulbicki et al. 2013)
+-   parsimony analysis of endemicity (see Mouillot et al. 2013)
+-   CAP (see Irvine et al. 2011)
+-   LDA
+-   BRT (see Viana et al. 2022)
+
+Assign local habitat classes
+
+-   See Blanchard et al. 2017 for lower trophic analysis from PWS
+-   Shorezone habitat classes - structuring process, substrate, beach width, slope
+
+Climatic periods
+
+- MHW defined by SST anomalies from nearest data station
+- May need to reduce dataset to appropriate spatial areas depending on SST data available
+
+- Series of papers by Litzow et al. 2006; 2012; 2020
+
+- Shiftograms for fisheries time series data (Gröger et al. 2011)
+- Francis and Hare 1994; Francis et al. 1998
+- Beaulieu et al. 2016
+- Boldt et al. Appendix 3- Recent Ecosystem Changes in the Gulf of Alaska 
+
+Joint species distribution models
+
+- Joint-conditional probabilities of chosen metric (see Wilkinson et al. 2021)
 
 
+# Chapter 3:
 
+## Introduction
 
+- The interrelationship of temperature, growth parameters, and activity level in fishes (Palomares et al. 2022)
 
+## Research goal
 
+### Guiding question:
 
+Does growth and timing in nearshore fish species change over annual time periods?
+
+### Specific questions:
+
+- For which species do we know or expect changes in growth or timing?
+- For which species do we have data to estimate growth or timing?
+- Can we determine cohorts based on species size and day of capture?
+- Do large-scale climatic patterns (e.g., Pacific MHW) affect growth or timing?
+
+## Methods
+
+Determine cohorts
+
+-   Finite mixing models
+-   Compare model predictions to NFAA labels
+
+Interannual variability in nearshore habitat use
+
+-   Account for spatial groups (Chapter 2)
+-   GLMM for estimates of timing (intercept) and growth (slope)
+-   Random effects of sample?
+
+# References

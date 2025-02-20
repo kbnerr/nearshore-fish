@@ -30,6 +30,10 @@ Built with R version `r getRversion()`.
 
 The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover most steps of the initial data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other project files can be accessed at this [github repo](https://github.com/kbnerr/nearshore-fish). Following this document, Part II of the data wrangling and exploratory analyses can be accessed at <https://rpubs.com/chguo1/nfaa_data_2>.
 
+The purpose of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover second-stage steps of the data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other files can be accessed via the Kachemak Bay National Estuarine Research Reserve's [github repo](https://github.com/kbnerr/nearshore-fish).
+
+In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database. The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Part I of these data preparation steps can be accessed at <https://rpubs.com/chguo1/1188614>, and the resulting data objects are loaded below (file "nfaa_1.rda").
+
 Link to the NFA can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. The entire database can be downloaded as a .csv file, which is what I did. However, I have additional data files that were either shared with me by NFA content managers or modified from the NOAA NFA data directory for ease of reading into R. I will try to simplify this for others to replicate in the future.
 
 ## Set up
@@ -42,6 +46,8 @@ library(here)
 library(broom)
 library(multcomp)
 library(tidyverse)
+library(tweedie)
+library(statmod)
 
 # Directory
 wd = here()
@@ -56,166 +62,198 @@ for (i in seq_along(dirs)) {
 # Options
 
 # Source/Load
-load(file.path(dir.data, "nfaa_richness.rda"))
+richness.0 = readRDS(file.path(dir.data, "nfaa_richness.rds"))
 ```
 
 #
 
 ```{r}
+glimpse(richness.0)
+```
+
+
+```{r}
 # Visualize richness by replicates
-boxplot(S ~ Replicates, data = richness)
+boxplot(S ~ Replicates, data = richness.0)
 
 # remove replicates = 9, 10, 12 bc of single obs
-tmp = left_join(visits, diversity, by = "VisitID") %>%
-  mutate(Replicates = as.numeric(Replicates),
-         f.Replicates = ifelse(Replicates > 6, "7+", Replicates) %>% as.ordered())
+richness.1 = mutate(richness.0,
+       Replicates = as.numeric(Replicates),
+       f.R = ifelse(Replicates > 6, "7+", Replicates) %>% as.ordered())
 
+# Re-visualize
+boxplot(S ~ f.R, data = richness.1)
+```
+
+```{r}
 # analysis of variance
-aov.S.reps = aov(S ~ as.factor(Replicates), data = tmp)
-summary(aov.S.reps)
-# pairwise test
-TukeyHSD(aov.S.reps) %>% broom::tidy() %>% select(-term) %>% knitr::kable(digits = 3)
-# residuals
-residuals = residuals(aov.S.reps)
-plot(residuals)
-par(mfrow = c(2, 2))
-plot(aov.S.reps)
-par(mfrow = c(1, 1))
-# check for homogeneity
-shapiro.test(residuals)
-# result: violation of homogeneity
+aov = aov(S ~ f.R, data = richness.1) # effects may be unbalanced
+summary(aov)
 
+# pairwise test
+TukeyHSD(aov) %>% tidy() %>% select(-term) %>% knitr::kable(digits = 3)
+
+# residuals
+aov.res = residuals(aov)
+plot(aov.res)
+par(mfrow = c(2, 2))
+plot(aov)
+
+# check for homogeneity
+shapiro.test(aov.res)
+# result: violation of homogeneity
+```
+
+
+```{r}
 # kruskal-wallis test
-kruskal.test(S ~ Replicates, data = tmp)
+kruskal.test(S ~ f.R, data = richness.1)
 
 # one way t-test not assuming equal variances
-oneway.test(S ~ Replicates, data = tmp)
+oneway.test(S ~ f.R, data = richness.1)
+
 # pairwise test
-results = pairwise.t.test(tmp$S, tmp$Replicates,
-                          p.adjust.method = "BH",
-                          pool.sd = FALSE)
-results
+pairwise.t.test(richness.1$S, richness.1$f.R, p.adjust.method = "BH", pool.sd = FALSE)
 
 # plot t.test results
-ggplot(tmp) +
-  aes(x = Replicates, y = S, group = Replicates) +
+ggplot(richness.1) +
+  aes(x = f.R, y = S, group = f.R) +
   geom_boxplot() +
   geom_signif(test = "t.test",
               comparisons = list(c(1, 2),
                                  c(2, 3),
-                                 c(2, 4),
                                  c(3, 4),
-                                 c(3, 5)),
-              y_position = c(33, 36, 39, 43, 46),
+                                 c(4, 5)),
+              y_position = c(33, 36, 39, 42),
               map_signif_level = TRUE)
+```
 
-
+```{r}
 # plot Richness freq distribution
-tmp %>% pull(S) %>% table() %>% barplot()
+richness.1 %>% pull(S) %>% table() %>% barplot(xlab = "S", ylab = "Frequency")
 # plot Richness freq distribution facet by replicates
-plot.tmp = ggplot(tmp) +
+ggplot(richness.1) +
   aes(x = S) +
-  geom_histogram() +
-  facet_wrap(~ f.Replicates, scales = "free")
+  geom_histogram(bins = 31) +
+  facet_wrap(~ f.R, scales = "free")
+```
 
+```{r}
 # Model S ~ Replicates
 
 # lm
-S.lm = lm(S ~ f.Replicates, data = tmp)
-summary(S.lm)
-plot(S.lm)
+lm = lm(S ~ f.R, data = richness.1)
+summary(lm)
+plot(lm)
+# link to interp of coefficients by the-mad-statter, https://stackoverflow.com/a/57513718/24244712
 
 # poisson
-S.pois = glm(S ~ f.Replicates, data = tmp,
-            family = poisson(link = log))
-summary(S.pois)
-plot(S.pois)
+pois = glm(S ~ f.R, data = richness.1, family = poisson(link = log))
+summary(pois)
+plot(pois)
+
+# inverse gamma
+invg = glm(S ~ f.R, data = richness.1, family = Gamma(link = "inverse"))
+summary(invg)
+tidy(invg)
+plot(invg)
 
 # AIC test
-AIC(S.lm, S.pois) # lm better
-
-# inv gamma
-S.invg = glm(S ~ f.Replicates, data = tmp,
-             family = Gamma(link = "inverse"))
-summary(S.invg)
-plot(S.invg)
-
-# AIC test
-AIC(S.lm, S.pois, S.invg) # inv gamma better
+AIC(lm, pois, invg) # inv gamma better
 
 # Null glm test
-S.null <- glm(S ~ 1, data = tmp, family = Gamma(link = "inverse"))
-anova(S.null, S.invg, test = "LRT") # sig
+null = glm(S ~ 1, data = richness.1, family = Gamma(link = "inverse"))
+anova(null, invg, test = "LRT") # sig
 
 # Predicted S + se and residuals
-S.pred = augment(S.invg, type.predict = "response", se_fit = TRUE)
+invg.pred = augment(invg, type.predict = "response", se_fit = TRUE)
 
 # Plot residuals
-ggplot(S.pred) +
-  aes(x = f.Replicates, y = .resid) +
+ggplot(invg.pred) +
+  aes(x = f.R, y = .resid) +
   geom_point() +
   geom_hline(aes(yintercept = 0))
-# Plot raw S and predicted S
-ggplot(S.pred) +
-  aes(x = f.Replicates) +
+invg.pred %>%
+  distinct(f.R, .fitted, .se.fit) %>%
+  group_by(f.R) %>%
+  summarise(fit = .fitted,
+            lower_ci = .fitted - 1.96 * .se.fit,
+            upper_ci = .fitted + 1.96 * .se.fit)
+# Plot observed S and fitted S w/ CI
+ggplot(invg.pred) +
+  aes(x = f.R) +
   geom_point(aes(y = S), position = position_nudge(x = -0.1)) +
   geom_point(aes(y = .fitted + .resid), color = "blue", position = position_nudge(x = 0.1))
-# Plot estimates
-ggplot(S.pred) +
-  aes(x = f.Replicates) +
-  geom_jitter(aes(y = S)) +
-  geom_crossbar(aes(y = .fitted, ymin = .fitted - .se.fit, ymax = .fitted + .se.fit), color = "blue")
 
 # Multcomp
-glht(model = S.invg, linfct = mcp(f.Replicates = "Tukey")) %>% summary()
+glht(model = invg, linfct = mcp(f.R = "Tukey")) %>% summary()
 
+```
+
+```{r}
 # plot Richness freq distr + Estimate facet by replicates
-ggplot(S.pred) +
+ggplot(invg.pred) +
   aes(x = S) +
   geom_histogram() +
   geom_vline(aes(xintercept = .fitted), color = "red") +
-  facet_wrap(~ f.Replicates, scales = "free_y")
+  facet_wrap(~ f.R, scales = "free_y")
 
 # MASS
-gamma.shape(S.invg)
-gamma.dispersion(S.invg)
+gamma.shape(invg)
+gamma.dispersion(invg)
+```
 
+```{r}
 # Tweedie
 
 # Estimate xi 
-S.profile = tweedie.profile(S ~ f.Replicates, data = tmp, do.plot = TRUE)
+twd.profile = tweedie.profile(S ~ f.R, data = richness.1, do.plot = TRUE)
 
 # The index parameter, xi
-(xi.est = S.profile$xi.max)
+(xi = twd.profile$xi.max)
 
 # Phi
-(phi.mle = S.profile$phi.max)
+(phi = twd.profile$phi.max)
 
-S.twd = glm(S ~ f.Replicates, data = tmp, family = tweedie(var.power = xi.est))
-plot(S.twd)
+twd = glm(S ~ f.R, data = richness.1, family = tweedie(var.power = xi))
+plot(twd)
 # S.twd = cplm::cpglm(S ~ f.Replicates, link = "log", data = tmp)
-(S.twd.sum = summary(S.twd))
+(twd.sum = summary(twd))
 
 # AIC test
-AIC(S.lm, S.pois, S.invg); AICtweedie(S.twd)
+AIC(invg); AICtweedie(twd)
+
+# Multcomp
+glht(model = invg, linfct = mcp(f.R = "Tukey")) %>% summary()
 
 # Modelled probability of P(Y=0)
-S.twd.aug = augment(S.twd, type.predict = "response", se_fit = TRUE)
-tidy(S.twd, conf.int = TRUE)
+twd.aug = augment(twd, type.predict = "response", se_fit = TRUE)
+# tidy(twd, conf.int = TRUE) # another option to augment()
 
 # Mean estimates 
-mu.fRep = predict(S.twd, newdata = tmp.new, type = "response")
-names(mu.fRep) = pull(tmp.new)
+
+# predict() method
+# predict(twd, newdata = new, type = "response")
+
+# Use augment()
+twd.fit = select(twd.aug, f.R, mu.fR = .fitted) %>% distinct() %>% arrange(f.R)
+# Save mean estimates as vector
+mu.fR = twd.fit %>% pull(mu.fR)
+names(mu.fR) = twd.fit %>% pull(f.R)
+mu.fR
+
 # Compare estimates to data means
-summarise(tmp, S.mean = mean(S), .by = f.Replicates) %>% 
-  arrange(f.Replicates) %>%
-  add_column(mu.fRep)
+summarise(richness.1, S.mean = mean(S), .by = f.R) %>% 
+  arrange(f.R) %>%
+  add_column(mu.fR)
 
-# Interpret underlying poisson and gamma distributions
-tweedie.convert(xi = xi.est, mu = mu.fRep, phi = phi.mle) %>%
+# Underlying poisson and gamma distributions
+tweedie.convert(xi = xi, mu = mu.fR, phi = phi) %>%
   as_tibble() %>% 
-  add_column(tmp.new)
+  add_column(f.R = names(mu.fR), .before = 1)
+```
 
+```{r}
 y = seq(1, 31, 1)
 dt = dtweedie(y = x, power = xi.est, mu = mu.fRep[1], phi = phi.mle)
 n = pull(tmp, f.Replicates) %>% table()
@@ -243,114 +281,134 @@ full_join(S.freq, S.dens, by = join_by(f.Replicates, x)) %>%
   facet_wrap(~ f.Replicates, scales = "free_y") +
   labs(x = "Frequency", y = "Richness")
 
+```
 
-
+```{r}
 #### Re-run tweedie model for three groups Replicates
 
 # Re-factor Replicates
-tmp = mutate(tmp, f.Replicates = ifelse(Replicates > 2, "3+", Replicates) %>% as.ordered())
+richness.2 = mutate(richness.1, f.R = ifelse(Replicates > 2, "3+", Replicates) %>% as.ordered())
 
 # Estimate xi 
-S.profile = tweedie.profile(S ~ f.Replicates, data = tmp, do.plot = TRUE)
+twd2.profile = tweedie.profile(S ~ f.R, data = richness.2, do.plot = TRUE)
 
-# The index parameter, xi
-(xi.est = S.profile$xi.max)
+# Xi and Phi, these overwrite previous profile estimates
+(xi = twd.profile$xi.max); (phi = twd.profile$phi.max)
 
-# Phi
-(phi.mle = S.profile$phi.max)
+twd2 = glm(S ~ f.R, data = richness.2, family = tweedie(var.power = xi))
+plot(twd2)
+summary(twd2)
 
-S.twd = glm(S ~ f.Replicates, data = tmp, family = tweedie(var.power = xi.est, link.power = 0))
-plot(S.twd)
-# S.twd = cplm::cpglm(S ~ f.Replicates, link = "log", data = tmp)
-summary(S.twd)
+# AIC test - is this OK to compare?
+AICtweedie(twd); AICtweedie(twd2)
 
-# AIC test
-AIC(S.lm, S.pois, S.invg); AICtweedie(S.twd)
+# Modelled probatwd2.profile
 
 # Modelled probability of P(Y=0)
-S.twd.aug = augment(S.twd, type.predict = "response", se_fit = TRUE)
+twd2.aug = augment(twd2, type.predict = "response", se_fit = TRUE)
+# Use augment()
+twd2.fit = select(twd2.aug, f.R, fit = .fitted, se.fit = .se.fit) %>% distinct() %>% arrange(f.R)
 
-# newdata
-tmp.new = distinct(tmp, f.Replicates) %>% arrange(f.Replicates)
-
-# Mean estimates 
-S.pred = predict(S.twd, newdata = tmp.new, type = "response", se.fit = TRUE)
+# Save mean estimates as vector (these overwrite previous objects)
+mu.fR = twd2.fit %>% pull(fit)
+names(mu.fR) = twd2.fit %>% pull(f.R)
+mu.fR
 
 # Compare estimates to data means
-summarise(tmp, S.mean = mean(S), .by = f.Replicates) %>% 
-  arrange(f.Replicates) %>%
-  add_column(S.pred$fit)
+summarise(richness.2, S.mean = mean(S), .by = f.R) %>% 
+  arrange(f.R) %>%
+  add_column(mu.fR)
 
 # Interpret underlying poisson and gamma distributions
-S.twd.convert = tweedie.convert(xi = xi.est, mu = S.pred$fit, phi = phi.mle) %>%
+tweedie.convert(xi = xi, mu = mu.fR, phi = phi) %>%
   as_tibble() %>% 
-  add_column(tmp.new)
+  add_column(mu.fR, .before = 1)
 
-# Plot tweedie fitted values
+# Plot tweedie predicted values
 y = seq(1, 31, 1)
-dt = dtweedie(y = x, power = xi.est, mu = S.pred$fit[1], phi = phi.mle)
-n = pull(tmp, f.Replicates) %>% table()
-plot(x, dt * n[1])
+for (i in 1:length(mu.fR)) {
+  dt = dtweedie(y = y, power = xi, mu = mu.fR[i], phi = phi)
+  n = pull(richness.2, f.R) %>% table()
+  plot(x, dt * n[i])
+}
 
+```
+
+
+```{r}
 # Define dataframes for plotting:
 # n samples per Replicate group for scaling
 n.tbl = as_tibble(n) %>% 
-  rename(f.Replicates = ".") %>% 
-  mutate(f.Replicates = as.ordered(f.Replicates))
+  rename(f.R = ".") %>% 
+  mutate(f.R = as.ordered(f.R))
 
 # Recreate S frequency data
-S.freq = tmp %>% 
-  count(f.Replicates, S, name = "freq") %>%
-  complete(f.Replicates, S = y, fill = list(freq = 0)) %>%
+S.freq = richness.2 %>% 
+  count(f.R, S, name = "freq") %>%
+  complete(f.R, S = y, fill = list(freq = 0)) %>%
   rename(x = S)
 
 # Calculate tweedie densities based on mean estimates
-S.dens = map(S.pred$fit, function (x) dtweedie(y = y, power = xi.est, mu = x, phi = phi.mle)) %>%
+S.dens = map(mu.fR, function (x) dtweedie(y = y, power = xi, mu = x, phi = phi)) %>%
   as_tibble() %>%
   rowid_to_column(var = "x") %>%
   pivot_longer(cols = matches("[^x]"),
-               names_to = "f.Replicates", names_transform = list(f.Replicates = as.ordered),
+               names_to = "f.R", names_transform = list(f.R = as.ordered),
                values_to = "y") %>%
-  mutate(f.Replicates = ifelse(f.Replicates == 3, "3+", f.Replicates)) %>%
-  left_join(n.tbl, by = join_by(f.Replicates))
+  left_join(n.tbl, by = join_by(f.R))
 
 # Mean and 95% confidence interval
-S.est = as_tibble(S.pred) %>% 
-  add_column(tmp.new) %>%
+S.est = twd2.fit %>%
   mutate(lower_ci = fit - 1.96 * se.fit,
          upper_ci = fit + 1.96 * se.fit,
-         se_pi = sqrt(se.fit^2 + (fit * residual.scale^2)),
+         se_pi = sqrt(se.fit^2 + (fit * sigma(twd2)^2)),
          lower_pi = fit - 1.96 * se_pi,
          upper_pi = fit + 1.96 * se_pi)
 
 # Plot density with mean estimates
-ggplot(S.twd.aug) +
-  aes(x = S, group = f.Replicates) +
+ggplot(twd2.aug) +
+  aes(x = S, group = f.R) +
   geom_histogram(bins = 31) +
   geom_vline(aes(xintercept = .fitted), color = "red") +
-  facet_wrap(~ f.Replicates, scales = "free_y")
+  facet_wrap(~ f.R, scales = "free_y")
+
 # Plot frequency with mean est + 95% CI
-full_join(S.freq, S.dens, by = join_by(f.Replicates, x)) %>%
-  full_join(S.dts, by = join_by(f.Replicates, x)) %>%
-  ggplot(aes(x = x, group = f.Replicates)) +
-  geom_line(aes(y = y * n), col = "red") +
+full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
+  ggplot(aes(x = x, group = f.R)) +
+  geom_line(aes(y = y * n), col = "blue") +
   geom_col(aes(y = freq)) +
   geom_vline(data = S.est, aes(xintercept = fit), color = "red", linetype = "solid") +
   geom_vline(data = S.est, aes(xintercept = lower_ci), color = "green", linetype = "dashed") +
   geom_vline(data = S.est, aes(xintercept = upper_ci), color = "green", linetype = "dashed") +
-  geom_vline(data = S.est, aes(xintercept = lower_pi), color = "red", linetype = "dashed") +
-  geom_vline(data = S.est, aes(xintercept = upper_pi), color = "red", linetype = "dashed") +
-  facet_wrap(~ f.Replicates, scales = "free_y") +
+  facet_wrap(~ f.R) +
   labs(x = "Frequency", y = "Richness")
 
-# Calculate mean sample weights
-mu.fRep$fit / max(mu.fRep$fit)
+# Plot frequency with mean est + 95% PI
+full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
+  ggplot(aes(x = x, group = f.R)) +
+  geom_line(aes(y = y * n), col = "blue") +
+  geom_col(aes(y = freq)) +
+  geom_vline(data = S.est, aes(xintercept = fit), color = "red", linetype = "solid") +
+  geom_vline(data = S.est, aes(xintercept = lower_pi), color = "green", linetype = "dashed") +
+  geom_vline(data = S.est, aes(xintercept = upper_pi), color = "green", linetype = "dashed") +
+  facet_wrap(~ f.R) +
+  labs(x = "Frequency", y = "Richness")
 
-#
-out = tmp %>% 
-  count(f.Replicates, S, name = "freq") %>%
-  rename(x = S) %>%
-  group_by(f.Replicates) %>%
+# Approximate sample weights by factored replicates
+mu.fR / max(mu.fR)
+```
+
+Each replicate group has a different shape, generally following a tweedie distribution. We could use these tweedie mean estimates to assign weights, but maybe it is more appropriate to estimate richness based on the median inseatd of mean. Also, we may want to model the densities for each replicate group separately, to better capture the observed density curve.
+
+```{r}
+# Frequencies of richness factored by replicates
+freq = richness.2 %>% 
+  count(f.R, S, name = "freq") %>%
+  rename(x = S)
+
+# Try different models for each replicate group
+models = freq %>%
+  group_by(f.R) %>%
   nest() %>%
   mutate(poisson = map(data, ~ glm(freq ~ x, data = ., family = poisson(link = "log"))),
          AIC.poisson = map(poisson, ~ AIC(.x)),
@@ -360,9 +418,16 @@ out = tmp %>%
          tweedie = map(data, ~ glm(freq ~ x, data = ., family = tweedie(var.power = pluck(xi, 1)), start = c(0.2, 0.01))),
          AIC.tweedie = map(tweedie, ~ AICtweedie(.x)))
 
-out %>% unnest(c(AIC.poisson, AIC.gamma, AIC.tweedie))
+# Compare model results
+models %>%
+  unnest(c(AIC.poisson, AIC.gamma, AIC.tweedie)) %>%
+  select(f.R, contains("AIC"))
+```
 
-models = dplyr::select(out, f.Replicates, data, gamma) %>%
+Interesting! The tweedie model was the best overall fit when considering all replicate groups at once, but it isn't the best model for any individual group. We see that the poisson model works best for single replicates, and the inverse gamma model is best for both 2 and 3+ replicates.
+
+```{r}
+models = select(out, f.Replicates, data, gamma) %>%
   mutate(augment = map2(gamma, data, augment))
 
 unnest(models, augment)
@@ -377,12 +442,3 @@ dplyr::select(out, f.Replicates, data, gamma) %>%
 
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

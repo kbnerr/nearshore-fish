@@ -721,7 +721,7 @@ richness = left_join(visits, diversity, by = "VisitID") %>%
 # Visualize richness by replicates
 boxplot(S ~ Replicates, data = richness)
 
-# remove replicates = 9, 10, 12 bc of single obs
+# Aggregate replicates 7 and above
 richness %>%
   mutate(Replicates = as.numeric(Replicates),
          f.Replicates = ifelse(Replicates > 6, "7+", Replicates) %>% as.ordered())
