@@ -1,23 +1,23 @@
-﻿Site,Code,nfa_Location,Area,Region,Comments
-Anchor River,AR,Anchor River,East Cook Inlet,Cook Inlet,
-Anchor Point,AP,Anchor Point,East Cook Inlet,Cook Inlet,
-Ninilchik,NR,Ninilchik,East Cook Inlet,Cook Inlet,
-Plumb Bluff,PB,Plumb Bluff,East Cook Inlet,Cook Inlet,
-Whiskey Gulch,WG,Whiskey Gulch,East Cook Inlet,Cook Inlet,
-White Sands,WS,White Sands,Monashka Bay,Kodiak,
-Pillar Creek,PC,Pillar Creek,Monashka Bay,Kodiak,
-Jakolof Bay,JB,Jakolof Bay,Kachemak Bay,Cook Inlet,
-Herring Islands,HI,Herring Islands,Kachemak Bay,Cook Inlet,
-Barabara Point,BP,Barabara Point,Kachemak Bay,Cook Inlet,
-Barabara River,BR,Barabara River,Kachemak Bay,Cook Inlet,
-Outside Beach,OB,Outside Beach,Kachemak Bay,Cook Inlet,
-Tutka River,TR,Tutka River,Kachemak Bay,Cook Inlet,
-Halibut Cove,HC,Halibut Cove,Kachemak Bay,Cook Inlet,
-Grewingk River,GR,Grewingk River,Kachemak Bay,Cook Inlet,
-Seldovia Harbor,SH,Seldovia,Kachemak Bay,Cook Inlet,
-Seldovia WQ,KS,Seldovia,Kachemak Bay,Cook Inlet,
-Moosehead Point,MP,Moosehead Point,Kachemak Bay,Cook Inlet,
-Homer WQ,KH,Homer Spit,Kachemak Bay,Cook Inlet,
-Inner Spit,HH,Homer Spit,Kachemak Bay,Cook Inlet,Prior to harbor expansion
-Coal Point,CP,Homer Spit,Kachemak Bay,Cook Inlet,
-Otter Rock,OR,Peterson Bay,Kachemak Bay,Cook Inlet,
+﻿Site,Code,nfa_Location,Area,Region,Comments,Latitude,Longitude
+Anchor River,AR,Anchor River,East Cook Inlet,Cook Inlet,,59.79375333,-151.8581483
+Anchor Point,AP,Anchor Point,East Cook Inlet,Cook Inlet,,59.77270538,-151.8691497
+Ninilchik,NR,Ninilchik,East Cook Inlet,Cook Inlet,,60.05420713,-151.6730467
+Plumb Bluff,PB,Plumb Bluff,East Cook Inlet,Cook Inlet,,59.91455917,-151.7601333
+Whiskey Gulch,WG,Whiskey Gulch,East Cook Inlet,Cook Inlet,,59.83065,-151.8255967
+White Sands,WS,White Sands,Monashka Bay,Kodiak,,57.83779433,-152.439541
+Pillar Creek,PC,Pillar Creek,Monashka Bay,Kodiak,,57.81482367,-152.424909
+Jakolof Bay,JB,Jakolof Bay,Kachemak Bay,Cook Inlet,,59.47233,-151.51973
+Herring Islands,HI,Herring Islands,Kachemak Bay,Cook Inlet,,59.48267,-151.51926
+Barabara Point,BP,Barabara Point,Kachemak Bay,Cook Inlet,,59.48031,-151.62527
+Barabara River,BR,Barabara River,Kachemak Bay,Cook Inlet,,59.48277077,-151.6548254
+Outside Beach,OB,Outside Beach,Kachemak Bay,Cook Inlet,,59.456469,-151.712886
+Tutka River,TR,Tutka River,Kachemak Bay,Cook Inlet,,59.4192504,-151.3040432
+Halibut Cove,HC,Halibut Cove,Kachemak Bay,Cook Inlet,,59.59323564,-151.1699358
+Grewingk River,GR,Grewingk River,Kachemak Bay,Cook Inlet,,59.65357667,-151.1927339
+Seldovia Harbor,SH,Seldovia,Kachemak Bay,Cook Inlet,,59.43532846,-151.7149185
+Seldovia WQ,KS,Seldovia,Kachemak Bay,Cook Inlet,,59.4418,-151.71947
+Moosehead Point,MP,Moosehead Point,Kachemak Bay,Cook Inlet,,59.57870735,-151.3085476
+Homer WQ,KH,Homer Spit,Kachemak Bay,Cook Inlet,,59.60088,-151.22937
+Inner Spit,HH,Homer Spit,Kachemak Bay,Cook Inlet,Prior to harbor expansion,59.60766,-151.421507
+Coal Point,CP,Homer Spit,Kachemak Bay,Cook Inlet,,59.62007563,-151.4406966
+Otter Rock,OR,Peterson Bay,Kachemak Bay,Cook Inlet,,59.5748875,-151.294185
