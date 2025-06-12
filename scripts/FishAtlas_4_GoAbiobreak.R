@@ -90,7 +90,7 @@ sf_regions_3857 = st_read(dsn = file.path(dir.data.ignore, "fishatlas2020.gdb"),
 st_layers(dsn = file.path(dir.data.ignore, "shorezone.gdb"))
 
 # ADNR coastline maps
-map_adnr_3338 = read_sf(dsn = file.path(dir.data.ignore, "adnr_ak_cst63xsi.shx"))
+map_adnr_3338 = read_sf(dsn = file.path(dir.data.ignore, "adnr_ak_cst63", "adnr_ak_cst63.shp"))
 
 ## Fish
 # Subset catch for genus abundance,

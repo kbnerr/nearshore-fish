@@ -47,32 +47,41 @@ for (i in seq_along(dirs)) {
 
 Built with R version `r getRversion()`.
 
-# Proposal instructions
-
-Please follow the following guidelines when submitting the research proposal with your GSP: - A research proposal should typically be less than 10 pages. - Students are expected to include the following elements into the proposal: - Introduction - The introduction should give some background information on your research topic and your system (region and habitat) - The introduction should address 1. Why are you doing this? 2. Why should we care about this? 3. What is known about this topic? 4. What are you contributing to the existing knowledge? - The introduction should demonstrate that you have researched this topic area - You need some references in your introduction to demonstrate that you have researched your topic. - Research question - Clearly state your hypothesis or questions and research objectives. It is okay to just have one hypothesis or question. - Good resources to refer too: - ESA guide: Scientific Writing Made Easy: A Step‐by‐Step Guide to undergraduate Writing in the Biological Sciences. - Purdue guide: Writing is a Conversation - Purdue OWL - Methods - A methods section that shows you have thought about how you are going to address your question/hypothesis from sampling/experimental design to statistical analysis tools. - Timeline - Add a preliminary timeline on what is happening where and when (could be a table or Gantt diagram). - References - A reference section. Please ensure that the references are cited correctly. Please choose the style of an appropriate journal for your topic. We strongly recommend using a reference manager, such as Mendeley, to make this task easier and less prone to errors.
-
 # Background
 
-## What is the nearshore?
+## Nearshore importance in fish ecology
 
-The nearshore is a unique zone of the ocean that generally encompasses the narrow band of marine waters along any coast. The nearshore is viewed as a highly productive environment that provides beneficial ecosystem services to many fish species [review in @Beck.etal.2001]. Nearshore production is inherently exported to other marine ecosystems by the downstream flow of matter. Although, productivity is also transported by fishes residing in the nearshore then migrating to other environments carrying nutrient-rich biomass that is of higher trophic quality [@Deegan.1993]. Maybe the most referenced function of the nearshore is that it provides nursery habitat for many fishes and other biota due to its relatively shallow, productive waters that provide protection from predators. These beneficial aspects were reviewed by @Beck.etal.2001 and formed the initial nursery role hypothesis, whereby nurseries in comparison to other habitats "must support greater contributions to adult recruitment from any combination of four factors: (1) density, (2) growth, (3) survival of juveniles, and (4) movement to adult habitats."
+The nearshore is a unique zone of the ocean that generally encompasses the narrow band of marine waters along any coast. The nearshore is viewed as a highly productive environment that provides beneficial ecosystem services to many fish species [review in @Beck.etal.2001]. Nearshore production is inherently exported to other marine ecosystems by the downstream flow of matter. Production is also transported by fishes residing in the nearshore then migrating to other environments carrying nutrient-rich biomass that is of higher trophic quality [@Deegan.1993]. In fisheries science, maybe be the most recognized function of the nearshore is that it provides nursery habitat for many species due to its relatively shallow, protective waters that also contain abundant food sources. These beneficial aspects were reviewed by @Beck.etal.2001 who formed the initial nursery role hypothesis; whereby, nurseries in comparison to other habitats "must support greater contributions to adult recruitment from any combination of four factors: (1) density, (2) growth, (3) survival of juveniles, and (4) movement to adult habitats."
 
-In another early review, @Gillanders.etal.2003 found that most nearshore fish studies at the time focused on a difference in abundance and size classes among habitats, and so emphasized the need to provide evidence that juveniles were migrating to adult habitats or else the nursery role would not efectively exist. @Dahlgren.etal.2006 then built on the nursery role hypothesis by defining an 'Effective Juvenile Habitat' framework to assess nursery function based on an overall contribution to adult recruitment from all such habitats instead of which specific habitats contain the highest density of juveniles. @Sheaves.etal.2006 commented on the EJH framework, questioning the lack of consideration of the effects that scale, complexity, and connectivity have on habitats benefiting juveniles. Instead, they suggested broadening the concept of juvenile and nursery habitat to recognize that the processes supporting juveniles cannot be truly quantified with unit-area metrics and recruitment numbers alone, and that exclusively evaluating certain habitat types would underestimate (and maybe misidentify) the effects that the nearshore as a whole ecosystem has on the success of future generations.
+In another early review, @Gillanders.etal.2003 found that most nearshore fish studies at the time focused on a difference in abundance and size classes among habitats, and so emphasized the need to provide evidence that juveniles were migrating to adult habitats or else the nursery role would not effectively exist. @Dahlgren.etal.2006 then built on the nursery role hypothesis by defining an 'Effective Juvenile Habitat' framework to assess nursery function based on an overall contribution to adult recruitment from all such habitats instead of which specific habitats contain the highest density of juveniles. @Sheaves.etal.2006 commented on the EJH framework, questioning the lack of consideration of the effects that scale, complexity, and connectivity have on habitats benefiting juveniles. Instead, they suggested broadening the concept of juvenile and nursery habitat to recognize that the processes supporting juveniles cannot be truly quantified with unit-area metrics and recruitment numbers alone, and that exclusively evaluating habitat would underestimate (and maybe misidentify) the effects that the nearshore as a whole ecosystem has on the success of future generations.
 
-The criticisms by @Sheaves.etal.2006 are disputed, however, this alternative view was easier said than done [@Layman.etal.2006]. @Sheaves.2009 expounded on the complexity of benefits that the nearshore provides emphasizing the function of connectivity; he cites various migration patterns that can result from species ontogenetic stages and behavior shifts, which also involve linkages to habitat components and other species as in trophic dynamics and predator-prey interactions. From here, the literature on nearshore importance begins to incorporate aspects of landscape ecology acknowledging the mosiac effect of diverse habitats viewed as a 'seascape nursery' [@Nagelkerken.etal.2015], while focusing on the functional processes that lead species to use nursery grounds rather than the ranking of different habitat types [@Sheaves.etal.2015; @Litvin.etal.2018].
+The criticisms of the EHJ framework raised by @Sheaves.etal.2006 were disputed as easier said than done [@Layman.etal.2006]. @Sheaves.2009 then expanded on the alternative view of nearshore complexity emphasizing the function of connectivity. They cite various migration patterns that can result from species ontogenetic stages and behavior shifts, which also involve linkages to habitat components and other species through trophic dynamics and predator-prey interactions. From here, the literature on nearshore importance begins to incorporate aspects of landscape ecology acknowledging the mosaic effect of diverse habitats known as a 'seascape nursery' [@Nagelkerken.etal.2015]. Research on this topic focused on the functional processes that lead species to utilize the various habitats of a seascape, contrasting results with studies that rank habitats by abundance or density metrics [@Sheaves.etal.2015; @Litvin.etal.2018]. Research that support this idea were typically studies that tracked migration patterns of juvenile fishes across connected habitats. For example in an Australia-based study, @Swadling.etal.2024 reported on two species (luderick and yellowfin bream) that had repeatedly migrated as juveniles from seagrass beds (recognized nursery habitat) to nearby reefs (adult habitat), suggesting that these species were searching for suitable areas for later life stages.
 
-Climate stuff - Concentration of human activity, fast rates of change relative to climate, linked to coastal processes involving freshwater input [@Cloern.etal.2016] - [@Ziegler.etal.2023]
+## The role of estuaries
 
--   [@Swadling.etal.2024] Re-enforcement of seascape importance over singular habitat usage.
+Estuarine ecosystems are (very generally) defined by the aqueous environment where fresh and marine waters meet and mix [@Wolanski.2007]. The importance of estuarine habitat was recognized relatively early in the development of fisheries ecology [e.g., @Blaber.Blaber.1980; @Morin.etal.1980]. Because coastal communities often form around river drainages, people in fisheries could easily observe that certain species uniquely inhabit euryhaline waters as residents or as an ontological phase in their life history such as in diadromous species. The research themes that stem from the nursery role hypothesis were recognized for estuaries separately from other coastal systems [see @Deegan.1993; @Beck.etal.2001], likely due to the unique set of ecological paradigms that distinguishes it [@Whitfield.etal.2012]. Although often studied as a distinct domain, estuaries can be viewed from a hierarchical perspective as one of a subset of contexts that make up the nursery seascape [@Bradley.etal.2019], as it shares the same aspects of the nursery role defined for the nearshore broadly [@Whitfield.Patrick.2015].
 
-### Estuaries
+Some of the earliest and most Informative nearshore fish studies were conducted in an estuary setting.
 
+-   community structure
+-   spatial connectivity
+    -   Munsch et al. 2025
+-   functional groupings
+    -   @Potter.etal.1990; @Bottom.Jones.1990; @Potter.etal.1997; @Maes.etal.2004; @Ray.2005; @Harrison.Whitfield.2006; @Elliott.etal.2007; @Howe.Simenstad.2007
+-   In a review of fish-based indices of ecological quality, @Souza.Vianna.2020 chose to highlight 'transitional' habitats, i.e., estuaries, bays, coastal lagoons. Determined that these habitats were relatively understudied compared to freshwatrer habitats, and that non-temperate regions were the most well-studied among those that were. Found 23 different indices were used in studies between 1990 and 2018, the most popular being the Estuarine Fish Assessment Index (EFAI).
 -   From @Whitfield.Pattrick.2015: "For a habitat to serve as a nursery area for fish it must: (a) Be physiologically suitable in terms of chemical and physical features; (b) Have connectivity to enable colonisation by larvae and/or early juveniles; (c) Provide abundant and suitable food; (d) Afford a degree of protection from predators." Finds differential community structure among marine and estuarine habitat types, implying that certain species do exhibit selectivity among available habitat type.
 -   @Whitfield.2020 follows this with a study that in particular highlights the protection from predation that littoral estuarine habitats provide via shelter from wave-action, turbid conditions, and connectivity to vegetated patches.
 -   [@Whitfield.etal.2023] Importance of connectivity among estuarine zones, particularly channel blockage and barriers to shallow, sheltered areas.
 
+### Tying it all together
 
+-   Seascape connectivity leads to insights in questions of scale
 
+-   Climate stuff - Concentration of human activity, fast rates of change relative to climate, linked to coastal processes involving freshwater input [@Cloern.etal.2016]
+
+<!-- -->
+
+-   Marine potected areas [@Ziegler.etal.2023]
 
 ### Community structure is driven by...
 
@@ -93,17 +102,17 @@ Reports
 
 Primary literature
 
-- Murphy et al. 1988
-- Hare et al. 1999
-- Cooney et al. 2001
-- Linley 2001
-- Orsi et al. 1987; 2000; 2004
-- Fry abundnance as best predictor of marine survival (Malick et al. 2009)
-- Koski et al. 2009
-- Ruggerone et al. 2010 (?)
-- Olsen et al. 2003 coho genetics
-- Hoem-neher et al. 2013
-- Pierce 2017 MS thesis
+-   Murphy et al. 1988
+-   Hare et al. 1999
+-   Cooney et al. 2001
+-   Linley 2001
+-   Orsi et al. 1987; 2000; 2004
+-   Fry abundnance as best predictor of marine survival (Malick et al. 2009)
+-   Koski et al. 2009
+-   Ruggerone et al. 2010 (?)
+-   Olsen et al. 2003 coho genetics
+-   Hoem-neher et al. 2013
+-   Pierce 2017 MS thesis
 
 #### Rockfish and Lingcod
 
@@ -117,10 +126,13 @@ Recruitment into the nearshore
 -   Regional connectivity for egg-to-0-age walleye, GOA, Aluetian, Bering [@Parada.etal.2016]
 -   Timing of larval walleye (\<10mm) and nauplii, Resurrection Bay [@Clayton.etal.1997]
 
-Energetics/condition
+Energetics/condition/growth
 
 -   Energetic models of 0-1 age walleye, Bering Sea [@Siddon.etal.2013]
 -   Next year recruitment and fall condition of age-0 walleye, Bering Sea [@Heintz.etal.2013]
+-   Switch to lipid storage during pre-winter months Pcod, Kodiak (Abookire et al. 2024), see discussion for good background of juv Pcod in AK
+-   Wt-at-age Larger juveniles (age 1-3) but smaller adults under warming SST conditions, Kodiak (Oke et al. 2022)
+-   Temp effects on embryo/larvae Pcod, lab study (Slesinger et al. 2024)
 
 Habitat usage
 
@@ -130,12 +142,13 @@ Habitat usage
 
 #### Other groundfish
 
+-   Clark et al. 1999
 -   Bouwens et al. 1999a; 1999b
 -   Grwoth of juvenile arrowtooth Paul et al. 2000
 -   Habitat use by juvenile groundfish, Kachemak Bay [@Abookire.etal.2001]
 -   Halibut spawning and skipped spawning (Loher and Seitz 2008)
 -   Temporal-spatial variability (Depth?) of YOY rock sole, Kodiak [@Hurst.Abookire.2006]
-- 
+-   
 
 ### Forage species
 
@@ -149,7 +162,7 @@ Habitat usage
 -   Composition and energy of PSL, Kachemak Bay [@Robards.etal.1999]
 -   Spawning by PSL, Kachemak Bay [@Robards.etal.1999b]
 -   Growth and abundance of PSL, lower Cook Inlet [@Robards.etal.2002]
--   Orr et al. 2015 
+-   Orr et al. 2015
 -   Spawning readiness, Neff 2021
 
 #### Pacific herring
@@ -230,7 +243,6 @@ SEAK
 -   Regional \> watershed-scale variability, Kachemak and SEAK [@Lundstrom.etal.2022]
 -   taxonomic vs functional stucture over years, Kachemak and SEAK [@Sutton.etal.2025]
 
-
 ### Modelling nearshore fishes
 
 Species level
@@ -243,7 +255,6 @@ Community level
 -   Regional \> watershed-scale variability, Kachemak and SEAK [@Lundstrom.etal.2022]
 -   taxomic vs functional stucture over years, Kachemak and SEAK [@Sutton.etal.2025]
 
-
 ## Approach
 
 How are nearshore fishes studied, generally?
@@ -252,40 +263,36 @@ What data exists for Alaska? What gaps?
 
 Working with the NFAA: challenges and opportunities
 
-
 ## Outcomes
 
 How does this research fit into the current fisheries research?
 
 What are implications for fisheries research in Alaska?
 
-
-
 # Chapter 1:
 
 See [@Guo.etal.2022]
-
 
 # Chapter 1.5:
 
 ## Introduction
 
-- Variation in Capture Efficiency of a Beach Seine for Small Fishes (Parsley et al. 1989)
-- Estimating Densities of Small Fishes and Decapod Crustaceans in Shallow Estuarine Habitats- A Review of Sampling Design with Focus on Gear Selection (Rozas and Minello 1997)
+-   Variation in Capture Efficiency of a Beach Seine for Small Fishes (Parsley et al. 1989)
+-   Estimating Densities of Small Fishes and Decapod Crustaceans in Shallow Estuarine Habitats- A Review of Sampling Design with Focus on Gear Selection (Rozas and Minello 1997)
 
 ## Research goal
 
 ### Guiding question:
 
-- What is an appropriate framework to synthesize multiple datasets of fish community collected by beach seine?
+-   What is an appropriate framework to synthesize multiple datasets of fish community collected by beach seine?
 
 ### Objectives:
 
-- Data ingestion and clean up
-- Conduct exploratory data analysis and suggest additional objectives (the following)
-- Account for variability in accuracy of community samples
-- Select appropriate metrics
-- Select appropriate data treatment steps
+-   Data ingestion and clean up
+-   Conduct exploratory data analysis and suggest additional objectives (the following)
+-   Account for variability in accuracy of community samples
+-   Select appropriate metrics
+-   Select appropriate data treatment steps
 
 ## Methods
 
@@ -307,27 +314,26 @@ Data transformation and distance calculations
 -   4th rt (non-compositional) + bray-curtis
 -   robust CLR (compositional) + euclidean
 
-
 # Chapter 2:
 
 ## Introduction
 
-- Atwood et al. 2010
+-   Atwood et al. 2010
 
 ## Research goal
 
 ### Guiding question:
 
-- How does nearshore fish community structure vary at different spatial scales across the northeastern Pacific?
+-   How does nearshore fish community structure vary at different spatial scales across the northeastern Pacific?
 
 ### Specific questions:
 
-- Is there an east-west GOA biobreak? (see Waite and Mueter 2013, 2016)
-- Do apriori regions based on geography (Aleutians, Southcentral, Southeast) result in significant differences in community structure?
-- Are there significant spatial groupings at the sub-regional scale (10s-100s km)?
-- How does community structure relate to local (1-10 km) physical habitat features?
-- What spatial scales are important for structuring communities (hierarchical landscape perspective)? Or, how does community structure variability partition among regional, sub-regional, and local scales? [see @Valesini.etal.2014]
-- Maybe add to each question, "does community structure vary interannually or among distinct climate periods?"
+-   Is there an east-west GOA biobreak? (see Waite and Mueter 2013, 2016)
+-   Do apriori regions based on geography (Aleutians, Southcentral, Southeast) result in significant differences in community structure?
+-   Are there significant spatial groupings at the sub-regional scale (10s-100s km)?
+-   How does community structure relate to local (1-10 km) physical habitat features?
+-   What spatial scales are important for structuring communities (hierarchical landscape perspective)? Or, how does community structure variability partition among regional, sub-regional, and local scales? [see @Valesini.etal.2014]
+-   Maybe add to each question, "does community structure vary interannually or among distinct climate periods?"
 
 ## Methods
 
@@ -335,7 +341,7 @@ Multiscale ordination and variograms
 
 -   Nugget: account for microscale error (variance of data from same location or bin)
 -   How to incorporate shoreline distance rather than A-B distance?
-    - try sf::st_simplify()
+    -   try sf::st_simplify()
 -   Multivariate regression from direct gradient, e.g., RDA (see Flanagan et al. 2018)
 -   Also see Dray et al. 2012; Bacaro and Ricotta 2007; Reuda and Defeo 2003; Wagner 2004; Schlup and Wagner 2008
 -   Use of Moran's Eigenvectors Maps (MEM)
@@ -361,26 +367,32 @@ Assign local habitat classes
 
 Climatic periods
 
-- MHW defined by SST anomalies from nearest data station
-- May need to reduce dataset to appropriate spatial areas depending on SST data available
+-   MHW defined by SST anomalies from nearest data station
 
-- Series of papers by Litzow et al. 2006; 2012; 2020
+-   May need to reduce dataset to appropriate spatial areas depending on SST data available
 
-- Shiftograms for fisheries time series data (Gröger et al. 2011)
-- Francis and Hare 1994; Francis et al. 1998
-- Beaulieu et al. 2016
-- Boldt et al. Appendix 3- Recent Ecosystem Changes in the Gulf of Alaska 
+-   Series of papers by Litzow et al. 2006; 2012; 2020
+
+-   Shiftograms for fisheries time series data (Gröger et al. 2011)
+
+-   Francis and Hare 1994; Francis et al. 1998
+
+-   Beaulieu et al. 2016
+
+-   Boldt et al. Appendix 3- Recent Ecosystem Changes in the Gulf of Alaska
 
 Joint species distribution models
 
-- Joint-conditional probabilities of chosen metric (see Wilkinson et al. 2021)
-
+-   Joint-conditional probabilities of chosen metric (see Wilkinson et al. 2021)
 
 # Chapter 3:
 
 ## Introduction
 
-- The interrelationship of temperature, growth parameters, and activity level in fishes (Palomares et al. 2022)
+-   The interrelationship of temperature, growth parameters, and activity level in fishes (Palomares et al. 2022)
+-   Age determination manual by AFSC, Matta and Kimura 2012
+-   Size selective mortality in juvenile fishes, Sogard 1997
+-   Causes of winter mortality, Hurst 2007
 
 ## Research goal
 
@@ -390,10 +402,10 @@ Does growth and timing in nearshore fish species change over annual time periods
 
 ### Specific questions:
 
-- For which species do we know or expect changes in growth or timing?
-- For which species do we have data to estimate growth or timing?
-- Can we determine cohorts based on species size and day of capture?
-- Do large-scale climatic patterns (e.g., Pacific MHW) affect growth or timing?
+-   For which species do we know or expect changes in growth or timing?
+-   For which species do we have data to estimate growth or timing?
+-   Can we determine cohorts based on species size and day of capture?
+-   Do large-scale climatic patterns (e.g., Pacific MHW) affect growth or timing?
 
 ## Methods
 

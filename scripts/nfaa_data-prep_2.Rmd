@@ -47,7 +47,6 @@ library(vegan)
 library(ggsignif)
 library(ggpubr)
 library(broom)
-library(multcomp)
 
 
 # Directory
@@ -729,10 +728,27 @@ richness %>%
 # Save richness df
 saveRDS(richness, file = file.path(dir.data, "nfaa_richness.rds"))
 
-# Source
-
 # Load
+weights = readRDS(file.path(dir.data, "nfaa_weights.rds"))
 ```
+
+### Adding sample weights
+
+```{r}
+# Start with the richness df
+richness %>%
+  # Re-factor Replicates based on our analyses
+  mutate(f.R = ifelse(Replicates > 2, "3+", Replicates) %>% as.ordered()) %>%
+  # Add sample weights
+  left_join(weights, by = join_by(f.R, S)) %>%
+  # Remove un-needed vars
+  select(VisitID, weights) %>%
+  # Join weights with the visits df
+  right_join(visits, by = join_by(VisitID)) %>%
+  # Re-factor Replicates for this df
+  mutate(Replicates = ifelse(Replicates > 2, "3+", Replicates))
+```
+
 
 ## Species EDA plots {.tabset .tabset-pills}
 
@@ -873,6 +889,25 @@ knitr::include_graphics(file.path(dir.figs, "species eda", "Oncorhynchus kisutch
 ```{r echo=FALSE, out.width = '100%'}
 knitr::include_graphics(file.path(dir.figs, "species eda", "Salvelinus malma.png"))
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## MV Ordinations
 

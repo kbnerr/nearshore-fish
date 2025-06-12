@@ -1,42 +1,10 @@
----
-title: "NOAA Nearshore Fish Atlas of Alaska"
-subtitle: "Determining sample weights based on replicates"
-author: "Chris Guo"
-date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
-output:
-  html_document:
-    toc: TRUE
-    toc_depth: 2
-    toc_float:
-      collapsed: FALSE
-      print: FALSE
-    number_sections: TRUE
-    code_download: TRUE
-theme: "flatly"
-bibliography: "`r file.path(here::here(), 'doc.ignore', 'nfaa_references.bib')`"
-csl: "`r file.path(here::here(), 'doc.ignore', 'ecology.csl')`"
-link-citations: TRUE
----
-
-```{r include = FALSE}
+## ----include = FALSE-----------------------------------------------------------------------------------------
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(size = "scriptsize")
-```
 
-Built with R version `r getRversion()`.
 
-# Introduction
-
-The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover most steps of the initial data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other project files can be accessed at this [github repo](https://github.com/kbnerr/nearshore-fish). Following this document, Part II of the data wrangling and exploratory analyses can be accessed at <https://rpubs.com/chguo1/nfaa_data_2>.
-
-In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database. The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Part I of these data preparation steps can be accessed at <https://rpubs.com/chguo1/1188614>, and the resulting data objects are loaded below (file "nfaa_1.rda").
-
-Link to the NFA can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. The entire database can be downloaded as a .csv file, which is what I did. However, I have additional data files that were either shared with me by NFA content managers or modified from the NOAA NFA data directory for ease of reading into R. I will try to simplify this for others to replicate in the future.
-
-## Set up
-
-```{r results = 'hide'}
+## ----results = 'hide'----------------------------------------------------------------------------------------
 # Packages
 library(MASS)
 library(lubridate)
@@ -61,21 +29,18 @@ for (i in seq_along(dirs)) {
 
 # Source/Load
 richness.0 = readRDS(file.path(dir.data, "nfaa_richness.rds"))
-```
 
-#
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Summary
 glimpse(richness.0)
 
 # Tabulate number of samples by replicate freq
 summarise(richness.0, n = n(), .by = Replicates) %>% 
   arrange(Replicates)
-```
 
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Visualize richness by replicates
 boxplot(S ~ Replicates, data = richness.0)
 
@@ -90,9 +55,9 @@ summarise(richness.1, n = n(), .by = f.R) %>%
 
 # Re-visualize
 boxplot(S ~ f.R, data = richness.1)
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 # analysis of variance
 aov = aov(S ~ f.R, data = richness.1) # effects may be unbalanced
 summary(aov)
@@ -112,11 +77,9 @@ plot(aov)
 # check for homogeneity
 shapiro.test(aov.res)
 # result: violation of homogeneity
-```
 
-Supports a cut-off of 3 replicates. Except sig test at 6-reps (n = 44) vs 4-reps (n = 123) comparison.
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # kruskal-wallis test
 kruskal.test(S ~ f.R, data = richness.1)
 
@@ -137,13 +100,9 @@ ggplot(richness.1) +
                                  c(4, 6)),
               y_position = c(33, 36, 39, 42),
               map_signif_level = TRUE)
-```
 
-Similar results for Kruskal-Wallis test (no assumption of equal variances)
 
-# 
-
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # plot Richness freq distribution
 richness.1 %>% pull(S) %>% table() %>% barplot(xlab = "S", ylab = "Frequency")
 # plot Richness freq distribution facet by replicates
@@ -151,9 +110,9 @@ ggplot(richness.1) +
   aes(x = S) +
   geom_histogram(bins = 31) +
   facet_wrap(~ f.R, scales = "free")
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 # Model S ~ Replicates
 
 # lm
@@ -203,9 +162,9 @@ ggplot(invg.pred) +
 # Multcomp
 glht(model = invg, linfct = mcp(f.R = "Tukey")) %>% summary()
 
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 # plot Richness freq distr + Estimate facet by replicates
 ggplot(invg.pred) +
   aes(x = S) +
@@ -216,9 +175,9 @@ ggplot(invg.pred) +
 # MASS
 gamma.shape(invg)
 gamma.dispersion(invg)
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 # Tweedie
 
 # Estimate xi 
@@ -266,9 +225,9 @@ summarise(richness.1, S.mean = mean(S), .by = f.R) %>%
 tweedie.convert(xi = xi, mu = mu.fR, phi = phi) %>%
   as_tibble() %>% 
   add_column(f.R = names(mu.fR), .before = 1)
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 y = seq(1, 31, 1)
 dt = dtweedie(y = y, power = xi, mu = mu.fR[1], phi = phi)
 n = pull(richness.1, f.R) %>% table()
@@ -296,9 +255,9 @@ full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
   facet_wrap(~ f.R, scales = "free_y") +
   labs(x = "Frequency", y = "Richness")
 
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 #### Re-run tweedie model for three groups Replicates
 
 # Re-factor Replicates
@@ -349,10 +308,9 @@ for (i in 1:length(mu.fR)) {
        main = str_c("Predicted sample frequency when replicates = ", names(mu.fR)[i]))
 }
 
-```
 
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Define dataframes for plotting:
 # n samples per Replicate group for scaling
 n.tbl = as_tibble(n) %>% 
@@ -413,11 +371,9 @@ full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
 
 # Approximate sample weights by factored replicates
 mu.fR / max(mu.fR)
-```
 
-Each replicate group has a different shape, generally following a tweedie distribution. We will want to model the densities for each replicate group separately, to better capture the observed density curve.
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Frequencies of richness factored by replicates
 freq = richness.2 %>% 
   count(f.R, S, name = "freq")
@@ -440,11 +396,9 @@ models = richness.2 %>%
 models %>%
   unnest(c(AIC.poisson, AIC.gamma, AIC.tweedie)) %>%
   select(f.R, contains("AIC"))
-```
 
-The tweedie model is still best when comparing AIC across the different models.
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Augment tweedie models
 tweedie = models %>%
   mutate(fit = tweedie) %>%
@@ -461,13 +415,9 @@ tweedie.dens = tweedie %>%
   left_join(n.tbl, by = join_by(f.R)) %>%
   mutate(pred.freq = density * n) %>%
   left_join(S.freq, by = join_by(f.R, x))
-```
 
-We could use these mean estimates to assign weights, but maybe it is more appropriate to use the highest density probability of predicted values (peak of the curve) or the median instead.
 
-Compare richness among probability density, mean, and median estimates
-
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Max
 estimates = tweedie.dens %>%
   filter(density == max(density), .by = f.R) %>%
@@ -479,10 +429,9 @@ estimates = tweedie.dens %>%
 
 # View
 estimates
-```
 
 
-```{r}
+## ------------------------------------------------------------------------------------------------------------
 # Plot predicted richness frequency based on tweedie estimates
 ggplot(tweedie.dens) +
   aes(x = S, group = f.R) +
@@ -503,9 +452,9 @@ expected = filter(tweedie.dens, f.R == '3+') %>% pull(probs)
 ggplot(tweedie.dens) +
   aes(x = S, col = f.R, group = f.R) +
   geom_line(aes(y = (probs + expected)/(2 * probs)))
-```
 
-``` {r}
+
+## ------------------------------------------------------------------------------------------------------------
 # Pull out the weights
 weights = tweedie.dens %>%
   mutate(weights = (probs + expected)/(2 * probs), .by = f.R) %>%
@@ -514,10 +463,8 @@ weights = tweedie.dens %>%
 
 # View and save
 weights; saveRDS(weights, file = file.path(dir.data, "nfaa_weights.rds"))
-```
 
-```{r}
+
+## ------------------------------------------------------------------------------------------------------------
 knitr::purl(input = file.path(dir.scripts, "nfaa_sample-weights.Rmd"))
-```
-
 
