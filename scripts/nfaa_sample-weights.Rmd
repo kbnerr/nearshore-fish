@@ -1,6 +1,6 @@
 ---
 title: "NOAA Nearshore Fish Atlas of Alaska"
-subtitle: "Determining sample weights based on replicates"
+subtitle: "Determining sample weights based on replicates and richness"
 author: "Chris Guo"
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -19,6 +19,7 @@ link-citations: TRUE
 ---
 
 ```{r include = FALSE}
+library(knitr)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(size = "scriptsize")
@@ -28,21 +29,21 @@ Built with R version `r getRversion()`.
 
 # Introduction
 
-The point of this document is to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. Here, I cover most steps of the initial data preparation for my second and third chapters concerning spatial and temporal distributions of nearshore fishes across the state. This and other project files can be accessed at this [github repo](https://github.com/kbnerr/nearshore-fish). Following this document, Part II of the data wrangling and exploratory analyses can be accessed at <https://rpubs.com/chguo1/nfaa_data_2>.
+This document is meant to make open and share-able the research methods used for my dissertation on nearshore fish communities in Alaska working towards a PhD in marine biology at the University of Alaska Fairbanks. This and other documents provide details of my approach concerning spatial and temporal distributions of nearshore fishes across the state. All files can be accessed at this [github repo](https://github.com/kbnerr/nearshore-fish). The data I am working with comes from the NOAA Nearshore Fish Atlas of Alaska (NFAA) database found here, <https://alaskafisheries.noaa.gov/mapping/sz/>.
 
-In this document I share exploratory data analyses conducted on the NOAA Nearshore Fish Atlas (NFA) database. The NFA database can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. Namely, this document contains the steps taken after cleaning/wrangling raw data. In particular I produce various visualizations of the data in space and time. Part I of these data preparation steps can be accessed at <https://rpubs.com/chguo1/1188614>, and the resulting data objects are loaded below (file "nfaa_1.rda").
+After making plots of species richness by frequency of sample replicates (number of seine hauls), I saw a need to account for the difference in information provided by samples based on how many replicates they contained. From personal observations in the field, we find that 2 seine hauls are generally more informative than 1, and 3 hauls more-so than 2, and so on. This is something intuitive and has been studied in sampling theory broadly, as well as in the development of species accumulation curves in the field of community ecology.
 
-Link to the NFA can be found here, <https://alaskafisheries.noaa.gov/mapping/sz/>. The entire database can be downloaded as a .csv file, which is what I did. However, I have additional data files that were either shared with me by NFA content managers or modified from the NOAA NFA data directory for ease of reading into R. I will try to simplify this for others to replicate in the future.
+The idea is that the more samples taken (or replicates in our case) the closer we are to the 'true' diversity of our target community, and that consecutive samples will return diminishing new information as we approach that asymptote (as described by the 'curve' of the accumulation curve). Of course, this just describes an overall pattern, and real observations contain variability among samples. Sometimes a single haul actually reflects the diversity of the community well, and pulling more seines does not meaningfully improve our knowledge of the community. This intuition comes into play when collection events are time limited (e.g., targeting a certain tide window).
 
-## Set up
+My goal in this script is to identify an 'ideal' balance between the number of replicates within a given sample and how well that sample actually describes the community. In other words if we were to continuously pull seines on a beach, at what number of hauls are we unlikely to gain additional diversity information? Afterwards we can group the data based on the number of replicates within samples, and use that grouping as a categorical variable or to apply sample weights in appropriate modelling contexts.
+
+My thinking in this analysis is that samples with less replicates are not as informative as samples with more replicates, but also that not all samples with the same number of replicates are equally informative.
+
+# Set up
 
 ```{r results = 'hide'}
 # Packages
-library(MASS)
-library(lubridate)
 library(here)
-library(broom)
-library(multcomp)
 library(tidyverse)
 library(tweedie)
 library(statmod)
@@ -63,284 +64,201 @@ for (i in seq_along(dirs)) {
 richness.0 = readRDS(file.path(dir.data, "nfaa_richness.rds"))
 ```
 
-#
+# Sample richness
+
+I am using species richness (S) as our metric to determine estimates of grouped replicates. The object we loaded was created within a more comprehensive data preparation script. It contains only the pertinent information required for this script. The result of this analysis will be saved in a separate object that will be loaded back into the overall data prep script to continue that process.
+
+Here, we have a df comprised of unique sample identifiers `VisitID`, date, number of replicates, and richness. Let's take a look at the df structure and summary of replicate info.
 
 ```{r}
 # Summary
-glimpse(richness.0)
+head(richness.0, 10)
 
 # Tabulate number of samples by replicate freq
 summarise(richness.0, n = n(), .by = Replicates) %>% 
   arrange(Replicates)
+
+# Graph richness by replicates
+boxplot(S ~ Replicates, data = richness.0)
 ```
 
+As expected, we see a general increasing trend in richness as number of replicates increases. We also see a decrease in the frequency of samples with increasing replicate number. Most samples are contained in the first two frequency bins, and samples with 9 and 10 replicates only occur once. If we combine samples with 7 or more replicates, we would have a more balanced distribution (at least among sample bins at 5 and above).
 
 ```{r}
-# Visualize richness by replicates
-boxplot(S ~ Replicates, data = richness.0)
-
-# Combine samples with 7 or more replicates for a more balanced test
+# Combine samples with 7 or more replicates
 richness.1 = mutate(richness.0,
        Replicates = as.numeric(Replicates),
-       f.R = ifelse(Replicates > 6, "7+", Replicates) %>% as.ordered())
-
-# Tabulate number of samples by factored replicates
-summarise(richness.1, n = n(), .by = f.R) %>% 
-  arrange(f.R)
+       f.R = ifelse(Replicates > 6, "7+", Replicates) %>%
+         as.ordered())
 
 # Re-visualize
 boxplot(S ~ f.R, data = richness.1)
 ```
 
+# Initial comparison tests
+
+In the last graph, we see an increase in richness as number of replicates increases, especially as we go from 1-to-2 and 2-to-3 replicates. It's hard to tell if the increasing trend continues after that, but we do see a decrease in variance after 3 replicates.
+
+Let's start with a Shapiro-Wilk test to see if assumptions for normality are met. If they are, we can use move forward with an Analysis of Variance (ANOVA) model. If we find a difference then follow up with a pairwise test.
+
+From our graph, we may expect assumptions of normality and variance are violated. So we can try the non-parametric Kruskal-Wallis test and follow up with the pairwise Dunn's test.
+
 ```{r}
-# analysis of variance
-aov = aov(S ~ f.R, data = richness.1) # effects may be unbalanced
-summary(aov)
+library(rstatix)
 
-# pairwise test
-TukeyHSD(aov) %>% 
-  tidy() %>% 
-  select(-term) %>% 
-  knitr::kable(digits = 3)
+# Shapiro-Wilk normality test
+richness.1 %>%
+  group_by(f.R) %>%
+  shapiro_test(S) %>%
+  kable(digits = 3)
 
-# residuals
-aov.res = residuals(aov)
-plot(aov.res)
-par(mfrow = c(2, 2))
-plot(aov)
+# Analysis of Variance
+aov(data = richness.1, S ~ f.R) %>%
+  anova_summary()
 
-# check for homogeneity
-shapiro.test(aov.res)
-# result: violation of homogeneity
+# Tukey Honest Significant Differences
+tukey_hsd(richness.1, S ~ f.R) %>%
+  kable(digits = 3)
+
+# Kruskal-Wallis rank sum test
+kruskal_test(richness.1, S ~ f.R)
+
+# Dunn's test of multiple comparisons
+dunn_test(richness.1, S ~ f.R,
+          p.adjust.method = "hochberg") %>%
+  kable(digits = 3)
 ```
 
-Supports a cut-off of 3 replicates. Except sig test at 6-reps (n = 44) vs 4-reps (n = 123) comparison.
+The Shapiro-Wilks test was significant for the first 4 replicate groups, indicating that these data are not normally distributed. Even though an ANOVA is probably not appropriate for replicate group comparisons, we did run the model so let's talk about it. Our fit resulted in a significant difference among the groups (F = 94.36, p \< 0.001). The pairwise test supports a cut-off after 3 replicates, with 1-replicate and 2-replicate groups having strong differences in all comparisons (p \< 0.001). Meanwhile, the 3-replicate group had insignificant differences all other comparisons except between 4-and-6 replicate groups comparison (p = 0.005).
+
+The Kruskal-Wallis test was significant (KW $X^{2}$ = 432.17, p \< 0.001), supporting a difference among groups without assumptions of normality. The Dunn's test resulted in pretty much the same pairwise differences as in the Tukey HSD results. We used the Hochberg correction as we assume that the test statistics among groups would be correlated.
+
+# Compare models of richness by replicate group
+
+We probably have sufficient cause to re-factor our replicate groups (from 7 to 3 groups) based on the results above. But we can also model the data to better describe the differences among groups.
+
+As indicated by the Shapiro-Wilk test, our data are not normally distributed so the anova linear model is not quite appropriate. Richness is represented by positive count data (without zero counts in our case), and so are commonly described using models from the generalized linear family. Below, we try the poisson and the inverse gamma models, and compare their performance against the ANOVA model.
 
 ```{r}
-# kruskal-wallis test
-kruskal.test(S ~ f.R, data = richness.1)
-
-# one way t-test not assuming equal variances
-oneway.test(S ~ f.R, data = richness.1)
-
-# pairwise test
-pairwise.t.test(richness.1$S, richness.1$f.R, p.adjust.method = "BH", pool.sd = FALSE)
-
-# plot t.test results
-ggplot(richness.1) +
-  aes(x = f.R, y = S, group = f.R) +
-  geom_boxplot() +
-  ggpubr::geom_signif(test = "t.test",
-              comparisons = list(c(1, 2),
-                                 c(2, 3),
-                                 c(3, 4),
-                                 c(4, 6)),
-              y_position = c(33, 36, 39, 42),
-              map_signif_level = TRUE)
-```
-
-Similar results for Kruskal-Wallis test (no assumption of equal variances)
-
-# 
-
-```{r}
-# plot Richness freq distribution
-richness.1 %>% pull(S) %>% table() %>% barplot(xlab = "S", ylab = "Frequency")
-# plot Richness freq distribution facet by replicates
-ggplot(richness.1) +
-  aes(x = S) +
-  geom_histogram(bins = 31) +
-  facet_wrap(~ f.R, scales = "free")
-```
-
-```{r}
-# Model S ~ Replicates
-
-# lm
-lm = lm(S ~ f.R, data = richness.1)
-summary(lm)
-plot(lm)
-# link to interp of coefficients by the-mad-statter, https://stackoverflow.com/a/57513718/24244712
-
-# poisson
+# Poisson
 pois = glm(S ~ f.R, data = richness.1, family = poisson(link = log))
 summary(pois)
-plot(pois)
 
-# inverse gamma
+# Inverse gamma
 invg = glm(S ~ f.R, data = richness.1, family = Gamma(link = "inverse"))
 summary(invg)
-tidy(invg)
-plot(invg)
 
 # AIC test
-AIC(lm, pois, invg) # inv gamma better
+AIC(aov, pois, invg)
+```
 
-# Null glm test
+We can see in the summaries of both models that there are highly significant effects at the first three terms, similar to what we had found in our initial tests. However, we see that poisson results indicate larger differences among the higher-replicate groups, as opposed to the inverse gamma model which shows significant differences in the 4th and 5th terms and interestingly reverses the sign of the effect for all of the four higher-replicate groups.
+
+When we compare the three different models in an AIC test, we find that the poisson model performs worst while the inverse gamma performs best by a large margin. We can confirm the appropriateness of the model itself by comparing it to a null model that doesn't account for replicate group.
+
+```{r}
+# Null GLM test
 null = glm(S ~ 1, data = richness.1, family = Gamma(link = "inverse"))
-anova(null, invg, test = "LRT") # sig
+anova(null, invg, test = "LRT")
+```
 
+We find that our chosen model is appropriate for the data, with a highly significant result (D = 179.31, p \< 0.001).
+
+Let's again run some pairwise tests to confirm where the differences lie. We'll do a 'full' comparison of all possible pairs of estimates. We can also run a sequential comparison that adjusts p to contrast each factor with the one before it, which seems appropriate given that the number of replicates within a sample is ordered - one replicate must occur to have two replicatesand so on.
+
+```{r}
+# Multiple comparisons - Tukey all pairwise combinations
+multcomp::glht(model = invg, linfct = mcp(f.R = "Tukey")) %>% summary()
+
+# Multiple comparisons - sequential pairwise combinations
+multcomp::glht(model = invg, linfct = mcp(f.R = "Sequen")) %>% summary()
+
+# To try other compensation methods, see multcomp::contrMat
+```
+
+Both Tukey and sequential comparisons support a grouping of 1, 2, and 3 or more replicates, just as previous results suggested. But let's also visualize how the model fits to the data.
+
+```{r}
+library(broom)
 # Predicted S + se and residuals
 invg.pred = augment(invg, type.predict = "response", se_fit = TRUE)
+  
+# Plot observed S and fitted S + std residuals
+ggplot(invg.pred) +
+  aes(x = f.R) +
+  geom_violin(aes(y = S)) +
+  geom_point(aes(y = .fitted), color= "blue", shape = "\U2014", size = 5) +
+  geom_point(aes(y = .fitted + .std.resid), color = "blue")
 
 # Plot residuals
 ggplot(invg.pred) +
   aes(x = f.R, y = .resid) +
   geom_point() +
   geom_hline(aes(yintercept = 0))
-invg.pred %>%
-  distinct(f.R, .fitted, .se.fit) %>%
-  group_by(f.R) %>%
-  summarise(fit = .fitted,
-            lower_ci = .fitted - 1.96 * .se.fit,
-            upper_ci = .fitted + 1.96 * .se.fit)
-# Plot observed S and fitted S w/ CI
-ggplot(invg.pred) +
-  aes(x = f.R) +
-  geom_point(aes(y = S), position = position_nudge(x = -0.1)) +
-  geom_point(aes(y = .fitted + .resid), color = "blue", position = position_nudge(x = 0.1))
-
-# Multcomp
-glht(model = invg, linfct = mcp(f.R = "Tukey")) %>% summary()
-
 ```
 
-```{r}
-# plot Richness freq distr + Estimate facet by replicates
-ggplot(invg.pred) +
-  aes(x = S) +
-  geom_histogram() +
-  geom_vline(aes(xintercept = .fitted), color = "red") +
-  facet_wrap(~ f.R, scales = "free_y")
+No surprise, we see the largest jumps from 1-to-2-to-3 replicate groups. Afterwards, the estimates appear to hover around the 3rd factor estimate \~13 with no obvious pattern with more replications. If we return to the model summary, we can check the effect size of those significant 4th and 5th terms and see that they are relatively weak.
 
-# MASS
-gamma.shape(invg)
-gamma.dispersion(invg)
+It's interesting to compare the estimates with the observed richness density for each group. Groups 3, 5, 6, and 7+ have estimates that align with the highest density of distribution more-or-less. Groups 1 and 2 are pretty bottom heavy with a mean estimate much greater than where the majority of the observations are located. Group 4 has a similar pattern as groups 1 and 2 but the 'vase' shape is much less pronounced. When we examine the model residuals we also see uneven distributions.
+
+For now, I think we have strong support for re-grouping our replicate levels to three groups: 1, 2, and 3+, based on empirical estimates modeled on an inverse gamma distribution.
+
+```{r echo = FALSE}
+# Mutate df as new factor order
+richness.2 = richness.1 %>%
+  mutate(f.R = ifelse(Replicates > 2,"3+", Replicates) %>%
+           as.ordered())
 ```
 
-```{r}
-# Tweedie
+# Model richness by group using Tweedie distribution
 
-# Estimate xi 
-twd.profile = tweedie.profile(S ~ f.R, data = richness.1, do.plot = TRUE)
+Our inverse gamma model was meant to discern richness estimates amongst grouping factors, achieving one of our goals which was to determine a number of replicates after which we are not any more likely to gain more information (won't change based on estimates). However, we also want to account for the variability that can exist among samples within a group (e.g., single replicate samples containing low vs high amounts of information).
 
-# The index parameter, xi
-(xi = twd.profile$xi.max)
+The idea here is that we may want to weight samples prior to comparative analyses, but doing so with a 3-level factor is a pretty broad categorization. No matter what estimate we use as a factor level (e.g., mean richness), both informative and uninformative samples would be given equal weight within that group. To tackle this we can try applying the tweedie distribution. The tweedie distribution is a flexible form of the generalized linear distribution family with parameters \xi, \phi, and a power coefficent that can be estimated using MLE.
 
-# Phi
-(phi = twd.profile$phi.max)
-
-twd = glm(S ~ f.R, data = richness.1, family = tweedie(var.power = xi))
-plot(twd)
-# S.twd = cplm::cpglm(S ~ f.Replicates, link = "log", data = tmp)
-(twd.sum = summary(twd))
-
-# AIC test
-AIC(invg); AICtweedie(twd)
-
-# Multcomp
-glht(model = invg, linfct = mcp(f.R = "Tukey")) %>% summary()
-
-# Modelled probability of P(Y=0)
-twd.aug = augment(twd, type.predict = "response", se_fit = TRUE)
-# tidy(twd, conf.int = TRUE) # another option to augment()
-
-# Mean estimates 
-
-# predict() method
-# predict(twd, newdata = new, type = "response")
-
-# Use augment()
-twd.fit = select(twd.aug, f.R, mu.fR = .fitted) %>% distinct() %>% arrange(f.R)
-# Save mean estimates as vector
-mu.fR = twd.fit %>% pull(mu.fR)
-names(mu.fR) = twd.fit %>% pull(f.R)
-mu.fR
-
-# Compare estimates to data means
-summarise(richness.1, S.mean = mean(S), .by = f.R) %>% 
-  arrange(f.R) %>%
-  add_column(mu.fR)
-
-# Underlying poisson and gamma distributions
-tweedie.convert(xi = xi, mu = mu.fR, phi = phi) %>%
-  as_tibble() %>% 
-  add_column(f.R = names(mu.fR), .before = 1)
-```
+Let's apply a tweedie model to our re-factored dataset to get a feel for it and see how the distribution fits to data.
 
 ```{r}
-y = seq(1, 31, 1)
-dt = dtweedie(y = y, power = xi, mu = mu.fR[1], phi = phi)
-n = pull(richness.1, f.R) %>% table()
-plot(x, dt * n[1])
-n.tbl = as_tibble(n) %>% 
-  rename(f.R = ".") %>% 
-  mutate(f.R = as.ordered(f.R))
-
-S.freq = richness.1 %>% 
-  count(f.R, S, name = "freq") %>%
-  complete(f.R, S = y, fill = list(freq = 0)) %>%
-  rename(x = S)
-
-S.dens = map(mu.fR, function (x) dtweedie(y = y, power = xi, mu = x, phi = phi)) %>%
-  as_tibble() %>%
-  rowid_to_column(var = "x") %>%
-  pivot_longer(cols = matches("[^x]"), names_to = "f.R", values_to = "y") %>%
-  mutate(f.R = as.ordered(f.R)) %>%
-  left_join(n.tbl, by = join_by(f.R))
-
-full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
-  ggplot(aes(x = x)) +
-  geom_line(aes(y = y * n), col = "red") +
-  geom_col(aes(y = freq)) +
-  facet_wrap(~ f.R, scales = "free_y") +
-  labs(x = "Frequency", y = "Richness")
-
-```
-
-```{r}
-#### Re-run tweedie model for three groups Replicates
-
-# Re-factor Replicates
-richness.2 = mutate(richness.1, f.R = ifelse(Replicates > 2, "3+", Replicates) %>% as.ordered())
-
-# Estimate xi 
+# Estimate parameters 
 twd.profile = tweedie.profile(S ~ f.R, data = richness.2, do.plot = TRUE)
 
-# Xi and Phi, these overwrite previous profile estimates
+# Xi and Phi estimates
 (xi = twd.profile$xi.max); (phi = twd.profile$phi.max)
 
-twd2 = glm(S ~ f.R, data = richness.2, family = tweedie(var.power = xi))
-plot(twd2)
-summary(twd2)
+# Fit the model
+twd = glm(S ~ f.R, data = richness.2, family = tweedie(var.power = xi))
 
-# AIC test - is this OK to compare?
-AICtweedie(twd); AICtweedie(twd2)
+# Model summary
+summary(twd)
 
-# Modelled probatwd2.profile
+# PLot model results
+plot(twd)
+```
 
+The first plot is a tweedie likelihood profile over a range of \phi values. This allows us to estimate both \xi and \phi values using maximum likehihood, which we then plugged into the model fit. We inspect the model summary as well as evaluation plots, and we find significant coefficients and unbalanced residuals (similar to previous models). This is not surprising as we are still just modelling richness by replicate group using distributions in the GLM family but with fewer groups.
+
+Next we examine the model estimates and predicted values.
+
+```{r}
 # Modelled probability of P(Y=0)
-twd2.aug = augment(twd2, type.predict = "response", se_fit = TRUE)
-# Use augment()
-twd2.fit = select(twd2.aug, f.R, fit = .fitted, se.fit = .se.fit) %>% distinct() %>% arrange(f.R)
+twd.fit = augment(twd, type.predict = "response", se_fit = TRUE) %>%
+  select(f.R, fit = .fitted, se.fit = .se.fit) %>% 
+  distinct() %>% 
+  arrange(f.R)
 
 # Save mean estimates as vector (these overwrite previous objects)
-mu.fR = twd2.fit %>% pull(fit)
-names(mu.fR) = twd2.fit %>% pull(f.R)
-mu.fR
+mu.fR = twd.fit %>% pull(fit)
+names(mu.fR) = twd.fit %>% pull(f.R)
 
 # Compare estimates to data means
 summarise(richness.2, S.mean = mean(S), .by = f.R) %>% 
   arrange(f.R) %>%
   add_column(mu.fR)
 
-# Interpret underlying poisson and gamma distributions
-tweedie.convert(xi = xi, mu = mu.fR, phi = phi) %>%
-  as_tibble() %>% 
-  add_column(mu.fR, .before = 1)
+# Our range of richness values to predict on
+y = seq(1, 31, 1)
 
 # Plot tweedie predicted values
-y = seq(1, 31, 1)
 for (i in 1:length(mu.fR)) {
   dt = dtweedie(y = y, power = xi, mu = mu.fR[i], phi = phi)
   n = pull(richness.2, f.R) %>% table()
@@ -348,12 +266,13 @@ for (i in 1:length(mu.fR)) {
        xlab = "Richness", ylab = "Predicted frequency",
        main = str_c("Predicted sample frequency when replicates = ", names(mu.fR)[i]))
 }
-
 ```
 
+The model estimates match the group means of the observed data, and predicted values appear to track with what we know about the group distributions. But how do the predicted values look alongside the observed data?
 
 ```{r}
-# Define dataframes for plotting:
+## Define dataframes for plotting:
+
 # n samples per Replicate group for scaling
 n.tbl = as_tibble(n) %>% 
   rename(f.R = ".") %>% 
@@ -362,67 +281,64 @@ n.tbl = as_tibble(n) %>%
 # Recreate S frequency data
 S.freq = richness.2 %>% 
   count(f.R, S, name = "freq") %>%
-  complete(f.R, S = y, fill = list(freq = 0)) %>%
-  rename(x = S)
+  complete(f.R, S = y, fill = list(freq = 0))
 
 # Calculate tweedie densities based on mean estimates
 S.dens = map(mu.fR, function (x) dtweedie(y = y, power = xi, mu = x, phi = phi)) %>%
   as_tibble() %>%
-  rowid_to_column(var = "x") %>%
-  pivot_longer(cols = matches("[^x]"),
+  rowid_to_column(var = "S") %>%
+  pivot_longer(cols = matches("[^S]"),
                names_to = "f.R", names_transform = list(f.R = as.ordered),
                values_to = "y") %>%
   left_join(n.tbl, by = join_by(f.R))
 
 # Mean and 95% confidence interval
-S.est = twd2.fit %>%
+S.est = twd.fit %>%
   mutate(lower_ci = fit - 1.96 * se.fit,
          upper_ci = fit + 1.96 * se.fit,
-         se_pi = sqrt(se.fit^2 + (fit * sigma(twd2)^2)),
+         se_pi = sqrt(se.fit^2 + (fit * sigma(twd)^2)),
          lower_pi = fit - 1.96 * se_pi,
          upper_pi = fit + 1.96 * se_pi)
 
+## Create plots:
+
 # Plot density with mean estimates
-ggplot(twd2.aug) +
-  aes(x = S, group = f.R) +
-  geom_histogram(bins = 31) +
-  geom_vline(aes(xintercept = .fitted), color = "red") +
-  facet_wrap(~ f.R, scales = "free_y")
+full_join(S.freq, S.dens, by = join_by(f.R, S)) %>%
+  ggplot(aes(x = S, group = f.R)) +
+  geom_line(aes(y = y * n), col = "blue") +
+  geom_col(aes(y = freq)) +
+  facet_wrap(~ f.R, scales = "free_y") +
+  labs(x = "Frequency", y = "Richness", title = "Model predictions")
 
 # Plot frequency with mean est + 95% CI
-full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
-  ggplot(aes(x = x, group = f.R)) +
+full_join(S.freq, S.dens, by = join_by(f.R, S)) %>%
+  ggplot(aes(x = S, group = f.R)) +
   geom_line(aes(y = y * n), col = "blue") +
   geom_col(aes(y = freq)) +
   geom_vline(data = S.est, aes(xintercept = fit), color = "red", linetype = "solid") +
   geom_vline(data = S.est, aes(xintercept = lower_ci), color = "green", linetype = "dashed") +
   geom_vline(data = S.est, aes(xintercept = upper_ci), color = "green", linetype = "dashed") +
   facet_wrap(~ f.R) +
-  labs(x = "Frequency", y = "Richness")
+  labs(x = "Frequency", y = "Richness", title = "Model predictions + 95% confidence interval")
 
 # Plot frequency with mean est + 95% PI
-full_join(S.freq, S.dens, by = join_by(f.R, x)) %>%
-  ggplot(aes(x = x, group = f.R)) +
+full_join(S.freq, S.dens, by = join_by(f.R, S)) %>%
+  ggplot(aes(x = S, group = f.R)) +
   geom_line(aes(y = y * n), col = "blue") +
   geom_col(aes(y = freq)) +
   geom_vline(data = S.est, aes(xintercept = fit), color = "red", linetype = "solid") +
   geom_vline(data = S.est, aes(xintercept = lower_pi), color = "green", linetype = "dashed") +
   geom_vline(data = S.est, aes(xintercept = upper_pi), color = "green", linetype = "dashed") +
   facet_wrap(~ f.R) +
-  labs(x = "Frequency", y = "Richness")
-
-# Approximate sample weights by factored replicates
-mu.fR / max(mu.fR)
+  labs(x = "Frequency", y = "Richness", title = "Model predictions + 95% prediction interval")
 ```
 
-Each replicate group has a different shape, generally following a tweedie distribution. We will want to model the densities for each replicate group separately, to better capture the observed density curve.
+The tweedie model appears to have performed well enough- describing richness based on factored replicate groups. However, if we want to move beyond estimating group means and examine sample variability, we will need to model richness within each group separately.
 
-```{r}
-# Frequencies of richness factored by replicates
-freq = richness.2 %>% 
-  count(f.R, S, name = "freq")
+The tweedie model is a good candidate to do this but we should offer alternatives. Considering that we are modelling the data as separate sets of observations, we should try poisson and inverse gamma fits again - maybe one of the groups actually fits a particular model really well.
 
-# Try different models for each replicate group
+```{r warning=FALSE}
+# Use purrr functions to map the 3 models over the 3 datasets
 models = richness.2 %>%
   group_by(f.R) %>%
   nest() %>%
@@ -442,7 +358,9 @@ models %>%
   select(f.R, contains("AIC"))
 ```
 
-The tweedie model is still best when comparing AIC across the different models.
+The tweedie model is still best when comparing AIC across the different models. The inverse gamma model actually performed okay considering how much worse the Poisson model performed relatively.
+
+So we move forward with the tweedie model... We'll extract the model fits and calculate predicted values based on our range of potential richness values. Then, let's plot those predictions against the raw data again like before.
 
 ```{r}
 # Augment tweedie models
@@ -451,64 +369,90 @@ tweedie = models %>%
   select(f.R, fit, xi, phi) %>%
   mutate(augment = map(fit, ~ augment(.x, type.predict = "response")),
          mu = map(augment, pluck(".fitted")) %>% map(pluck, 1))
-# Calculate probability densities
+
+# Calculate probability densities from tweedie PDFs
 tweedie.dens = tweedie %>%
   mutate(y = list(y)) %>%
-  mutate(density = pmap(list(y, xi, mu, phi), ~ dtweedie(y = ..1, power = ..2, mu = ..3, phi = ..4)),
-         probs = map(density, cumsum)) %>%
-  select(f.R, S = y, density, probs) %>%
+  mutate(density = pmap(list(y, xi, mu, phi), ~ dtweedie(y = ..1, power = ..2, mu = ..3, phi = ..4))) %>%
+  select(f.R, S = y, density) %>%
   unnest(everything()) %>%
   left_join(n.tbl, by = join_by(f.R)) %>%
   mutate(pred.freq = density * n) %>%
-  left_join(S.freq, by = join_by(f.R, x))
-```
+  left_join(S.freq, by = join_by(f.R, S))
 
-We could use these mean estimates to assign weights, but maybe it is more appropriate to use the highest density probability of predicted values (peak of the curve) or the median instead.
-
-Compare richness among probability density, mean, and median estimates
-
-```{r}
-# Max
-estimates = tweedie.dens %>%
-  filter(density == max(density), .by = f.R) %>%
-  select(f.R, max = S) %>%
-  # Mean
-  left_join(summarise(richness.2, mean = mean(S), .by = f.R), by = join_by(f.R)) %>%
-  # Median
-  left_join(summarise(richness.2, median = median(S), .by = f.R), by = join_by(f.R))
-
-# View
-estimates
-```
-
-
-```{r}
-# Plot predicted richness frequency based on tweedie estimates
+# Plot predicted richness
 ggplot(tweedie.dens) +
   aes(x = S, group = f.R) +
   geom_line(aes(y = pred.freq), col = "blue") +
   geom_col(aes(y = freq)) +
   facet_wrap(~ f.R) +
   labs(y = "Frequency", x = "Richness")
-
-# Plot probabilty distributions
-ggplot(tweedie.dens) +
-  aes(x = S, col = f.R, group = f.R) +
-  geom_line(aes(y = probs))
-
-# Pull out expected probabilities for 3+ replicate samples
-expected = filter(tweedie.dens, f.R == '3+') %>% pull(probs)
-
-# Plot richness probabilities relative to expected - these will be our sample weights (?)
-ggplot(tweedie.dens) +
-  aes(x = S, col = f.R, group = f.R) +
-  geom_line(aes(y = (probs + expected)/(2 * probs)))
 ```
 
-``` {r}
+I can see some difference in how these prediction graphs compare to the first ones we made. The distributions seem to fit a bit tighter to the raw data now. Now that we have models sufficiently describing richness, we can figure out how to use the predicted values in sample comparisons...
+
+Let's return to the ideas that formed our approach to this analyses. We've found a significant increasing trend in richness when samples contain one vs two vs three-or-more replicates. If we consider 3+ replicate samples as 'ideal', then lesser replicate samples can be made proportional to ideal samples based on the probability of that richness occurring.
+
+We have seen the wide variability of richness that exists within each replicate group. We can now describe that variability as a probability density based on tweedie distributions, where area under the curve sums to a total probability of 1. Following species accumulation theory, we assume increasing but diminishing returns as more species are encountered, meaning the more species that are caught the more likely this represents the actual community. So we could use cumulative probabilities to resemble this phenomena. Let's make a plot to view these accumulation curves.
+
+```{r}
+# Calculate cumulative densities based on PDF
+tweedie.prob = tweedie %>%
+  mutate(y = list(y)) %>%
+  mutate(dens = pmap(list(y, xi, mu, phi), ~ dtweedie(y = ..1, power = ..2, mu = ..3, phi = ..4)),
+         prob = map(dens, cumsum)) %>%
+  select(f.R, S = y, dens, prob) %>%
+  unnest(everything())
+
+# Plot CDFs
+ggplot(tweedie.prob) +
+  aes(x = S, col = f.R, group = f.R) +
+  geom_line(aes(y = prob)) +
+  facet_wrap( ~ f.R) +
+  labs(y = "Cumulative density", x = "Richness")
+```
+
+Let's examine the case where S = 1: the probability of this occurring in an 'ideal' setting pretty low, and I would expect a higher probability of this happening in 1-replicate samples vs 2-replicate samples. The relative position of 1-vs-2 replicate curves follow this logic over the whole range. If we examine the extreme end of the distribution, the probability that S = 31 is essentially 1 no matter which group replicate group - makes sense because we do not have any samples with more richness than that and the probability of that occurring in our 'ideal' dataset is very low to begin with.
+
+Essentially, our cumulative probabilities based on richness resemble the informative-ness we are assigning to a given sample. Remember that we are trying to interpret probabilities in relation to 3+ replicates, so we can come up with an equation that represents the expected informative-ness based on observed data.
+
+Let's try reason out this sample-information relationship and visualize it with graphs.
+
+```{r}
+# Pull out 'ideal' probabilities for 3+ replicate samples
+ideal.prob = filter(tweedie.prob, f.R == '3+') %>% pull(prob)
+
+# Save plotting aesthetics
+p = ggplot(tweedie.prob) + aes(x = S, col = f.R, group = f.R)
+
+# Start with PDF - probability of richness occurring within groups
+# These are not comparable to each other, really
+p + geom_line(aes(y = dens)) + facet_wrap( ~ f.R)
+
+# Change to CDF - interpret like species cumulation curves,
+# Within group, this is like the probability of samples being representative of true richness
+p + geom_line(aes(y = prob)) + facet_wrap( ~ f.R)
+
+# Combine probabilities, by adding non-ideal and ideal cases
+# i.e., two possibilities could happen - either we have a non-ideal OR an ideal case
+p + geom_line(aes(y = (prob + ideal.prob))) + facet_wrap( ~ f.R)
+
+# Make probabilities relative to each other,
+# i.e., probability of non-ideal or ideal case GIVEN the actual case
+p + geom_line(aes(y = (prob + ideal.prob) / prob))
+
+# Multiple equation by 1/2 to make the max probability = 1
+p + geom_line(aes(y = (prob + ideal.prob) / (2 * prob)))
+```
+
+The equation we landed at makes intuitive sense (see code comments for steps). Our ideal scenario is that a sample contains 3 or more replicates, and if so that sample would be just as informative as any other 3-or-more sample. Amnd, given the case where a sample contains 1 or 2 replicates, that sample is always going to have a lower likelihood of being as informative as an ideal 3-or-more replicate sample. However, if we do have a non-ideal sample, it is more likely to be close to ideal as the observed richness increases. We also see that 2-replicate samples are always more likely to be closer to ideal, and at the low end of richness we find that 1-replicate samples are likely about half as informative as ideal samples.
+
+We will use these adjusted probabilities as a vector of weights that can be applied to our samples given their replicate group and observed richness.
+
+```{r}
 # Pull out the weights
-weights = tweedie.dens %>%
-  mutate(weights = (probs + expected)/(2 * probs), .by = f.R) %>%
+weights = tweedie.prob %>%
+  mutate(weights = (prob + ideal)/(2 * prob), .by = f.R) %>%
   select(f.R, S, weights) %>%
   arrange(f.R)
 
@@ -516,8 +460,8 @@ weights = tweedie.dens %>%
 weights; saveRDS(weights, file = file.path(dir.data, "nfaa_weights.rds"))
 ```
 
-```{r}
+Save script as R file.
+
+```{r include=FALSE}
 knitr::purl(input = file.path(dir.scripts, "nfaa_sample-weights.Rmd"))
 ```
-
-
