@@ -842,14 +842,14 @@ save_plot_list = function (ls) {
   # Create a vector containing all the species names
   species = abun$Sp_ScientificName %>% unique() %>% sort()
   # For each species, save a file in a figs subfolder
-  iwalk(species, ~ ggsave(filename = file.path(dir.figs, "species eda", str_c(.x, ".png", sep = "")),
+  iwalk(species, ~ ggsave(filename = file.path(dir.figs.ignore, "species eda", str_c(.x, ".png", sep = "")),
                           plot = pluck(ls, .x), device = "png", create.dir = TRUE,
                           height = 15, width = 10, units = "in"),
         .progress = "Saving species plots:")
 }
 
 # If there are no species plots saved, then run the save plot function
-if (list.files(file.path(dir.figs, "species eda")) %>% length() == 0) {
+if (list.files(file.path(dir.figs.ignore, "species eda")) %>% length() == 0) {
   save_plot_list(plot_list)
 }
 ```
