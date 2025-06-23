@@ -1,0 +1,21 @@
+---
+title: "Proposal"
+author: "Chris Guo"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+# Background
+
+## Nearshore importance in fish ecology
+
+The marine nearshore is the relatively narrow band of waters along any oceanic coast. It is an environment that provides important ecosystem services for numerous fish species. Most notably the nearshore strongly impacts the juvenile life stages through habitat benefits as described in the nursery role hypothesis. This hypothesis and closely related concepts were made popular in the 1990's and continues in the current literature. In the recent literature, researchers have begun incorporating ideas from other fields of ecology and statistics, as well as adapting new approaches to data collection and analysis afforded by modern technologies.
+
+Much of the contents of the nursery role hypothesis has become paradigm (e.g., the reduced predation paradigm), supported by numerous studies documenting the occurrence, abundance, and growth of fish species in nearshore habitats. In the last decade, there has been strong support in the literature for expansion of nearshore benefits to include ideas like habitat connectivity and 'seascape' effects. These migration-dependent topics have mostly been studied for singular taxa due to fisheries management priorities and cost-prohibitive research struutures. So, relatively little is known about community-level effects in terms of how the nursery role fits with other ecological mechanisms that are known to affect fishes, such as inter species competition, cascading trophic interactions, or shifts in resource benefits (e.g., degradation from OA or other physicochemical changes).
+
+Issues of scale add an additional level of complexity to the study of the relationship between fish communities and their nearshore environment. As in other fields of ecology, scale-related effects are a necessary hurdle to overcome for research to move beyond the local or 'point-in-time' scale. In recent years as IPCC reports confirm worldwide trends, climate effects have brought on anomolous environmental observations, which has raised management concerns for resource availability and quality. In areas where long-term environmental data exists, nearshore fish observations are able to attribute species or community variability to multi-year or decadal patterns, or to periodically defined events (e.g., historic floods, MHWs, oil spills). At the same time, spatial scale effects must be understood so that variability can be parsed separately from (or in tandem with) temporal effects.
+
+
+-   Climate stuff - Concentration of human activity, fast rates of change relative to climate, linked to coastal processes involving freshwater input [@Cloern.etal.2016]
+
+-   Marine potected areas [@Ziegler.etal.2023]
