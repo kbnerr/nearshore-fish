@@ -61,7 +61,7 @@ The criticisms of the EHJ framework raised by @Sheaves.etal.2006 were disputed a
 
 Estuarine ecosystems are (very generally) defined by the aqueous environment where fresh and marine waters meet and mix [@Wolanski.2007]. The importance of estuarine habitat was recognized relatively early in the development of fisheries ecology [e.g., @Blaber.Blaber.1980; @Morin.etal.1980]. Because coastal communities often form around river drainages, people in fisheries could easily observe that certain species uniquely inhabit euryhaline waters as residents or as an ontological phase in their life history such as in diadromous species. The research themes that stem from the nursery role hypothesis were recognized for estuaries separately from other coastal systems [see @Deegan.1993; @Beck.etal.2001], likely due to the unique set of ecological paradigms that distinguishes it [@Whitfield.etal.2012]. Although often studied as a distinct domain, estuaries can be viewed from a hierarchical perspective as one of a subset of contexts that make up the nursery seascape [@Bradley.etal.2019], as it shares the same aspects of the nursery role defined for the nearshore broadly [@Whitfield.Patrick.2015].
 
-Some of the earliest and most Informative nearshore fish studies were conducted in an estuary setting.
+Some of the most informative nearshore fish studies were conducted in an estuary setting.
 
 -   community structure
 -   spatial connectivity
@@ -115,7 +115,7 @@ Primary literature
 #### Rockfish and Lingcod
 
 -   differential habitat use and behavior of Sebastes spp, SEAK [@Johnson.etal.2003]
--   Juvenile Copper Rockfish and Lingcod (Reynolds et al. 2008)
+-   Juvenile Copper Rockfish and Lingcod, PWS (Reynolds et al. 2008)
 
 #### Walleye pollock and gadids
 
@@ -140,9 +140,9 @@ Habitat usage
 
 #### Other groundfish
 
--   Clark et al. 1999
--   Bouwens et al. 1999a; 1999b
--   Grwoth of juvenile arrowtooth Paul et al. 2000
+-   Decadal changes in halibut, GOA wide + Bering, Clark et al. 1999
+-   Growth, Length, timing of Arrowtooth, Kachemak and GoA, Bouwens et al. 1999a; 1999b
+-   Growth of juvenile arrowtooth, Resurrection Bay, Paul et al. 2000
 -   Habitat use by juvenile groundfish, Kachemak Bay [@Abookire.etal.2001]
 -   Halibut spawning and skipped spawning (Loher and Seitz 2008)
 -   Temporal-spatial variability (Depth?) of YOY rock sole, Kodiak [@Hurst.Abookire.2006]
