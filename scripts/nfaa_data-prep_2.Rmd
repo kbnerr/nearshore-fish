@@ -732,21 +732,21 @@ saveRDS(richness, file = file.path(dir.data, "nfaa_richness.rds"))
 weights = readRDS(file.path(dir.data, "nfaa_weights.rds"))
 ```
 
-### Adding sample weights
+### Linking weights with samples
 
 ```{r}
 # Start with the richness df
-richness %>%
-  # Re-factor Replicates based on our analyses
+visits.1 = richness %>%
+  # Re-factor replicates based on our analyses
   mutate(f.R = ifelse(Replicates > 2, "3+", Replicates) %>% as.ordered()) %>%
   # Add sample weights
   left_join(weights, by = join_by(f.R, S)) %>%
   # Remove un-needed vars
-  select(VisitID, weights) %>%
-  # Join weights with the visits df
+  select(VisitID, Weights = weights) %>%
+  # Join with Visits df
   right_join(visits, by = join_by(VisitID)) %>%
-  # Re-factor Replicates for this df
-  mutate(Replicates = ifelse(Replicates > 2, "3+", Replicates))
+  # Re-factor Replicates
+  mutate(Replicates = ifelse(Replicates > 2, "3+", Replicates) %>% as.ordered())
 ```
 
 
@@ -857,117 +857,64 @@ if (list.files(file.path(dir.figs.ignore, "species eda")) %>% length() == 0) {
 ### Walleye Pollock {.unnumbered}
 
 ```{r echo=FALSE, out.width = '100%'}
-knitr::include_graphics(file.path(dir.figs, "species eda", "Gadus chalcogrammus.png"))
+knitr::include_graphics(file.path(dir.figs.ignore, "species eda", "Gadus chalcogrammus.png"))
 ```
 
 ### Starry Flounder {.unnumbered}
 
 ```{r echo=FALSE, out.width = '100%'}
-knitr::include_graphics(file.path(dir.figs, "species eda", "Platichthys stellatus.png"))
+knitr::include_graphics(file.path(dir.figs.ignore, "species eda", "Platichthys stellatus.png"))
 ```
 
 ### Great Sculpin {.unnumbered}
 
 ```{r echo=FALSE, out.width = '100%'}
-knitr::include_graphics(file.path(dir.figs, "species eda", "Myoxocephalus polyacanthocephalus.png"))
+knitr::include_graphics(file.path(dir.figs.ignore, "species eda", "Myoxocephalus polyacanthocephalus.png"))
 ```
 
 ### Pacific Herring {.unnumbered}
 
 ```{r echo=FALSE, out.width = '100%'}
-knitr::include_graphics(file.path(dir.figs, "species eda", "Clupea pallasii.png"))
+knitr::include_graphics(file.path(dir.figs.ignore, "species eda", "Clupea pallasii.png"))
 ```
 
 ### Coho Salmon {.unnumbered}
 
 ```{r echo=FALSE, out.width = '100%'}
-knitr::include_graphics(file.path(dir.figs, "species eda", "Oncorhynchus kisutch.png"))
+knitr::include_graphics(file.path(dir.figs.ignore, "species eda", "Oncorhynchus kisutch.png"))
 ```
 
 ### Dolly Varden {.unnumbered}
 
 ```{r echo=FALSE, out.width = '100%'}
-knitr::include_graphics(file.path(dir.figs, "species eda", "Salvelinus malma.png"))
+knitr::include_graphics(file.path(dir.figs.ignore, "species eda", "Salvelinus malma.png"))
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## MV Ordinations
-
-### Create catch matrix based on average abundances
+# Save data objects
 
 ```{r}
-# Create a data.frame in sample x species format (e.g., vegan)
-abun.mat = abun %>%
-  pivot_wider(names_from = Sp_ScientificName,
-              values_from = Abundance,
-              values_fill = 0) %>%
-  column_to_rownames(var = "VisitID")
+# Save "all" catch, events, visits objects
+save(catch.all, events.all, visits.all, file = file.path(dir.data, "nfaa_alldata.rda"))
+
+# Save some objects separately
+saveRDS(events, file = file.path(dir.data, "nfaa_events.rds"))
+saveRDS(abun, file = file.path(dir.data, "nfaa_abun.rds"))
+saveRDS(diversity, file = file.path(dir.data, "nfaa_diversity.rds"))
+saveRDS(size, file = file.path(dir.data, "nfaa_size.rds"))
+saveRDS(sp.occur, file = file.path(dir.data, "nfaa_spoccur.rds"))
+
+# Clean up obj name and remove working versions
+catch = catch.2; rm(catch.0, catch.1, catch.2)
+visits = visits.1; rm(visits.1)
+
+# Clean up data ojbects except catch and visits
+rm(list = ls()[!ls() %in% c('catch', 'visits')])
+
+# Save cleaned up environment
+save(list = ls(), file = file.path(here(), "data", "nfaa_2.rda"))
 ```
 
-### Standardize catch
 
-```{r}
-# presence/absence
-pa = decostand(abun.mat, method = "pa")
 
-# 4th root
-rt4 = mutate(abun.mat, across(everything(), ~ .x^(1/4)))
 
-# robust CLR
-rclr = decostand(abun.mat, method = "rclr")
-```
 
-### Calculate distances
-
-```{r}
-# Jaccard distances on P/A data
-jac = vegdist(as.matrix(pa), method = "jaccard")
-
-# Bray-Curtis distance on 4th rt transformed data
-bc = vegdist(as.matrix(rt4), method = "bray")
-
-# Euclidean distance on RCLR transformed data, i.e., robust aitchison distance
-rait = vegdist(as.matrix(rclr), method = "euclidean")
-```
-
-### Ordinations
-
-```{r eval = FALSE}
-nmds.jac = metaMDS(jac)
-plot(nmds.jac, type = "t")
-
-nmds.bc = metaMDS(bc)
-plot(nmds.bc, type = "t")
-
-## plot using rda() abd biplot()
-# pca.rclr = rda(as.matrix(rclr))
-# biplot(pca.rclr, display = c("sites", "species"), type = c("text", "points"))
-
-mds.rclr = metaMDS(rait)
-plot(mds.rclr, type = "t")
-```
-
-### Look at the outlier sample
-```{r}
-filter(visits, VisitID == "846_2015-08-15") %>%
-  left_join(catch.2, by = "VisitID") %>%
-  glimpse()
-```
