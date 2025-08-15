@@ -1,0 +1,96 @@
+---
+title: "Nearshore flatfish studies 1990-2000s"
+output: html_notebook
+---
+
+[@Norcross.etal.1995] August 1991
+
+Sizes overlap in ago-0 halibut and rock sole, and age-1 y yellowfin 
+
+System location (bay location) - halibut and rock sole associated with mouth and outer bay.
+
+Among system variability in abundance, occurrence, and size of rock sole and halibut. Yellowfin closest to shore (<2 km) but similar sizes among systems.
+
+Depth most influential on distributions- rock sole <50m (most ~40m), halibut mostly <40m, yellowfin exclusely <40m and most 5-30m. No flathead < 10m
+
+Substrate also influenced distribution- rock sole on sand/mud, halibut positive correlation with sand, yellowfin positive correlation with mud.
+
+Bottom temperature (8.8 - 11.2) positive correlation with halibut abundance
+
+@Norcross.etal.1997 August 1992 - confirmed models in 1991, depth-temp and substrate (mud, sand, gravel) as main distribution factors, however these are "highly intercorrelated". Discriminant analysis produced much lower error rates for presence compared to absence, suggesting that these three species exhibit a relatively "confined" habitat preference even though additional areas also offer their predicted depth-substrate characteristics.
+
+Age-0 rock sole concentrated at "sandy, shallow locations". highest abundance on mixed sand, >8.7 C. Relatively wide distribution in depth 0-70m but most ~30m. Pos cor with sand, neg with depth
+
+size 17-60 mm
+
+Age-0 halibut highest abundance <40m and >2.9 km outside of mouth, lower abundances on sand/mud mixtures in >9.0 C, sandy, shallow locations like rock sole BUT seldom found >50 m unlike rock sole. Pos cor with sand and temp, neg with depth, distance from mouth, mud
+
+size 22-84 mm
+
+Age-1 Yellowfin highest abundance in <28m on mixed mud substrate, closer to head of bays (>32 km from mouth). Never found >50m deep, and always on mixed substrate. Neg cor with depth. Found at "very shallow locations on mixed mud substrate near the head of bays"
+
+size 41-105
+
+Few age-0 found, size 15-20 mm
+
+Lab experiments on sediment preference for halibut, rock sole, yellowfin agree with @Norcross.etal.1995 and @Norcross.etal.1997 [@Moles.Norcross.1995].
+
+@Norcross.etal.1999 - comparison of models used in @Norcross.etal.1995 (discriminant) and @Norcross.etal.1997 (CART), plus another resource-selection model (simpler, logistic regression) tested on new data from systems (bays) along the AK Peninsula. Results from all three generally agree.
+
+Bays in this study were shallower, more open, and had shorter within-bay distance, contrasting with the fjord-type bays from the previous two Kodiak-based studies.
+
+Descriptive depth-substrate models from @Norcross.etal.1995 performed best on the most abundant species (age-0 rock sole and halibut) with 96-99% accuracy (as % abundance) and 91% precision (as % occurrence) for defined habitat parameters. However, the model was not as accurate (75%) or precise (52%) for yellowfin sole which could be due to much less abundance (insufficient data).
+
+Depth and sediment seem good predictors for age-0 rock sole, temperature and sediment for age-0 halibut, and depth only for age-1 yellowfin.
+
+Age-1 halibut presence may be predicted by examining the bay type, preference for open rather than intermediate or closed. This study used a bay aspect ratio (calculated width x distance) as opposed to a comparable fetch-based system classification used by other studies (exposed/semi-exposed/protected) because of the additional depth parameters and that currents (from an 8m tidal range) may confound the influence of exposure based on fetch.
+
+@Abookire.Norcross.1998 - Kachemak 1994-96, age-0 and age-1 rock sole. Supports similar findings as Kodiak and AK Peniinsula, where depth and substrate were significant factors in rock sole distribution except temperature did not appear influential.
+
+Abundances distribute by depth differently depending on season. Rock sole move to deeper waters during winter. 
+
+Both age-0 and age-1 in <20 m depth, and associates with sand substrate.
+
+No interannual variability between age-0 and age-1 abundances, age-0 may not be density depoendent
+
+@Abookire.etal.2001 - Kachemak groundfish community 1994-1999, depth as major influence and NOT temperature/salinity
+
+Depth and sediment were related
+
+[@Stoner.Abookire.2002] - Age-0 halibut Kachemak and lab experiments. 
+
+size range 14-120 mm
+
+Smallest (newly settled, <30 mm) on very fine sand, 41-80 mm on fine sand, 81-120 over a range of sand/mud.
+
+Size-dependent shifts in sediment preferences over first year's growth, relates to ability to bury and appears to lessen by 80 mm [@Stoner.Ottmar.2003].
+
+[@Stoner.Titgen.2003] - Halibut and rock sole lab experiment, preference for structured (bryozoans, shells, sand waves, and particularly sponges) ver smooth sand. Smaller halibut (48-144) were more selective than larger (270-337), and in sponge habitat halibut more selective than similar sized rock sole. Structure preference increased with light, but preference existed in darkness too.
+
+Field tests confirmed general finding, where abundances in age-0 for both species correlated with amount of shell and echinoderm bycatch.
+
+Catch from bare substrate suggests structure preference is not obligatory
+
+Small fishes may profit from structure
+
+Rock sole exhibiting less preference for structure (pers obs by auth) may be due to a different defense strategy.
+
+More cryptid, blending in with substrate better than halibut. 
+
+Led to more lab experiments on predation in...
+
+@Ryer.etal.2004 - Lab experiments. Age-0 halibut had strong preference for sponge structure (16%) vs none, but age-0 rock sole did not show preference. Structure decreased predator-prey encounter.
+
+Rock sole used immobility, burial, and crypsis for defense mechanism (traditional* flatfish strategy), they were less likely to flush when predators approached, but were also less likely to escape than halibut.
+
+Different species strategies: balancing vulnerability and antipredator behavior.
+
+Starts with encounter probability (vulnerability) and then probability of escape (motility)
+
+Body shape conferred with strategy: halibut are deeper, narrower body with narrow peduncle, made for faster swimming
+
+Observations support Bartholomew.etal.2000 who suggested (inter-structure distance):(predator size) as measure of predator forage success with structure complexity 
+
+Refuge vs forage trade off - starved fish buried less, and age-2 predators also exhibited structure preference
+
+Diets of juvenile rock sole, halibut, and yellowfin consist of mostly Crustacean taxa, and overlap is consistent across depths and substrates [@Holladay.Norcross.1995]. Although, overlap decreased when the most abundant flatfish (age-0 rock sole and age-1 yellowfin) co-occurred, where one or both would alter their prey source.
