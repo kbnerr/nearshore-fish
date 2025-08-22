@@ -34,11 +34,13 @@ At larger spatial scales, variability in community structure is dominated by fac
 
 Despite wide spatial variability, dominance by juvenile life stages in the community is ubiquitous among nearshore studies. Studies report of community patterns over shorter time scales (e.g., night vs day, tidal fluctuations, seasonal periods) [@Maes.etal.2004; @MarrinJarrin.Shanks.2011; @Torre.etal.2017], which is caused by to the variability in ontogenetic patterns exhibited by community members [@Elliot.etal.2007; @Potter.etal.2015]. Therefore, seasonal patterns of occurrence and abundance are often attributed to the different life histories that functionally lead fishes into the nearshore [@ShahEsmaeili.etal.2022], such as the various forms of diadromy [@Ray.2005]. Nearshore residence, recruitment timing, and size have also been related to seasonal prey availability, hydrological gradients, and habitat features, among other (often system-specific) factors [@Moore.etal.2016; @Kindong.etal.2020; @Barton.etal.2020; @Luo.etal.2023]. While seasonal influences have been widely reported, interannual effects are somewhat less common and appear more difficult to explain. Community studies that do analyse interannual effects have typically reported on shorter periods (\~2-4 yrs) [e.g., @Thedinga.etal.2013; @Roux.etal.2016; @Sutton.etal.2025], which is usually insufficient to measure the effect of nearshore function on community members [@Able.1999].
 
-More recent literature has been able to discuss long-term change because some places have accrued large time series of community observations (several years to decades). Researchers can couple these data with long-term environmental monitoring datasets [@Cloern.etal.2016] or oceanographic indices (e.g., ENSO, NAO, PDO) [@Collie.etal.2008; @Sielfeld.etal.2010; @Araujo.etal.2025]. Structural changes in species residency, abundance, density, and growth have been linked to shifts in the environment described by anomalous conditions, physicochemical gradients, and habitat changes [@Baptista.etal.2015; @Barcelo.etal.2016; @Amorim.etal.2017; @Beukhof.etal.2019; @Langan.etal.2021; @Priest.etal.2022; @Castillo.etal.2023]. A number of studies have also compared fish responses among distinct temperal periods defined by shifts in the environment or sometimes by gaps in sample years [e.g., @Heintz.etal.2013; @Ziegler.etal.2023; @Almeida.etal.2024; @Geoghegan.etal.2025]. There is evidence that nursery benefits may be reduced due to periodic disturbances [@Sebatian.etal.2021; @Thalmann.etal.2024], although conservation areas (e.g., MPAs) appear to provide resiliency during and after such periods [@Ziegler.etal.2023]. Community variability over long time scales can be a useful metric for discovering structural shifts attributed environmental change (e.g., climate, habitat, regime) as opposed to cyclical population dynamics. Still, identifying the exact mechanisms driving community shifts likely lies in understanding ontogeny at the species- or population-level [see for example @Laurel.etal.2016; @Thalmann.etal.2024].
+More recent literature has been able to discuss long-term change because some places have accrued large time series of community observations (several years to decades). Researchers can couple these data with long-term environmental monitoring datasets [@Cloern.etal.2016] or oceanographic indices (e.g., ENSO, NAO, PDO) [@Collie.etal.2008; @Sielfeld.etal.2010; @Araujo.etal.2025]. Structural changes in species residency, abundance, density, and growth have been linked to shifts in the environment described by anomalous conditions, physicochemical gradients, and habitat changes [@Baptista.etal.2015; @Barcelo.etal.2016; @Amorim.etal.2017; @Beukhof.etal.2019; @Langan.etal.2021; @Priest.etal.2022; @Castillo.etal.2023]. A number of studies have also compared fish responses among distinct temperal periods defined by shifts in the environment or sometimes by gaps in sample years [e.g., @Heintz.etal.2013; @Ziegler.etal.2023; @Almeida.etal.2024; @Geoghegan.etal.2025]. There is evidence that nursery benefits may be reduced due to periodic disturbances [@Sebatian.etal.2021; @Thalmann.etal.2024], although conservation areas (e.g., MPAs) appear to provide resiliency during and after such periods [@Ziegler.etal.2023]. Community variability over long time scales can be a useful metric for discovering structural shifts attributed environmental change (e.g., climate, habitat, regime) as opposed to cyclical population dynamics. Still, identifying the exact mechanisms driving community shifts likely lies in understanding ontogeny at the species, metapopulation level [see for example @Laurel.etal.2016; @Thalmann.etal.2024].
 
 ## Findings from Alaska
 
-Community-level research on Alaskan nearshore fish dates back to the 1970’s when state and federal agencies sought biological assessments for emergent fisheries and resource extraction leases. These early coastal studies were focused around the Beaufort Sea, SEAK, and northern GOA, and in the latter specifically Kodiak, lower Cook Inlet, and Prince William Sound [@Craig.1984; @Rogers.etal.1986]. Additional community assessments have since been conducted (ca. 1980s to now) expanding the existing sample area coverage but also creating new datasets from parts of the Aleutian Islands, Bering Sea, and Chukchi Sea [e.g., @Sigler.etal.2001; @Rooper.Boldt.2005; @Farley.etal.2005; @Thedinga.etal.2013]. In many cases, these areas have produced findings on how their communities are structured in addition to baseline assemblage information. However, nearshore fish information still does not exist for most of Alaska’s huge coastline. Compared to other nearshore research across the globe, Alaska has sparse data relative to its physical size. Spatially explicit models can be used to fill gaps, associating fish with coastal datasets like habitat maps or hydrological observations [@Coffin.Mueter.2016; @Parada.etal.2016; @Gruss.etal.2021]
+Community-level research on Alaskan nearshore fish dates back to the 1970’s when state and federal agencies sought biological assessments for emergent fisheries and resource extraction leases. These early coastal studies were focused around the Beaufort Sea, SEAK, and northern GOA, and in the latter specifically Kodiak, lower Cook Inlet, and Prince William Sound [@Craig.1984; @Rogers.etal.1986]. Additional community assessments have since been conducted (ca. 1980s to now) expanding the existing sample area coverage but also creating new datasets from parts of the Aleutian Islands, Bering Sea, and Chukchi Sea [e.g., @Sigler.etal.2001; @Rooper.Boldt.2005; @Farley.etal.2005; @Thedinga.etal.2013]. In many cases, these areas have produced findings on how their communities are structured in addition to baseline assemblage information.
+
+However, nearshore fish information still does not exist for most of Alaska’s huge coastline. Compared to other nearshore research across the globe, Alaska has sparse data relative to its physical size. Spatially explicit models can be used to fill gaps, associating fish with coastal datasets like habitat maps or hydrological observations [@Coffin.Mueter.2016; @Parada.etal.2016; @Gruss.etal.2021]
 
 but community-level models have rarely been done [c.f., @Miller.etal.2014; @Miller.etal.2015].
 
@@ -128,7 +130,55 @@ Ecological principles:
 
         -   self-thinning rule [@Nash.etal.2007]
 
-Community analysis was developed recognizing ecological principles based on species interactions and was meant to address questions of biodiversity, conservation, management, and change over time, where single-taxa studies were either inadequate (e.g., too costly or time consuming to string together) or simply inappropriate (e.g., need for samples coupling multiple taxa). While nearshore fish research in Alaska has been built over multiple decades, the information available in the literature lacks cohesion in terms of data analyses, ecological interpretation, and future outlook at the community level. In the last decade, other branches of ecology have led the way in performing analyses from a community perspective (e.g., multivariate inference models, joint species distributions, variable reduction). Some of these methods have already been applied to Alaskan nearshore fish communities, namely ordination and ANOVA based approaches. However, broad-scale analyses are still a gap considering the breadth of available datasets in both time and space compared to what has been done in other parts of the world. My dissertation aims to develop a cohesive understanding of nearshore fish community variability at the local-to-system scale, as well as at the region-to-region scale, and to examine if and how communities have changed over longer time periods. In my opinion, these are requisite analyses that will result in useful outcomes for fisheries management and ecosystem models, and will lead to next step analyses like those found in other branches of ecology.
+Community analysis was developed recognizing ecological principles based on species interactions and was meant to address questions of biodiversity, distribution, management, and change over time, where single-taxa studies were either inadequate (e.g., too costly or time consuming to string together) or simply inappropriate (e.g., need for samples coupling multiple taxa).
+
+-   Community ecology based on species distributions, abundances, and possible interactions
+
+-   Metacommunity framework dictates 4 paradigms:
+
+    -   Neutral theory (null) -
+
+        -   defined by slow, random patterns of compositional change in space and through time
+
+        -   unlike other approaches, there is no presumption of species difference in niche relationships with local factors and/or in abilities to disperse or avoid local extinctions
+
+        -   differences in local and regional diversity are random, or else could be explained by the other paradigms
+
+    -   Patch-dynamics (dispersal among identical localities) -
+
+        -   built on dispersal/extinction theory, considering homogeneous patches
+
+        -   possible 'occupancy model' can lead to patches that are either vacant or occupied by populations at equilibrium when patches are identical
+
+        -   regional coexistence can happen when species trade-offs exist between fitness/fecundity and dispersal
+
+        -   dispersal can be constrained by predation and competition
+
+        -   distinct time scales between local dynamics and regional 'colonization-extinction' dynamics
+
+    -   Species-sorting (niche separation and coexistence) -
+
+        -   built on theories of community change over environmental gradients, considering heterogeneous patches
+
+        -   possible 'assembly model' where trade-offs among species lead to habitat specialization, where populations are at equilibrium behavior (stable point, oscillating, complex attractor) between colonization events and before extinctions caused by environmental perturbations
+
+        -   local community compositions track changes in local environment (sharp or gradual) but maintain correspondence between local conditions and composition
+
+        -   metacommunities can stabilize when local communities repeat assembly cycles as alternative states given sufficient heterogeneity among patches
+
+        -   mass-effects are unlikely when immigration occurs at high levels but does not influence local communities, which will exhibit good correspondence between composition and conditions
+
+    -   Mass-effects (density-dependent species interactions)
+
+        -   built on probabilistic rules of population size and classical MacArthur consumer-resource model of species competition
+
+        -   local population dynamics are quantitatively affected by dispersal, meaning no separation of time scales between local dynamics and competition-extinction dynamics
+
+        -   introduces constraint of regional similarity, where coexisting species differ in ability to inhabit a patch type (MacArthur), but also compensating differences in abilities to compete and disperse make them similar at the regional scale
+
+        -   metacommunity coexistence occurs via regional compensation, leading to species that are locally different but regionally similar (Amarasekare and Nisbet 2001)
+
+While nearshore fish research in Alaska has been built over multiple decades, the information available in the literature lacks cohesion in terms of data analyses, ecological interpretation, and future outlook at the community level. In the last decade, other branches of ecology have led the way in performing analyses from a community perspective (e.g., multivariate inference models, joint species distributions, variable reduction). Some of these methods have already been applied to Alaskan nearshore fish communities, namely ordination and ANOVA based approaches. However, broad-scale analyses are still a gap considering the breadth of available datasets in both time and space compared to what has been done in other parts of the world. My dissertation aims to develop a cohesive understanding of nearshore fish community variability at the local-to-system scale, as well as at the region-to-region scale, and to examine if and how communities have changed over longer time periods. In my opinion, these are requisite analyses that will result in useful outcomes for fisheries management and ecosystem models, and will lead to next step analyses like those found in other branches of ecology.
 
 # Proposed chapters
 
@@ -142,10 +192,7 @@ For chapter 2, I ask how nearshore fish communities are structured at varying sp
 
 -   @Dray.etal.2012
 
-<!-- -->
-
--   Macroecology
--   Graph theory
+-   metacommunity, multiscale spatial analysis
 
 For chapter 3, I ask if and how nearshore fish communities have changed over long-term periods (years-to-decades) coinciding with known climate-related trends. Specifically, I look for patterns in community variability surrounding the marine heatwave that affected the Gulf of Alaska from 2014-2016. The goal of this chapter is to apply findings from other nearshore fish research which hypothesized effects on nursery function during years with anomalously warm water temperatures.
 

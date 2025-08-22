@@ -1,0 +1,127 @@
+---
+title: "R Notebook"
+output: html_notebook
+bibliography: references.bib
+---
+
+Review of statistical models and accounting for spatial variability in community analyses [@Viana.etal.2022]
+
+## Statistical models
+
+-   Constrained ordination
+
+    -   Redundancy analysis (RDA)
+
+    -   Good summary of RDA vs other methods in @Paliy.Shankar.2016
+
+-   Generalized Linear Models (GLMs)
+
+    -   GLM - family quasi-poisson? tweedie?
+
+-   Generalized Additive Models (GAMs)
+
+    -   Good for smooth response surfaces - not for me but maybe down the road if interpolating to unsampled sites
+
+-   Machine learning (ML) tree-based methods
+
+## Spatial components
+
+-   [Moran's Eigenvector Maps (MEMs)]{.underline} - best for EDA and model input
+
+-   Smooth spatial splines - specific to GAM
+
+-   Tree-based nonlinear modelling of coordinates - specific to ML, not as robust as MEM
+
+# MEM-based PCNM
+
+-   described in [@Dray.etal.2006], method example in [@Bellier.etal.2007]
+
+-   classical data analysis
+
+-   principle coordinate analysis of neighboring matrices
+
+-   "PCNM-based functions are particular cases of MEMs that maximize spatial autocorrelation in relation to a spatial weighting matrix" [@Bellier.etal.2007]
+
+    -   so, eigenvectors associated high positive or negative eigenvalues have high positive or negative autocorrelation (respectively), have describe global or local structures (respectively)
+
+-   Steps as in @Bellier.etal.2007
+
+    -   detrend - must include linear detrending step else PCNMs will try to account for out-of-study trends and miss finer scale structures [@Borcard.etal.2004]
+
+    -   suggests to do EDA variography on response variables, to help choose number of relevant scales
+
+    -   generate PCNM base functions - construct Euclidean distance matrices, choose threshold value *t* and truncate matrix where D = *d*(i, j) if *d* ≤ *t* \| 4*t* if *d* \> *t*
+
+    -   perform principle coordinate analysis (PCoA) on D, where after diagonalisation PCs are obtained by scaling each eigenvector by the square root of the positive eigenvalue associated it
+
+    -   test eigenvectors by permutation using Moran's Index and keep only significant (p \<0.01) representing spatial autocorrelation
+
+    -   use significant eigenvectors as explanatory variables in multiple regressions with response var
+
+    -   due to large number of significant eigenvectors, use bonferroni-adjustment (divide usual alpha (a = 0.05) by the number of tests) for new alpha
+
+    -   retain PCNM variables - eigenvectors with significant bonferroni-adjusted p values
+
+    -   identify PCNM scale by fitting variogram, group similarly scaled PCNMs into submodels; PCNM scales decrease with decreasing eigenvalue
+
+    -   each submodel is used as response variable in multiple linear regressions with predictor variables (environmental data)
+
+    -   select significant env vars using permutation tests under the full model [@Anderson.Legendre.1999], "testing the partial regression coefficient in the multiple regression model" [@Bellier.etal.2007]
+
+# Geostatistics-based approaches
+
+-   probabilistic framework [@Bellier.etal.2007]
+
+    -   deals with "how variance and covariance depend on the distance between observations"
+
+    -   assumes that variables being studied "can be represented by a second-order, stationary spatial process" meaning covariance between two points depends on distance and direction but not the relative location of the points (this end of the area vs the other)
+
+-   spatial structures modelled by fitting a variogram function to an emperical variogram, which is a plot of half the squared difference between two samples ([the semi-variance]{.underline}) against their distance in space, averaged for a series of distance classes
+
+    -   variogram functions are defined by,
+
+        -   parameters (3)
+
+            -   sill = maximum semi-variance
+
+            -   range = max distance at which pairs of observations influence each other
+
+            -   nugget effect = variance within sampling units
+
+        -   family
+
+            -   spherical, exponential, or Gaussian: most commonly used and all assume no spatial dependence beyond the range
+
+            -   wave functions (e.g., Bessel): cyclical patterns of variance when plotted against distance; models communities organized by periodic spatial patterns [see @Radeloff.etal.2000]
+
+-   reveal relevant spatial scales by [linear regionalized analysis]{.underline}
+
+    -   assumes that observed phenomenon is the sum of several independent sub-phenomena acting at different scales
+
+    -   fit an empirical variogram with a nested model composed of several variogram functions with different sill and range parameters, where each function represents an independent structure
+
+-   nested variogram components are extracted by [filter kriging]{.underline}
+
+    -   "kriging" produces unbiased linear estimates used for mapping; essentially an interpolation tool for unsampled locatioun accounting for spatial structure revealed by the variogram
+
+    -   filter kriging is a method that yields maps for each nested structure, which can be added together to give the map of the response variable
+
+-   kriging components are used as response variable in multiple linear regressions and significant env vars are selected via permutation, analogous to the role of PCNM submodels
+
+## Multivariate geostatistics
+
+-   [linear model of coregionalization (LMC)]{.underline}
+
+    -   allows global modelling of simple and cross-variograms together
+
+        -   crossed-variograms describe pairwise difference relationships between response variable and explanatory variables
+
+    -   totally defined by the basic models (as in the nested variogram model) and partial sill coefficients corresponding to each variogram and cross-variogram at each scale considered
+
+    -   for each scale characterized by the LMC, a p x p variance-covariance matrix is obtained, where p = number of variables
+
+    -   principle component analysis (PCA) is performed on each coregionalisation matrix, where the PCs are considered regionalised factors
+
+    -   For each PCA, compute correlation between regionalized factors and initial variables, which can be summarised in a circle of correlation
+
+    -   see @Nanos.etal.2005 for a MV response LMC
