@@ -1,0 +1,302 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#### Beaufort Sea
+
+-   Beaufort Sea nearshore includes large embayments, lagoons created by barrier islands, and exposed shoreline
+
+-   Less diverse, relatively colder than Chukchi Sea (Craig.1984)
+
+-   River and wind influences are major, in addition to Arctic seasonality @Craig.1984; @Jarvela.Thorsteinson.1999
+
+    -   East-to-west currents prevail
+
+    -   Easterly winds tend to extend brackish lens, creating stratified marine wedge and upwelling near shore margins
+
+    -   Westerly winds tend to contract brackish waters against barrier islands, no stratification over marine waters
+
+    -   Waters between true coast and barrier islands remain mixed and brackish
+
+-   Western Beaufort (\~ -150 to -156 ° W) @Schmidt.etal.1983 - distinct from central and eastern
+
+    -   fewer lagoons and more large bays
+
+    -   Slow-flowing, tundra rivers and streams
+
+-   Eastern Beaufort (\~ -140 to -150 ° W)
+
+    -   Mountainous rivers with clean, fast-flowing waters
+
+-   @Schmidt.etal.1983 - shallow variable mesh gillnets 2.5-7.6 cm (1-3 in) stretched
+
+    -   Spring-fed freshwater habitats and tundra-formed lakes as (potentially important) overwintering grounds for salmonids and whitefish
+
+    -   Emphasis on anadromous species - least cisco (most abundant), Arctic cisco (2nd most), broad whitefish, humpback whitefish, Arctic char, pink salmon
+
+        -   Also caught rainbow smelt, round whitefish (labelled as FW?)
+
+    -   Marine species caught: fourhorn sculpin (dominant, 94%) and Arctic flounder (much less, 5%), also capelin and saffron cod
+
+-   @Craig.1984 - review of Beaufort nearshore
+
+    -   narrow band of turbid, warm brackish waters (5-10°C, 10-25 ppt) along shoreline (2-10 km wide) and adjacent to colder marine waters (-1-3°C, 27-32 ppt)
+
+        -   apparent in summer associating with open-water season; disappears in winter with sea ice formation
+
+        -   influenced by weather, ice melt, geophysical features, and river input, seasonal progression of decreasing runoff, which increases salinity and introduces cooling temperatures
+
+        -   distinct from other estuarine habitats because it is more or less continuous (\~750 km) rather than disjunct series of estuaries
+
+    -   Summer vs winter seasonal changes in assemblage
+
+        -   Summer:
+
+            -   anadromous species feeding timed with break up (early-mid June) - Arctic and least cisco, and Arctic char, whitefishes to some extent
+
+                -   these species are the focus of the main fisheries (commercial, sport, subsistence) in the Beaufort
+
+            -   marine species feeding during late summer (increased salinity)- Arctic cod and fourhorn sculpin, also Arctic flounder, slender eelblenny, and snailfish (maybe kelp snailfish?)
+
+        -   Winter:
+
+            -   anadromous move to FW overwintering in late summer and fall (late Aug - Sep) and last migrations in early winter (Oct). Several species can overwinter in brackish coastal waters and river deltas, particularly rainbow smelt seem to overwinter in marine (different ontegeny - spring spawner)
+
+            -   marine remain underneath sea ice formation, moving more offshore as ice thickens (\~2m); fourhorn and Arctic cod are most abundant winter nearshore, but gill nets may be selectively missing less active, different shaped species
+
+            -   "bad ice" years, when ice is late moving off from mainland shore, may disrupt juvenile anadromous dispersal
+
+    -   62 species, but probably more moving offshore
+
+        -   anadromous species abundance decreases with distance from shore, but marine (fourhorn) abundance shows no trend with distance
+
+    -   Habitats
+
+        -   FW drainages - contributes anadromous populations during summer, different community complexes depending on location:
+
+            -   Colville river and tundra plains in the west - broad and hump whitefishes, least cisco (not much Arctic), salmon
+
+            -   mountain streams in central - Arctic char (dominant) and Arctic cisco, disperse widely in both East and West directions
+
+            -   Mackenzie drainage in the east - broad and lake whitefish, Arctic and least cisco
+
+            -   smaller coastal streams (40-70 km) maybe support grayling, slimy sculpin, sticklebacks
+
+        -   brackish coastal waters- relatively warm and brackish (5-10°C, 10-25 ppt)
+
+            -   catcch density increases near true coast/island shores and less at mid-lagoon, but maybe because of relatively large area of lagoons
+
+            -   anadromous assemblage controlled by proximity to drainage, migration timing, daily variability T/S related to wind, migrations can be 3-6 km per day
+
+            -   All of the coastal brackish band is important feeding grounds, but deltas of large rivers are important over wintering habitat and migration corridors for spawning fish
+
+            -   Substrates are primarily mud and sand, but notable boulder patch near Prudoe Bay offers diversity of plants and inverts- maybe more associated with some marine species (kelp snailfish, fourhorn sculpin, fish doctor) but does not appear important for other species
+
+        -   marine coastal- outside of brackish band, seaward of barrier islands, defined by water-mass characteristics: cold and saline (-1-3°C, 27-32 ppt)
+
+            -   similarly to brackish zones, marine waters will fluctuate with daily wind conditions, sometimes creating stratified sub-lens wedges that reach into bays and lagoons
+
+            -   year-round use by cods, sculpin, eelpouts, snailfish. Densities highest during winter when species migrate away from inward habitats
+
+            -   mostly deeper waters (\>40m) except when conditions drive water mass closer to shore
+
+            -   little information availale at the time (ca. 1980s) but Arctic cod may be trophically important
+
+            -   
+
+    -   Trophic
+
+        -   nearshore is mainly a feeding zone due to abundant supply of prey
+
+            -   Arctic char, Arctic cod, Arctic and least ciscoes mostly eat epibenthic mysid and amphipods - much more abundant in 0-20 cm off floor compared to the rest of the water column (\~2 m)
+
+            -   Rainbow smelt and (at times) Arctic char consume fish
+
+            -   fourhorn and Arctic flounder consume isopods
+
+            -   infaunal organisms not commonly consumed
+
+        -   epibenthic production probably exceeds demand of consumers
+
+        -   Most carbon nutrition is derived from marine production, even though large amounts of terrestrial OM input
+
+-   Central Beaufort, divided into "west and east" in this study, 1988 -1991 @Jarvela.Thorsteinson.1999
+
+    -   nearshore not the focus (use of purse seine and tow nets, but confirmed shallow water conditions influenced by wind and ice dynamics
+
+    -   salinity driven by freshwater input, which is also variable by year, more spatially variable than termperature
+
+    -   documented overall low richness and interannual variability in juveniles age-0 species, dominated by Arctic cod, capelin, liparids
+
+    -   Use of negative binomial distributions to model species CPUE due to right-skewed data with lots of zero observations for most species
+
+        -   effort introduces potential interannual effect on variability
+
+    -   Fish more abundant in lagoons than open coastal habitat
+
+-   Western Beaufort, @Logerwell.etal.2015
+
+    -   Fyke net and beach seine had diversity (richness = 7, shannon = 1.30, 1.27, simpson = 2.87, 2.78), however actual catch composition differed a lot
+
+    -   Lagoon - Fyke net was similar to early studies, dominated by least cisco and fourhorn, and a modest number of Arctic flounder (\~6.5% CPUE)
+
+        -   however, there were also modest abundances of saffron cod and threespine sticklebacks at \~4.5%, and smelts at \~2.5% (capelin and rainbow)
+
+        -   P herring, Arctic cod, rainbow smelt, and threespine in lagoon fyke nets but not beach
+
+            -   Laggoon gill nets also captured migrating anadromous species - cisco, whitefish, and salmon
+
+        -   lagoons sampled by fyke net (smaller 6.4 mm) and gill nets (larger 64-204 mm) in 2009-12
+
+    -   Beaches sampled by beach seine (3.2 mm) in 2007 & 2009
+
+        -   Limited number of beach seines (n = 6 over 2 yrs),
+
+        -   with no catches of salmon, cisco, or flatfish
+
+        -   capelin made up 50% of CPUE, with large proportions of *Stichidae* (\~28%), saffron (\~9%) fish larvae (\~7.5%)
+
+        -   ninespine sticklebacks but no threespine
+
+    -   Pacific sand lance were found at beaches but not lagoons
+
+    -   Stickleback difference between beach and lagoon- both in lagoons but dominated by threespine, only ninespine at beaches
+
+    -   Ontogeny
+
+        -   saffron cod, pricklebacks, eelblennies, and snailfish likely spawn on shelf then migrate/transport to nearshore for feeding
+
+        -   fourhorn, flounder, sticklebacks, and capelin likely lagoon and/or beach spawners
+
+        -   PSL known inshore spawners, but larvae found on shelf
+
+        -   Lagoons and beaches likely nurseries for saffron, Arctic, slender eelblenny, capelin, and various sculpin
+
+            -   Also favored by classic forage fish (capelin, herring, PSL, rainbow smelt) at a range of ages, likely due to warmer temps, abundant prey, and proximity to spawning areas
+
+-   Ciscos
+
+    -   Least cisco (Bering to Arctic), widely distributed and abundant, not common beyond mainland shore
+
+    -   Arctic cisco (Arctic-wide, but up to Pt Barrow in AK), suspected largely Mackenzie River (Canada) spawning but also spawning in Colville River, juveniles prefer warmest temperatures, more distributed around lagoon-side shores than least cisco and whitefish
+
+        -   unimodal temperature distribution in water column (not horizontally) @Thorsteinson.etal.1991
+
+        -   15-18 km/day from tagging studies @Thorsteinson.etal.1991
+
+    -   supports commercial and subsistence fisheries - Arctic favored for more oils, least are dog food
+
+    -   favor brackish waters - low-salinity tolerance, \~18 ppt to as low as 0.2 ppt, correlated with warm temp and low salinity
+
+    -   anadromous behavior - YOY migrate into nearshore after ice-break up
+
+-   Arctic char
+
+    -   widely distributed in Arctic, but favor fast-flowing waters of Eastern Beaufort, more distributed around lagoon-side shores than least cisco and whitefish, must abundant anadromous fish on seaward side of barrier islands - indicating greater tolerance for varying T/S conditions
+
+        -   Multimodal temperature distribution @Thorsteinson.etal.1991
+
+    -   paranadromous - split fw and searun populations
+
+    -   summer nearshore feeding in marine and brackish, smolt age usually after years compared to Arctic cisco
+
+    -   juveniles migrate to over-winter habitat in Aug-Sep after adults migrate to spawn
+
+-   Broad whitefish
+
+    -   more fresh/brackish, rarely venture into marine waters, not common outside of mainland shore
+
+    -   ages 0-2 in brackish gillnets
+
+    -   slow-growing and long-lived relatively (up to 22 yr, maturity 9-14 yr)
+
+    -   Round whitefish are much more FW, rarely nearshore except if rivers cause salinity to drop
+
+-   Rainbow smelt
+
+    -   anadromous spring spawners in low river and delta areas
+
+    -   YOY don't seem to move far from natal stream
+
+-   Capelin
+
+    -   Shallow water, gravel beach spawning, perhaps multiple runs starting June @Jarvela.Thorsteinson.1999
+
+    -   Adults caught during beach spawning, but age-0 continue to rear in nearshore, little interannual variability in size perhaps because of better foraging ability
+
+    -   Capelin survive better when onshore winds keep waters warm, compared to offshore winds that drive upwelling and carry larva out
+
+-   Fourhorn sculpin
+
+    -   highly abundant, marine spawning
+
+    -   nearshore feeders in brackish/shallow lagoons, during 'open water season'
+
+-   Arctic flounder
+
+    -   similar ontogeny as fourhorn sculpin, maybe deeper habitat preferred (5-10 m)
+
+-   Arctic cod
+
+    -   juvenile use of nearshore areas as salinity increases later in summer, but interannual variability exists, potential threshold of 14°C below which they are not found @Jarvela.Thorsteinson.1999
+
+    -   When capelin larva are low in number (offshore winds), conditions are better (higher salinity) but also likely less competition for food with capelin, leading to higher abundance of cod
+
+-   Saffron cod
+
+    -   onshore spawning migration during fall/winter
+
+    -   offshore summer to feed
+
+-   
+
+#### Chuckchi Sea
+
+Prior to the 2000s, nearshore information was much less available in the Chukchi Sea compared to the Beaufort Sea. During that period @Fechhelm.etal.1984 provided the only nearshore survey, describing the coastal environment from Pt. Hope to Pt. Barrow (\~550 km) and documenting fish communities collected in 1983 by gill net (1-2 in mesh) and fyke net (1/2 in mesh). The Chukchi nearshore environment, similar to the Beaufort, is influenced by seasonal ice dynamics and alongshore winds that shape freshwater dispersal, however, a distinction is its southern connection with the Bering Sea. Unlike the Beaufort, the Chukchi does not maintain a nearshore band of brackish waters [@Craig.1984], but instead has more marine exposure and exchange with lagoon habitats, which overall decreases temperature and increases salinity. @Fechhelm.etal.1984 pointed to this lack of suitable hydrology to explain the relative absence of anadromous species (Arctic cisco, Arctic char, and whitefishes) compared to the Beaufort. Also, notable was the absence of Pacific sand lance, which was likely related to the mesh size of sampling nets.
+
+From a broad perspective, the northeastern Chukchi coast mostly contains bluff formations and narrow gravel beaches [@Fechhelm.etal.1984], although @Craig.1984 thought the Chukchi coast to be more diverse in habitat than the Beaufort. @Fechhelm.etal.1984 parsed its study area into subregions based on coastal environment and observed differences in species abundances. The southern most portion (Ledyard Bay) is a long exposed coastline with one major river drainage, mostly influenced by the North Alaskan Current carrying warm Bering Sea waters northward. Nearshore fish sampling effort was low in this subregion in 1983 (except by vessel-based methods), but @Fechhelm.etal.1984 suggests it may contain rich communties due to high productivity resulting from Bering Sea influence. Continuing towards the northeast around Pt. Lay is a large lagoon system (Kasegulak) formed by \~180 km of barrier islands. Much larger than lagoons in the Beaufort, Kasegulak remains shallow (typically \<1 m) and its conditions are influenced by input from three major rivers in addition to several smaller rivers and tundra streams [@Fechhelm.etal.1984]. Summer sampling effort during 1983 (July-August) was focused here, capturing mostly juvenile fishes (\<130 mm) and reporting much more abundance (\~5x) on the outside of barrier islands than within the lagoon. Marine species dominated the catch, which included Arctic cod, capelin, fourhorn sculpin, Arctic flounder, Pacific herring, and rainbow smelt [*Osmerus mordax,* called "boreal smelt" in @Fechhelm.etal.1984]. Northeast of Kasegulak is another large watershed (Kuk river) that feeds into Wainwright Inlet. This drainage becomes a brackish environment in the summer that is important for feeding and migrating anadromous species, but also supports rainbow smelt during winter months [@Fechhelm.etal.1984].
+
+The northern-most subregion of the Chukchi nearshore is Peard Bay, which @Fechhelm.etal.1984 described as a relatively open, marine-exposed bay that includes large kelp stands formed on rocky substrates. Winter samples (March 1983) from all subregions had collectively low abundance (\~200 individuals) and was almost entirely Arctic cod (except one sculpin), but most of these were caught over a deep station (\>20 m) in the Peard Bay nearshore [@Fechhelm.etal.1984]. Peard Bay was the only subregion visited when nearshore data collection started again in the 2000s [@Johnson.etal.2012]. In particular, sampling focused on a small portion of coast within \~50 km of Pt. Barrow [@Johnson.etal.2012; @Thedinga.etal.2013].
+
+#### Chukchi and Beaufort
+
+A subset of the 2000s Chukchi beach seine data [August-September 2007-2009, @Thedinga.etal.2013] was incorporated into a broader study comparing fish habitats from the northeast Chukchi and western Beaufort [@Loggerwell.etal.2015]. In those years, Arctic cod dominated the nearshore abundance in the Beaufort while capelin was dominant in the Chukchi [@Loggerwell.etal.2015]. By studying a range of habitats including those offshore, @Loggerwell.etal.2015 demonstrated that juvenile Arctic cod distributed widely and were not restricted to the nearshore, suggesting variable strategies for during early life stages. By contrast, juvenile saffron cod appeared restricted to the nearshore in the Beaufort but not in the Chukchi, displaying a spatially dependent difference in expression of early life history. Another notable finding by @Logerwell.etal.2015 was that lower-latitude groundfishes (i.e., walleye pollock, Pacific cod, Greenland halibut, and yellowfin sole) were found in samples, however, their immature size classes and absence from larval surveys indicated that Arctic spawning had likely not occurred (ca. 2012).
+
+Ice scouring makes Arctic nearshore habitat relatively devoid of structures, and species probably rely on water conditions for refugia [@Logerwell.etal.2015]
+
+-   @Vollenweider.etal.2017 Pt. Barrow area beach seines 2013-15
+
+    -   Marine vs lagoon difference in assemblage
+
+        -   Lagoon comprised mostly of anadromous species (ciscoes, rainbow smelt, salmon), and fourhorn sculpin, plain sculpin, and arctic flounder
+
+        -   Marine species Arctic cod (mostly age-0), saffron cod (mostly age-0), Pacific sand lance - these were unaffected during cold years when generally CPUE was low
+
+        -   Capelin (mostly age-0) and slender eelblenny shared frequency of occurrence in lagoon and marine groups, but abundance greater in marine waters
+
+            -   Warm years increased frequency of Arctic flounder, capelin, Arctic shanny, tubenose poacher, and slender eelblenny
+
+        -   Cottidae were most speciose family, dominated all sites, but some species level differences between the groups
+
+        -   Juveniles were dominant in nearshore residents- Arctic shanny, slender eelblenny, sculpins, and sand lance; but anadromous smelt and ciscoes were adult form using nearshore as feeding grounds.
+
+-   @Barton.etal.2020 Same Pt. Barrow data but published chapter on variation partitioning
+
+    -   Use of relative abundance due to variable effort in beach seines [as in @Pierce.etal.1990] -\> led to CCA
+
+    -   Use of CCA to partition variability among environmental, spatial, and temporal, and chose against RDA due to its assumption of short, linear gradients
+
+        -   env included T, S, DO and wind metrics
+
+            -   Wind, T, salinity were forward selected, and all important - unable to distinguish how much each var is redundant with spatially variability, but salinity was obviously different among water bodies (grouped sites)
+
+        -   spa used site, grouped site (water body), and PCNM for autocorrelation of euclidean distance among samples, where distance was manually entered into a neighbor distance matrix
+
+            -   PCNM1 and 3 (of 9), water body, site were forward selected, but only PCNM was important, meaning autocorrelation was influential, suggesting spatial variability was relatively gradual (not abrupt, not highly heterogeneous)
+
+        -   tmp used year, week, and various day-since variables, and PCNM for autocorrelation between sample dates
+
+            -    Year was only variable forward selected. Clear interannual differences, and remaining variability after removing partial variability of ENV vars suggests other temporally dependent sources of variability
+
+        -   38% of variance explained total, with 24% as sum of partial variance explained (env = 9.85, tmp = 8.14, spa = 6.08) leaving 14% overlap between the three
